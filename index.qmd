@@ -1,0 +1,82 @@
+---
+title: "From the question to the model"
+subtitle: "A four-hour workshop on carbon data when the response is not Gaussian"
+author: "Bastien Chassagnol"
+institute: "PEPR Carbon statistical workshop"
+lang: en-GB
+from: markdown+emoji
+date: today
+date-format: "D MMMM YYYY"
+bibliography: "Statistical classes.bib"
+citeproc: true
+link-citations: true
+slide-level: 2
+execute:
+  echo: false
+  warning: false
+  message: false
+format:
+  revealjs:
+    theme: [default, styles.scss]
+    slide-number: c/t
+    width: 1050
+    height: 700
+    margin: 0.08
+    center: false
+    transition: fade
+    background-transition: fade
+    hash-type: number
+    navigation-mode: linear
+    controls: true
+    progress: true
+    preview-links: auto
+    footnotes-hover: true
+    code-line-numbers: false
+    code-overflow: wrap
+    fig-align: center
+    auto-stretch: false
+    chalkboard: true
+    mermaid:
+      theme: forest
+    footer: "[PEPR Carbon statistical workshop](https://github.com/bastienchassagnol/PEPR-Carbon-Statistical-Courses)"
+    title-slide-attributes:
+      data-background-color: "#f7f4ef"
+---
+
+{{< include sections/00-opening.qmd >}}
+
+# Two datasets {.center}
+
+:seedling: Thirty minutes, with the welcome. One count table, one designed experiment.
+
+{{< include sections/01-datasets.qmd >}}
+
+# Twelve pitfalls {.center}
+
+:triangular_ruler: About fifty minutes, including ten minutes to write your own PICO.
+
+{{< include sections/02-pitfalls.qmd >}}
+
+# When Y is not Gaussian {.center}
+
+:microscope: About seventy minutes. QQ plots, transformations, then three GLMs.
+
+{{< include sections/03-non-gaussian.qmd >}}
+
+# Experimental design {.center}
+
+:abacus: Twenty minutes. The model has to inherit the plan.
+
+{{< include sections/04-design.qmd >}}
+
+# Bayesian fits and causal estimands {.center}
+
+:balance_scale: Twenty minutes. Same mean model, a different claim.
+
+{{< include sections/05-bayesian-causal.qmd >}}
+
+# Close {.center}
+
+:white_check_mark: About thirty minutes. A short quiz, then your own write-up.
+
+{{< include sections/06-close.qmd >}}

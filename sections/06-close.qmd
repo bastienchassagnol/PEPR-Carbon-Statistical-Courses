@@ -1,0 +1,129 @@
+## Before the quiz :question:
+
+Six questions. The answer arrives on the next click. No score, and no trick wording.
+
+Use the notation from the first hour: $Y$ is the response, $x$ is the covariate, $\mu = \mathbb{E}(Y \mid x)$.
+
+::: {.notes}
+About eight minutes for six questions. Ask the room before you reveal the fragment.
+:::
+
+## Quiz · a small, precise ratio
+
+A warming contrast is reported as a flux ratio of 0.97, 95% interval 0.95 to 0.99, $p < 0.05$.
+
+::: {.fragment}
+The contrast is detected, and it is small. The sentence needs the ratio, the interval, and whether a 3% flux change matters for the budget. The $p$-value does not answer that last part.
+:::
+
+## Quiz · why is this core missing?
+
+Sequencing failed for every core with pH below 4. pH is recorded for every core, including the cores with no sequences.
+
+::: {.fragment}
+Working description: missing at random, because missingness depends on observed pH. That is not a licence to drop those cores and fit a complete-case model without a plan. pH has to enter the imputation or the likelihood.
+:::
+
+## Quiz · a cut in the SPRUCE gradient
+
+Someone proposes to analyse warming as "low" versus "high", split at $+4.5^\circ\mathrm{C}$.
+
+::: {.fragment}
+The design is a regression across five levels. The cut treats $+4.5$ and $+9$ as the same regime, and $+4.5$ and $+2.25$ as unrelated. Report a slope per $^\circ\mathrm{C}$, and show the mean. Binning is the fallback the design page already described as a loss.
+:::
+
+## Quiz · the Poisson interval is too tidy
+
+Colony counts have a residual spread far above the fitted mean. The log-link slope is the quantity you care about.
+
+::: {.fragment}
+Keep the log link if the mean model is still right. Drop the Poisson variance. A negative binomial adds $\mu^2/\theta$ to the variance and widens the interval for the rate ratio. $\log(Y+1)$ followed by a Gaussian `lm` targets a different estimand.
+:::
+
+## Quiz · how many replicates?
+
+Inside each SPRUCE enclosure, a collar is measured every week of the growing season.
+
+::: {.fragment}
+Warming is applied to the enclosure. There are ten enclosures. The weekly collar rows are repeated observations inside $j$. They are not $10 \times \text{weeks}$ independent replicates of the warming effect.
+:::
+
+## Quiz · an odds ratio of 4
+
+In a logit model of taxon detection, $\exp(\hat\beta_1) = 4$ for a one-unit increase in centred pH, other covariates held fixed.
+
+::: {.fragment}
+The **odds** of detection are multiplied by 4. The probability is not multiplied by 4. The change in $\pi$ depends on where you start on the curve.
+:::
+
+## SAMPL, in workshop language :memo:
+
+[Lang and Altman, SAMPL](https://www.equator-network.org/reporting-guidelines/sampl/) ask for the analysis to be explicit enough to audit. For this room, four lines are the minimum:
+
+1. Purpose: describe, compare, explain, predict, explore, or confirm
+2. Estimand, with the unit and the contrast
+3. Family, link, and what you did about missing rows
+4. The estimate, the interval, and the assumption you checked
+
+"We used a mixed model" is not one of the four lines.
+
+## Rewrite the model you arrived with :pencil:
+
+Take the analysis you named at the start. Replace one paragraph so that a colleague could say what $\mu$ is.
+
+- What is $Y$, and what is $j$?
+- Which of the twelve pitfalls is the one you are currently violating?
+- Does the family match the support of $Y$?
+- What would you refit tomorrow morning as a sensitivity analysis?
+
+::: {.notes}
+Ten minutes if the clock allows, otherwise five, and one example aloud. This is the second protected exercise.
+:::
+
+## A checklist you can paste above a script
+
+1. Question and purpose, in one sentence
+2. Estimand, including the population and the unit
+3. Experimental or observational, and where the treatment was applied
+4. Support of $Y$: continuous, count, binary, composition, censored
+5. Dependence: site, enclosure, date, space
+6. Missingness: how much, and a mechanism you are willing to defend
+7. Linearity of the linear predictor, checked, not assumed
+8. Family check: a QQ plot of the right residual
+9. Sensitivity: one alternative that could move the claim
+10. A report that separates association from an assigned effect
+
+## What to open next · the response
+
+- zero-inflated and hurdle models, when zeros are a second process
+- compositions: log-ratios, and a deliberate rule for zeros, before any CLR
+- splines and GAMs, when the warming or moisture curve is the result
+- quantile residuals and calibration, once the family is in place
+
+The longer GLM development is the SIB day already cited, and Agresti [@agrestiFoundationsLinearGeneralized2015].
+
+## What to open next · design, cause, and reuse
+
+- a full mixed model for the SPRUCE indices $i$ and $j$, on a defensible scale for flux
+- spatial and temporal correlation, when the random intercept is not enough
+- a Bayesian hierarchical fit, with two priors and a comparison of the slope
+- a mechanistic model, when $\mu$ is the solution of a process rather than a linear predictor
+- a reproducible script, and a report that meets SAMPL
+
+FAIR habits matter here because the next person will need your unit, your missingness rule, and your seed.
+
+## Thank you :wave:
+
+- The room, for writing a PICO that was specific enough to argue with
+- [Riley and colleagues](https://doi.org/10.1136/bmj-2022-072883), for the twelve pitfalls
+- The [SPRUCE design page](https://mnspruce.ornl.gov/content/experimental-design) and the [NEON soil-microbe products](https://data.neonscience.org/data-products/DP1.10081.001)
+- Paolo Angelino and Rachel Marcone, for the SIB GLM teaching sequence we followed in miniature
+
+The simulated figures use seed `20261005`. They are not fits to either dataset.
+
+## Sources for the two citations
+
+::: {#refs}
+:::
+
+Every other claim on a slide is linked where it is used: NEON, SPRUCE, SAMPL, SIB, O'Hara and Kotze (2010), Altman and Royston (2006), and Halsey and colleagues (2015).

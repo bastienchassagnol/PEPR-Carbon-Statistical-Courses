@@ -1,0 +1,103 @@
+## The mean can stay; the probability statement changes
+
+A Bayesian fit of the same GLM still uses
+
+$$
+g(\mu_i) = \beta_0 + \beta_1 x_i
+$$
+
+and a family for $Y \mid x$. What changes is the status of $\beta$.
+
+- the likelihood is the model for $Y$ given $\beta$
+- the prior is what you are willing to say about $\beta$ before these rows
+- the posterior is the updated distribution of $\beta$ given the rows
+
+Riley and colleagues note one use directly: a probability such as $\Pr(\text{rate ratio} < 0.9 \mid \text{data})$ [@riley12thDayChristmas2022].
+
+## Three objects, in order
+
+```{mermaid}
+%%| fig-width: 10
+%%| fig-height: 2.4
+flowchart LR
+  prior[Prior on beta]
+  likelihood[Likelihood of Y given beta]
+  posterior[Posterior of beta given Y]
+  prior --> posterior
+  likelihood --> posterior
+```
+
+No prior is "non-informative" merely because it was the software default. A prior labelled vague can still move $\hat\beta$ when the sample is small or the outcome is sparse. That check is a sensitivity analysis.
+
+## What you are allowed to say
+
+A Wald interval from `glm` is a statement about the sampling distribution of the estimator, under the model, if the experiment were repeated.
+
+A posterior interval is a statement about $\beta$ given this sample and this prior.
+
+They can be numerically close for a large sample and a gentle prior. They are not the same sentence. Write the one you computed.
+
+With ten enclosures, the prior on $\sigma_u$ is not a detail. Refit with a second prior and show the slope again.
+
+## Where it earns its place this afternoon
+
+- partial pooling of sites or enclosures, with an honest prior on the variance
+- a parameter that must stay positive, such as a variance or a rate
+- a small sample, where a weakly identified $\beta$ should not look precise
+- a hierarchical summary across studies, which is the meta-analysis version of the same idea
+
+It does not remove confounding, and it does not choose the estimand.
+
+## A coefficient is not an intervention
+
+SPRUCE assigns warming and $\mathrm{CO}_2$. A slope on assigned warming estimates the effect of that assignment, in that bog, under the design assumptions.
+
+An observational regression of taxon counts on organic carbon does **not** estimate "the effect of setting carbon to a new value", unless the adjustment set matches the causal question.
+
+Randomisation is a design fact. Adding covariates is not a substitute for it.
+
+## A confounder in the soil table
+
+```{mermaid}
+%%| fig-width: 9
+%%| fig-height: 3.2
+flowchart LR
+  moisture[Soil moisture]
+  carbon[Organic carbon x]
+  taxon[Taxon count Y]
+  moisture --> carbon
+  moisture --> taxon
+  carbon --> taxon
+```
+
+Both carbon and the taxon respond to moisture. The unadjusted slope of $Y$ on carbon mixes the carbon path with the moisture path.
+
+If the estimand is the association **at a given moisture**, moisture belongs in the model. If moisture is how carbon affects the taxon, moisture is a mediator, and adjusting for it removes part of the effect you wanted.
+
+## A mediator is a different question
+
+```{mermaid}
+%%| fig-width: 10
+%%| fig-height: 2.6
+flowchart LR
+  warming[Assigned warming]
+  plants[Plant productivity]
+  flux[Soil CO2 flux Y]
+  warming --> plants --> flux
+  warming --> flux
+```
+
+The top path is indirect. The lower path is direct. The **total** effect of assigned warming leaves plant productivity alone. Conditioning on productivity estimates something else, and only under further assumptions.
+
+Write the path you mean before you add the covariate.
+
+## Sensitivity is the causal report
+
+For an observational claim, say what would have to be true for the conclusion to change:
+
+- a missing confounder associated with both $x$ and $Y$ at a stated strength
+- a different adjustment set from the same diagram
+- a different family, if the mean is sensitive to the variance assumption
+- a different prior, if the fit is Bayesian and the sample is small
+
+SPRUCE still needs a sensitivity story for the chamber itself: the design page monitors chamberless areas because the enclosure is not identical to an open bog.

@@ -1,0 +1,112 @@
+/*-- scss:defaults --*/
+
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560;9..144,680&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&family=Source+Code+Pro:wght@500&display=swap");
+
+$presentation-heading-font: "Fraunces", serif;
+$font-family-sans-serif: "Source Sans 3", sans-serif;
+$font-family-monospace: "Source Code Pro", monospace;
+
+$body-bg: #f7f4ef;
+$body-color: #1c2b24;
+$presentation-heading-color: #0e4d3a;
+$link-color: #9a3412;
+$code-color: #0e4d3a;
+$code-block-bg: #efeae2;
+$code-block-border-color: #cfc6b8;
+
+$presentation-font-size-root: 32px;
+$presentation-h1-font-size: 1.7em;
+$presentation-h2-font-size: 1.22em;
+$presentation-h3-font-size: 1.02em;
+
+/*-- scss:rules --*/
+
+.reveal .slides section {
+  text-align: left;
+}
+
+.reveal .slides section.quarto-title-block,
+.reveal .slides section.center {
+  text-align: center;
+}
+
+.reveal .slides section#title-slide {
+  border-top: 14px solid #0e4d3a;
+}
+
+.reveal .slides section.level1 {
+  text-align: center;
+  border-top: 14px solid #0e4d3a;
+}
+
+.reveal .slides section.level1 > h1 {
+  color: #0e4d3a !important;
+}
+
+/* Content slides are nested under the divider, which also has class slide. */
+.reveal .slides section section.slide.level2 {
+  background-color: #f7f4ef;
+  color: #1c2b24;
+  text-align: left;
+}
+
+.reveal .slides section section.slide.level2 h2 {
+  color: #0e4d3a !important;
+}
+
+.reveal .slides section section.slide.level2 p,
+.reveal .slides section section.slide.level2 li,
+.reveal .slides section section.slide.level2 td,
+.reveal .slides section section.slide.level2 th {
+  color: #1c2b24 !important;
+}
+
+.reveal .slides section section.slide.level2 a {
+  color: #9a3412 !important;
+}
+
+.reveal .slides section figcaption {
+  display: none;
+}
+
+.reveal .footer {
+  font-size: 0.42em !important;
+  color: #5c6b63 !important;
+}
+
+.reveal .slide-number {
+  font-size: 0.45em !important;
+  color: #5c6b63 !important;
+}
+
+.reveal:has(section.present.light-text) .footer,
+.reveal:has(section.present.light-text) .slide-number {
+  color: #d7ebe3 !important;
+}
+
+.reveal .slides section img {
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  max-height: 390px !important;
+  max-width: 96% !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain;
+}
+
+.reveal .slides section .credit {
+  display: block;
+  margin-top: 0.35em;
+  font-size: 0.48em;
+  color: #5c6b63;
+}
+
+.reveal .slides section.light-text .credit {
+  color: #d7ebe3;
+}
+
+.reveal .slides section .equation {
+  text-align: center;
+  font-size: 0.92em;
+}

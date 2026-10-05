@@ -1,0 +1,68 @@
+## How the four hours are split :hourglass_flowing_sand:
+
+- **30 min.** Who is here, and two datasets we will keep in view
+- **50 min.** The question, a PICO exercise, and twelve reporting pitfalls
+- **70 min.** Non-Gaussian responses: QQ plots, then Poisson, negative binomial, and logit
+- **20 min.** Experimental design and hierarchical models
+- **20 min.** Bayesian regression and causal estimands
+- **30 min.** Quiz, SAMPL, and what to open next
+
+::: {.notes}
+The PICO writing block and the closing SAMPL block are protected. If a GLM slide runs long, shorten the tour of pitfalls 6 to 8 rather than the exercises. Speaker view: press S. A chalkboard is available if you want to annotate a PICO live.
+:::
+
+## Who is speaking :wave:
+
+- Bastien Chassagnol
+- I work on statistical models for structured biological data
+- Today the job is practical: match the question, the estimand, and the distribution of $Y$
+- Interrupt when your own unit of replication does not match the slide
+
+::: {.notes}
+Do not invent a CV. If asked for a longer biography, point to the DeCovarT work and then return to the participants. One minute.
+:::
+
+## Who is in the room? :speech_balloon:
+
+Write one line for each. We will use the answers this afternoon.
+
+1. Name and research group
+2. The carbon question, in one sentence
+3. What is the response $Y$?
+4. What is one independent replicate?
+5. What should be true by the end of these four hours?
+
+::: {.notes}
+Two or three people answer aloud. Listen for Gaussian assumptions, compositional data, and repeated measures. Do not solve their analysis yet. About four minutes.
+:::
+
+## What we are practising
+
+Not a catalogue of tests. A sequence you can reuse:
+
+- a scientific question, with a purpose
+- an estimand, including its unit
+- a distribution for $Y$ that respects the support of the data
+- a check you can show, preferably a plot
+- a sentence a colleague can re-implement
+
+::: {.notes}
+This is the pedagogical aim from the course plan. About one minute.
+:::
+
+## Notation we will not rename
+
+| Symbol | Meaning |
+| --- | --- |
+| $Y$ | Response on one observational row |
+| $x$, $\mathbf{x}$ | A covariate, or the covariate row |
+| $\mu = \mathbb{E}(Y \mid \mathbf{x})$ | Conditional mean, the usual target |
+| $g(\mu) = \beta_0 + \beta_1 x$ | Link and linear predictor |
+| $i$ | Observational index (a core, a date, a collar) |
+| $j$ | Cluster index (a site, an enclosure, a batch) |
+
+When $Y$ is binary, $\mu = \pi = \Pr(Y = 1 \mid \mathbf{x})$.
+
+::: {.notes}
+Say the table aloud once. Later slides reuse these symbols and do not switch to other letters for the response.
+:::

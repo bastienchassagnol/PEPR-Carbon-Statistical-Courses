@@ -1,0 +1,139 @@
+## The analysis inherits the plan
+
+A mixed model does not repair an undescribed design. Before the formula, name:
+
+- the unit that received the treatment
+- the unit that was measured
+- what was randomised, blocked, or only observed
+- which rows are repeats of the same unit
+
+Carbon data are often hierarchical, multi-site, and repeated in time. The random effect is the translation of that structure, not a decorative term.
+
+## A short map of plans {.smaller}
+
+| Plan | What is randomised or assigned |
+| --- | --- |
+| Completely randomised | Treatments to units, with no blocking factor |
+| Randomised block | Treatments inside a block that soaks up a nuisance gradient |
+| Factorial | Two or more factors crossed, so that interactions exist |
+| Split-plot or strip-plot | A hard-to-change factor on the large unit, another factor inside it |
+| Regression or gradient | A continuous driver, with enough levels to see the shape |
+| Nested or hierarchical | Units inside units, when crossing is impossible |
+
+Tanaka's [edibble slides](https://emitanaka.org/slides/toronto2022/) are a precise way to write units and treatments down before you fit anything.
+
+## Completely randomised, then blocked
+
+Completely randomised: every enclosure could have received every warming level, and you trust the site to be homogeneous.
+
+Blocked: you group units that share a nuisance (a boardwalk, a water-table band, a day) and randomise **inside** the block.
+
+SPRUCE's design page says a block was considered, and that preliminary surveys did not show a gradient strong enough to require one. That is a design assumption, and it belongs in the report.
+
+## Factorial: the interaction is the point
+
+Warming and $\mathrm{CO}_2$ are crossed. The scientific question on the design page is not only "does warming matter?" It is also "does elevated $\mathrm{CO}_2$ **change** the warming response?"
+
+That second question is $\beta_3$ in
+
+$$
+g(\mu_{ij}) = \beta_0 + \beta_1 x_{1j} + \beta_2 x_{2j} + \beta_3 x_{1j} x_{2j} + \cdots
+$$
+
+If you fit two separate slopes and then compare their $p$-values, you have skipped $\beta_3$.
+
+## Split-plot: the large unit is hard to change
+
+A factor that is expensive to reset is applied to the large unit. A factor that is easy to reset is applied inside it.
+
+Cookie-dough batches and oven trays are the textbook version. In the field, an enclosure's $\mathrm{CO}_2$ setpoint and a collar's measurement schedule are not interchangeable units.
+
+The error term for the large-unit factor is the large-unit variance. Using the inner residual will make the interval too small.
+
+## Crossed, nested, or both
+
+```{mermaid}
+%%| fig-width: 10
+%%| fig-height: 3.4
+flowchart TD
+  warming[Warming level]
+  co2[CO2 level]
+  enclosure[Enclosure j]
+  collar[Collar or core]
+  date[Date i]
+  warming --> enclosure
+  co2 --> enclosure
+  enclosure --> collar --> date
+```
+
+Warming and $\mathrm{CO}_2$ are crossed on the enclosure. Collars and dates are nested in the enclosure. A technical replicate nested in a core is a further level, and it is rarely the level of inference.
+
+## A random intercept is a distribution on $u_j$
+
+$$
+Y_{ij} = \beta_0 + \beta_1 x_j + u_j + \varepsilon_{ij},
+$$
+$$
+u_j \sim \mathcal{N}(0, \sigma_u^2), \qquad \varepsilon_{ij} \sim \mathcal{N}(0, \sigma^2).
+$$
+
+Use this Gaussian sketch only when $Y$ can live on that scale. For a count or a binary detection, the same idea sits on the link:
+
+$$
+g(\mu_{ij}) = \beta_0 + \beta_1 x_j + u_j.
+$$
+
+$u_j$ is a property of the cluster. It is not a covariate you forgot to measure, unless you are willing to say so.
+
+## Fixed and random name the target
+
+- **Fixed:** a contrast you want to report, such as the warming slope
+- **Random:** a level you want to generalise over, such as enclosures drawn from a bog
+- If you have the whole population of levels, a fixed indicator set is coherent
+- Ten enclosures is a small sample of a variance. $\hat\sigma_u$ will be noisy
+
+Partial pooling is the practical reason to bother: an enclosure with two bad weeks borrows strength from the others.
+
+## Repeated measures are a time series inside $j$
+
+Do not run a separate test at each date and then narrate the dates that were "significant".
+
+A first model for a repeated flux:
+
+- a term for time, or for season
+- the treatment, which does not change inside the enclosure
+- the treatment $\times$ time interaction, if the contrast itself changes
+- a dependence for the residuals, or a random intercept for the enclosure
+
+Dates are $i$. They do not become new experimental units because there are many of them.
+
+## SPRUCE chose a regression, not five bins
+
+The design page records an earlier incomplete factorial, then a quantitative comparison: more temperature levels, used as a regression, resolved the shape better than a small ANOVA, at lower cost.
+
+What was built:
+
+- five warming levels, from $+0$ to $+9^\circ\mathrm{C}$, steps of $2.25^\circ\mathrm{C}$
+- each level at ambient and at elevated $\mathrm{CO}_2$
+- ten enclosures, plus chamberless areas
+
+The number of experimental units has to exceed the number of regression parameters you intend to estimate.
+
+## Where the replicate is
+
+| If you need… | The replicate is… |
+| --- | --- |
+| The warming slope | The enclosure, $n = 10$ |
+| A collar method variance | Collars within an enclosure |
+| A seasonal curve | Dates within an enclosure, with dependence |
+| A claim about other bogs | Something this design does not contain |
+
+Pooling every collar-date into one residual answers none of these cleanly.
+
+## Do not bin the gradient you built
+
+The design page allows a fallback: bin the ten enclosures into low, medium, and high for an ANOVA, if a variable forces it.
+
+That fallback spends the design. Adjacent levels, $+4.5$ and $+6.75$, become either "the same" or "different" by a cut. The curve we already plotted is exactly what the binning throws away.
+
+Keep $x_1$ continuous. Report the slope per $^\circ\mathrm{C}$, with an interval, and show the fitted mean.

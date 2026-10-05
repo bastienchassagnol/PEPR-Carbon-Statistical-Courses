@@ -1,0 +1,269 @@
+## The shape is often the scientific object
+
+Environmental $Y$ is often:
+
+- skewed, and strictly positive
+- a count, or a composition
+- full of zeros, or censored at a detection limit
+- dependent in time or in space
+
+A Gaussian `lm` can still be a useful approximation for a mean. It is a poor default when the support of $Y$ makes the approximation impossible.
+
+## The assumption is conditional
+
+A QQ plot of the raw column $Y$ answers the wrong question.
+
+The Gaussian linear model assumes that the **conditional** distribution $Y \mid \mathbf{x}$ is Gaussian, with constant variance. In residual form,
+
+$$
+Y_i = \beta_0 + \beta_1 x_i + \varepsilon_i, \qquad \varepsilon_i \sim \mathcal{N}(0, \sigma^2).
+$$
+
+Look at residuals, or at a residual QQ plot. Do not gate the analysis on a test of the marginal histogram.
+
+## How to read the plot :mag:
+
+![Two QQ plots. Left: residuals from a Gaussian response sit near the reference line. Right: residuals from a Gaussian linear model fitted to Poisson counts bend up in the right tail.](figures/generated/qq-gaussian-vs-count.png){fig-alt="QQ plots comparing Gaussian linear-model residuals when the response is Gaussian and when the response is a Poisson count." width="96%"}
+
+Points along the line support the reference shape. A curve, or a tail that leaves the line, is a departure. Illustrative residuals, seed 20261005.
+
+## A normality test is a poor gate
+
+- with a large $n$, the test rejects a departure too small to change $\hat{\mu}$
+- with a small $n$, it misses a departure large enough to matter
+- the $p$-value does not say whether the **estimand** is distorted
+- the test is aimed at the wrong object if you apply it to raw $Y$ rather than to the model you will trust
+
+Prefer the QQ plot, and then a likelihood that matches $Y$.
+
+## A transformation can be the right scale
+
+A transform is justified when it matches the science:
+
+- a multiplicative effect, so that logs are the natural contrast
+- a variance that grows with the mean, and a log that stabilises it
+- a physical rate that is already defined on a log scale
+
+It is not justified by "the histogram looked skewed" alone.
+
+## $\log Y$ changes the estimand
+
+A Gaussian model for $\log Y$ targets $\mathbb{E}(\log Y \mid x)$.
+
+$$
+\exp\{\mathbb{E}(\log Y \mid x)\} \le \mathbb{E}(Y \mid x),
+$$
+
+with equality only in degenerate cases. The left-hand side behaves like a geometric mean. The right-hand side is the arithmetic mean on the original scale.
+
+$\log(Y+1)$ is a third response. Zeros were the reason for the $+1$, and they are still in the model, only hidden.
+
+For counts, start from a distribution on the non-negative integers ([O'Hara and Kotze, 2010](https://doi.org/10.1111/j.2041-210X.2010.00021.x); [@agrestiFoundationsLinearGeneralized2015]).
+
+## Powers that chase a Gaussian shape
+
+Yeo–Johnson chooses a power, including for zeros and negative values, so that the transformed sample is closer to Gaussian.
+
+- the criterion is closeness to a bell shape, not a scientific unit
+- the inverse transform is awkward, so a mean on the transformed scale is hard to say in the original unit
+- if you use it, describe the original $Y$ with the median and the quartiles
+
+It does not replace a likelihood whose support is the support of $Y$.
+
+## Favour the model, not a pretest
+
+```{mermaid}
+%%| fig-width: 10
+%%| fig-height: 2.6
+flowchart LR
+  question[Question and estimand]
+  support[Support of Y]
+  family[Family and link]
+  check[Residual plot]
+  report[Estimate and interval]
+  question --> support --> family --> check --> report
+```
+
+A pretest that switches you from a $t$-test to a rank test still does not estimate $\mu = \mathbb{E}(Y \mid x)$. Rank tests answer a different contrast, and they have assumptions of their own.
+
+The teaching sequence for the three models follows the SIB day on logistic regression and GLMs ([slides](https://github.com/sib-swiss/advanced-statistics/blob/master/docs/assets/pdf/Day2-LogisticregressionandGLM-2026.pdf), [course](https://www.sib.swiss/training/course/20260907_ADDMG)).
+
+## The response chooses the family
+
+| Support of $Y$ | A first model |
+| --- | --- |
+| Continuous, unrestricted, stable variance | Gaussian linear model |
+| Two categories, truly binary | Logit, $Y \sim \mathrm{Bernoulli}(\pi)$ |
+| Non-negative integer, variance near the mean | Poisson, log link |
+| Same, with extra-Poisson variance | Negative binomial, log link |
+
+Continuous flux is not on this list as a Poisson problem. A count of colonies, reads, or events is.
+
+## One skeleton for all three :link:
+
+$$
+Y_i \mid x_i \sim \text{family}(\mu_i), \qquad g(\mu_i) = \beta_0 + \beta_1 x_i .
+$$
+
+- **Family:** the distribution of $Y$ given $x$, including how $\mathrm{Var}(Y \mid x)$ depends on $\mu$
+- **Link** $g$: the function that makes $\beta_1 x$ linear
+- **Mean** $\mu = \mathbb{E}(Y \mid x)$: what $\beta$ describes, after you invert $g$
+
+Agresti is the reference for the theory and the worked models [@agrestiFoundationsLinearGeneralized2015]. Estimation is by maximum likelihood, not by a normal test of $Y$.
+
+## Quantile residuals check the family
+
+![Two QQ plots of randomised Poisson quantile residuals. The Poisson sample tracks the reference line. The overdispersed sample lifts in the upper tail.](figures/generated/qq-quantile-residuals.png){fig-alt="QQ plots of randomised quantile residuals from a Poisson fit to Poisson counts and from a Poisson fit to overdispersed counts." width="96%"}
+
+These are randomised quantile residuals for a Poisson mean: if the family is right, they should look Gaussian. A heavy upper tail is a reason to leave the Poisson, not a reason to run Shapiro–Wilk on the raw counts.
+
+## Poisson · when the count matches the story
+
+Use it when $Y$ is a non-negative integer and, to a first approximation,
+
+$$
+\mathrm{Var}(Y \mid x) = \mu = \mathbb{E}(Y \mid x).
+$$
+
+Colony counts on a plate are a clean example. Sequence-read totals usually are not: they are more variable than a Poisson, and they are compositional.
+
+The log link keeps $\mu > 0$:
+
+$$
+\log \mu = \beta_0 + \beta_1 x.
+$$
+
+## Poisson · a simulated plate count
+
+$n = 120$ cores. $x$ is centred soil moisture, in g/g, from $-0.15$ to $0.15$. $Y$ is a colony count.
+
+$$
+Y \sim \mathrm{Poisson}(\mu), \qquad \log \mu = \beta_0 + \beta_1 x.
+$$
+
+Fitted in this draw (seed 20261005): $\hat\beta_0 = 2.03$, $\hat\beta_1 = 2.05$. At $x = 0$, $\hat\mu = e^{2.03} \approx 7.6$ colonies.
+
+This is not a NEON fit. The script is `scripts/generate-slide-figures.R`.
+
+## Poisson · the mean, with its band
+
+![Poisson log-linear fit of simulated colony counts against centred soil moisture, with a band for the mean.](figures/generated/poisson-fit.png){fig-alt="Scatter of simulated colony counts against centred soil moisture, with a fitted Poisson mean and a Wald band." width="82%"}
+
+The band is a Wald interval for $\mu$, formed on the log scale and mapped back with $\exp$. It is not a band for a new core's count.
+
+## Poisson · what $\hat\beta_1$ says
+
+A step of $+0.1$ g/g in centred moisture multiplies the **mean count** by
+
+$$
+\exp(0.1 \hat\beta_1) = 1.23
+$$
+
+Wald 95% interval in this draw: **1.14 to 1.32**.
+
+- the contrast is multiplicative on $\mu$, additive on $\log \mu$
+- a step of 1 g/g is outside this $x$; do not quote $\exp(\hat\beta_1) \approx 7.7$ as a moisture effect
+- if the variance exceeds the mean, this interval is too narrow
+
+## Negative binomial · the Poisson is too tight
+
+![Bin mean against bin variance for Poisson draws, which sit on the line, and negative binomial draws, which sit well above it.](figures/generated/mean-variance.png){fig-alt="Mean-variance plot. Poisson bins follow the line variance equals mean. Negative binomial bins lie above it." width="78%"}
+
+Extra-Poisson variation is the usual state of ecological counts: unmeasured microsites, clumping, and noisy detection. The line on the plot is $\mathrm{Var} = \mu$.
+
+## Negative binomial · same mean, one extra parameter
+
+Keep the log link. Add a dispersion parameter $\theta > 0$:
+
+$$
+\mathrm{Var}(Y \mid x) = \mu + \frac{\mu^2}{\theta}.
+$$
+
+This is the `MASS::glm.nb` parameterisation: $\theta$ large means "close to Poisson". Agresti writes the same quadratic variance with a different symbol for the extra term [@agrestiFoundationsLinearGeneralized2015].
+
+In this second simulation, $\hat\theta = 1.48$. The draws are not the Poisson points from the previous slide. The true mean was the same; the noise was not.
+
+## Negative binomial · the band that was missing
+
+![Negative binomial fit of simulated overdispersed counts. A narrow band marks uncertainty of the mean and a wide band marks the observation scale.](figures/generated/negative-binomial-fit.png){fig-alt="Scatter of overdispersed counts against moisture, with a fitted mean, a narrow mean band, and a wide observation band." width="82%"}
+
+Green: uncertainty of $\mu$. Clay: an approximate $\mu \pm 1.96\,\mathrm{SD}$ band from the fitted variance. The clay band is a sketch of the observation scale, not a calibrated prediction interval.
+
+## Negative binomial · read the mean, then $\theta$
+
+For a $+0.1$ g/g step, this draw gives a mean rate ratio
+
+$$
+\exp(0.1 \hat\beta_1) = 1.55
+$$
+
+Wald 95% interval: **1.29 to 1.87**. Wider than the Poisson interval, because $Y$ is more variable than $\mu$.
+
+- $\theta$ is not a second scientific effect; it describes leftover variation
+- the rate ratio is still a statement about $\mu$, on the log link
+- a QQ plot of quantile residuals is the check, not a test that "selects NB"
+
+## Logit · only if $Y$ is really binary
+
+Detection of a taxon in a core is binary. A flux cut at an arbitrary threshold is the dichotomisation we have already rejected.
+
+$$
+Y \mid x \sim \mathrm{Bernoulli}(\pi), \qquad \mu = \pi = \Pr(Y = 1 \mid x).
+$$
+
+The mean of a 0/1 response **is** the probability. The logit gives that probability an unbounded scale:
+
+$$
+\mathrm{logit}(\pi) = \log \frac{\pi}{1-\pi} = \beta_0 + \beta_1 x.
+$$
+
+## Logit · a simulated detection
+
+$x$ is centred pH, from $-1.5$ to $1.5$. $Y$ is 1 if the taxon is detected.
+
+Fitted here: $\hat\beta_0 = -0.32$, $\hat\beta_1 = 1.44$.
+
+At $x = 0$, $\hat\pi = \mathrm{logit}^{-1}(-0.32) \approx 0.42$.
+
+Same seed, same script, still not a field dataset.
+
+## Logit · the curve is the result
+
+![Logit curve of detection probability against centred pH, with jittered binary points and a band for the probability.](figures/generated/logit-fit.png){fig-alt="Binary detections against centred pH, with a fitted logit curve and a Wald band on the probability scale." width="80%"}
+
+The band is for $\pi$, not for a single core. A core is still 0 or 1.
+
+## Logit · odds move by a factor, probabilities do not
+
+A one-unit increase in centred pH multiplies the **odds** by
+
+$$
+\exp(\hat\beta_1) = 4.2
+$$
+
+Wald 95% interval: **2.4 to 7.4**.
+
+In this fit, $\hat\pi$ goes from about **0.42** at $x = 0$ to about **0.75** at $x = 1$. That is a change of about 0.34 on the probability scale, not a 4.2-fold change in probability.
+
+The interval is symmetric on the logit scale. It is not symmetric on the probability scale.
+
+## Hold the other covariates still
+
+With several covariates,
+
+$$
+g(\mu) = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots
+$$
+
+$\exp(\beta_1)$ is the multiplicative change in the mean, or in the odds, for a one-unit step in $x_1$ **with the other covariates held at the same values**.
+
+If $x_2$ is a mediator or a collider, "held still" is a different estimand, not a more adjusted one.
+
+## What these three models do not cover
+
+- zero-inflation: a second process for structural zeros
+- compositions: a log-ratio, after a deliberate treatment of zeros
+- a continuous flux: often a positive continuous distribution, or a Gaussian model on a scale you can defend
+- dependence in space or in time: the design block is next
+
+Quasi-Poisson is a variance fix, not a full likelihood. Use it only if you can say what the interval means.

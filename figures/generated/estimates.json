@@ -1,0 +1,34 @@
+{
+  "seed": 20261005,
+  "n": 120,
+  "poisson": {
+    "estimate": [2.0318, 2.0473],
+    "se": [0.0333, 0.3791],
+    "exp_estimate": [7.6275, 7.7467],
+    "conf_low": [1.9665, 1.3042],
+    "conf_high": [2.0971, 2.7903],
+    "exp_low": [7.1454, 3.6849],
+    "exp_high": [8.1422, 16.2859]
+  },
+  "negative_binomial": {
+    "estimate": [2.183, 4.398],
+    "se": [0.0816, 0.9368],
+    "exp_estimate": [8.8729, 81.2919],
+    "conf_low": [2.0231, 2.5619],
+    "conf_high": [2.3429, 6.2341],
+    "exp_low": [7.562, 12.961],
+    "exp_high": [10.411, 509.8657],
+    "theta": 1.4767,
+    "se_theta": 0.2271
+  },
+  "logit": {
+    "estimate": [-0.3205, 1.4445],
+    "se": [0.217, 0.2843],
+    "exp_estimate": [0.7258, 4.2399],
+    "conf_low": [-0.7458, 0.8873],
+    "conf_high": [0.1047, 2.0018],
+    "exp_low": [0.4744, 2.4285],
+    "exp_high": [1.1104, 7.4023]
+  },
+  "note": "Illustrative simulations. Coefficients are estimates from one seed, not NEON or SPRUCE results."
+}

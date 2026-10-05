@@ -1,0 +1,93 @@
+## NEON soil microbes :microscope:
+
+The teaching table is the soil microbe community product.
+
+- Product [DP1.10081.001](https://data.neonscience.org/data-products/DP1.10081.001): counts and relative abundances
+- Archaea, bacteria, and fungi in soil, observations from 2014–2018
+- From the 2025 release, NEON supersedes it with taxonomy product [DP1.10081.002](https://data.neonscience.org/data-products/DP1.10081.002)
+- We use the scientific structure, not a fitted NEON model
+
+::: {.notes}
+Source: NEON product API text retrieved for this deck. Do not present any later slide's simulation as a NEON result. About two minutes.
+:::
+
+## What $Y$ is in that table
+
+$Y$ is a **count**, or a **share of a count**.
+
+- a taxon abundance is a non-negative integer
+- a relative abundance is a composition: parts of a whole
+- many taxa are zero in many cores
+- the sampling variance is not a free Gaussian $\sigma$
+
+Moisture, pH, soil chemistry, and organic carbon are the covariates we will want. They are companion measurements, not columns you should assume are already on this product.
+
+## Why a Gaussian `lm` is the wrong first tool
+
+- $Y$ cannot be negative, and a Gaussian mean can predict negative counts
+- the variance of a count usually moves with the mean
+- a proportion is bounded, and an increase in one taxon is a decrease in the share of another
+- zeros are a feature of community tables, not a nuisance to delete
+
+The deep dive after the pitfalls is this problem, with three likelihoods.
+
+## Four analyses, only one of them today
+
+| Approach | What it targets |
+| --- | --- |
+| Naive comparison of proportions | A share, with a false independence story |
+| Poisson or negative binomial | $\mathbb{E}(Y \mid x)$ for a count |
+| Log-ratio (CLR and its relatives) | A composition, after the zeros are handled |
+| Absolute versus relative | Whether the taxon changed, or only its share |
+
+Today we fit the count models. Compositions return on the "what next" slides.
+
+::: {.notes}
+This is the pedagogical contract from the course plan. Do not start a CLR derivation here.
+:::
+
+## SPRUCE :evergreen_tree:
+
+A whole-ecosystem warming experiment on the S1 bog, Marcell Experimental Forest.
+
+- Question on the design page: how do plants, microbes, and ecosystem processes respond to warming, and how does elevated $\mathrm{CO}_2$ change that response?
+- Air and deep soil warmed from ambient to $+9^\circ\mathrm{C}$
+- Elevated $\mathrm{CO}_2$ atmospheres of about 800–900 ppm
+- Source: [SPRUCE experimental design](https://mnspruce.ornl.gov/content/experimental-design)
+
+::: {.notes}
+All treatment numbers on the next slides are taken from that page, which cites Hanson et al. (2017) for the temperature differential and Cottingham et al. (2005) for regression designs. Do not expand those citations beyond what the page states. About two minutes.
+:::
+
+## Ten enclosures, not a two-group test
+
+![Schematic of ten SPRUCE enclosures: five warming levels from 0 to +9°C, crossed with ambient and elevated CO2. Each tile is one experimental unit.](figures/generated/spruce-allocation.png){fig-alt="Grid of ten SPRUCE treatment combinations: five warming levels crossed with two CO2 levels." width="92%"}
+
+Ambient and elevated $\mathrm{CO}_2$, each at $+0$, $+2.25$, $+4.5$, $+6.75$, and $+9^\circ\mathrm{C}$. Plots 4, 10, 11, 16, and 19 receive elevated $\mathrm{CO}_2$. Chamberless areas were also monitored.
+
+## What is measured, and what is independent
+
+The response we will keep in view is a **flux**: soil $\mathrm{CO}_2$ or $\mathrm{CH}_4$.
+
+- the treatment is applied to the **enclosure**
+- collars and dates sit inside the enclosure
+- a weekly series is a repeated measure, not a new experimental unit
+- there are **10** enclosures in the warmed regression design
+
+## The model the design is asking for
+
+For enclosure $j$ and repeated measure $i$,
+
+$$
+g(\mu_{ij}) = \beta_0 + \beta_1 x_{1j} + \beta_2 x_{2j} + \beta_3 x_{1j} x_{2j} + \beta_4 \mathrm{season}_{ij} + u_j
+$$
+
+- $x_{1j}$: warming assigned to the enclosure
+- $x_{2j}$: elevated $\mathrm{CO}_2$ versus ambient
+- $u_j$: enclosure-level departure, $u_j \sim \mathcal{N}(0, \sigma_u^2)$ under a random-intercept model
+
+A $t$-test of "warm versus cool" is a different estimand, and a poorer one.
+
+::: {.notes}
+Point at the indices. j is the enclosure, i is the repeated observation. We return to u_j in the design block. About two minutes.
+:::

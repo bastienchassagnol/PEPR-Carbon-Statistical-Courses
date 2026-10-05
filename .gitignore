@@ -40,11 +40,19 @@ vignettes/*.pdf
 .Renviron
 .env
 
-# pkgdown site
+# Rendered Quarto site (published by GitHub Actions, not committed)
 docs/
+.quarto/
+.firecrawl/
+
+# Local retrieval dumps, not part of the deck
+temp_rag*
 
 # translation temp files
 po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+/.quarto/
+**/*.quarto_ipynb

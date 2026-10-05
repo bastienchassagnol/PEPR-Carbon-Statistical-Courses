@@ -1,0 +1,267 @@
+## A poster, then one rule at a time
+
+![Poster of twelve statistical reporting recommendations, arranged in four rows of three cards.](figures/sources/review-statistical-analysis.png){fig-alt="Poster listing twelve statistical reporting recommendations, from the research question through transparent reporting." width="28%"}
+
+The poster is a visual summary of Riley and colleagues and of the SAMPL reporting principles [@riley12thDayChristmas2022].
+
+[Open access PDF](https://doi.org/10.1136/bmj-2022-072883) · CC BY-NC 4.0
+
+::: {.notes}
+Do not read the poster. Name the key principle along the bottom: align the question, the estimand, the data structure, the assumptions, and the report. About one minute.
+:::
+
+## The twelve, in the order we will use
+
+::: {.columns}
+::: {.column width="50%"}
+1. Start from the question
+2. Report the effect, not only $p$
+3. Handle missing data on purpose
+4. Do not dichotomise
+5. Allow a curve
+6. Quantify a subgroup difference
+:::
+::: {.column width="50%"}
+7. Read heterogeneity carefully
+8. Check a prediction in three ways
+9. Respect clusters and repeats
+10. Select covariates from a causal sketch
+11. Sensitivity is part of the result
+12. Report so a reader can redo it
+:::
+:::
+
+The poster numbers are the workshop numbers. The BMJ article uses the same twelve ideas, in a slightly different order.
+
+## Six purposes, six different $\mu$
+
+::: {.columns}
+::: {.column width="50%"}
+- Describe a pattern
+- Compare groups
+- Explain an intervention
+:::
+::: {.column width="50%"}
+- Predict a new unit
+- Explore and generate
+- Confirm a pre-specified claim
+:::
+:::
+
+A significant coefficient does not say which of these you did.
+
+::: {.notes}
+Riley and colleagues ask authors to say whether the work is descriptive or causal, prognostic or predictive, exploratory or confirmatory. One minute.
+:::
+
+## From a slogan to a statistical question
+
+Vague: "What is the effect of drought on forest carbon?"
+
+Sharper, still one estimand:
+
+- difference in what? Net $\mathrm{CO}_2$ flux, in stated units
+- between which conditions? Rain exclusion versus control
+- over which period, and on which population of sites?
+- at which unit? The plot that received the exclusion, not the technical replicate
+
+::: {.notes}
+Work one participant's slogan into this shape if time allows. Two minutes.
+:::
+
+## The estimand is the target, not the software
+
+The estimand is the quantity you claim to estimate.
+
+- a difference in tonnes of C per hectare
+- a flux ratio
+- a slope against warming
+- a mean over seasons, or a mean for one season
+- a site-specific effect, or an effect you want to transport to new sites
+
+Changing the unit, the contrast, or the set of covariates changes the estimand. It is not a cosmetic choice of summary.
+
+## PICO, when the question is a comparison
+
+![PICO diagram: Patient or population, Intervention or exposure, Comparison, and Outcome, each with a prompt.](figures/sources/pico.jpg){fig-alt="Four-row PICO diagram defining population, intervention or exposure, comparison, and outcome." width="78%"}
+
+For a designed contrast or a systematic comparison, name population, intervention or exposure, comparison, and outcome [@riley12thDayChristmas2022].
+
+## Ten minutes: write your PICO :pencil:
+
+Stay here. Four lines, for **your** dataset.
+
+1. **Population** or system, and the unit
+2. **Intervention**, exposure, or factor
+3. **Comparison**
+4. **Outcome** $Y$, and the estimand in one clause
+
+::: {.notes}
+Protect ten minutes. Walk the room. Collect two examples on the board. Do not advance until most people have four lines. The next slide is one possible answer, not the answer.
+:::
+
+## One possible answer, after you have written
+
+For the SPRUCE enclosures:
+
+| | |
+| --- | --- |
+| Population | S1 bog, the enclosure as the experimental unit |
+| Intervention | Assigned warming, $+0$ to $+9^\circ\mathrm{C}$ |
+| Comparison | The $+0^\circ\mathrm{C}$ enclosure at the same $\mathrm{CO}_2$ level |
+| Outcome | Mean soil $\mathrm{CH}_4$ flux; estimand: slope on warming, and the warming $\times \mathrm{CO}_2$ interaction |
+
+Your four lines will not look like this. They need to name **your** unit.
+
+## 1 · Start with the question
+
+![Card on starting with the question: PICO, exploratory versus confirmatory work, and a causal question contrasted with a prediction question.](figures/pitfalls/01-question.png){fig-alt="Card contrasting a causal estimand with a prediction target, and listing PICO." width="46%"}
+
+A causal question asks what would change if the exposure changed. A prediction question asks how close $\hat{\mu}$ is for a new unit. Write down which one you are answering.
+
+## 2 · An effect, an interval, and a reason it matters
+
+![Card contrasting absence of evidence with evidence of a small effect, using two confidence intervals for a risk ratio.](figures/pitfalls/02-effects.png){fig-alt="Two confidence-interval sketches: a wide interval that crosses 1, and a narrow interval for a small effect." width="48%"}
+
+Riley and colleagues use a risk ratio of 0.97 (0.95 to 0.99) as a detected but small effect, and 0.70 (0.40 to 1.10) as a large but uncertain one [@riley12thDayChristmas2022].
+
+## Statistical detection is not a carbon consequence
+
+![Infographic contrasting a statistically detectable effect with an effect that also exceeds a minimal clinically important difference.](figures/sources/mcid.jpeg){fig-alt="Infographic contrasting statistical significance with an effect large enough to pass a minimal clinically important difference." width="28%"}
+
+Replace the clinical threshold with a flux, stock, or decision that would matter. Pre-state it when you can. The estimate and the interval stay in the sentence ([Halsey et al., 2015](https://doi.org/10.1038/nmeth.3288)).
+
+## 3 · Missing data are part of the design
+
+![Card on MCAR, MAR, and MNAR, with a short list of approaches to avoid and approaches to prefer.](figures/pitfalls/03-missing-data.png){fig-alt="Card defining MCAR, MAR, and MNAR, and contrasting complete-case deletion with multiple imputation." width="42%"}
+
+Report how much is missing, in $Y$ and in $x$, and what you did. A complete-case analysis is a strong assumption, not a default [@riley12thDayChristmas2022].
+
+## Three mechanisms
+
+![Three cards: MCAR as entirely random, MAR as influenced by an observed variable, MNAR as influenced by an unobserved variable.](figures/sources/missing-mechanisms.png){fig-alt="Diagram of MCAR, MAR, and MNAR. MCAR is entirely random. MAR depends on an observed variable. MNAR depends on an unobserved variable." width="78%"}
+
+<span class="credit">Figure credit on the source image: \@daansan_ml.</span>
+
+## The same idea as a graph
+
+![Three directed graphs for whether a dog eats homework, labelled missing completely at random, missing at random, and missing not at random.](figures/sources/missing-dags.png){fig-alt="Three DAGs relating an assignment A, homework H, a dog D, and observed homework H-star, for MCAR, MAR, and MNAR." width="92%"}
+
+$R$, the missingness indicator, has to be in the story. If $R$ depends on the unobserved value of $Y$, a model that only conditions on the observed covariates does not fix the bias.
+
+## 4 · Do not dichotomise a continuous $x$
+
+![Card showing that 129 and 131 mmHg are split by a cut at 130, while 131 and 220 are pooled.](figures/pitfalls/04-dichotomisation.png){fig-alt="Diagram of systolic blood pressure values split at 130 mmHg, with 129 and 131 placed in different groups." width="52%"}
+
+A threshold throws away order, spends power, and makes the result depend on the cut [@riley12thDayChristmas2022]. [Altman and Royston (2006)](https://doi.org/10.1136/bmj.332.7549.1080) is the short note.
+
+## The same mistake in a carbon table
+
+"Dry" versus "wet", or soil temperature split at $10^\circ\mathrm{C}$.
+
+- $9.9^\circ\mathrm{C}$ and $10.1^\circ\mathrm{C}$ become different regimes
+- $10.1^\circ\mathrm{C}$ and $25^\circ\mathrm{C}$ become the same regime
+- a second cut, chosen because it was "significant", will not travel
+
+Keep warming, moisture, and pH continuous unless the threshold is itself the scientific object.
+
+## 5 · A straight line is an assumption
+
+![Card contrasting a straight-line predictor with a spline or fractional polynomial.](figures/pitfalls/05-non-linearity.png){fig-alt="Side-by-side sketch of a linear mean and a flexible mean, with the additive model written underneath." width="55%"}
+
+A one-unit step in $x$ need not have the same effect at the bottom and the top of the range. Restricted cubic splines and fractional polynomials are the usual parametric checks [@riley12thDayChristmas2022].
+
+## A line can miss the hump
+
+![Illustrative points along a hump-shaped mean, with a straight-line fit and the curve used to simulate the response.](figures/generated/linear-vs-curve.png){fig-alt="Scatter of an illustrative response against warming. A clay straight line misses the green hump used to simulate the points." width="78%"}
+
+Illustrative simulation, seed 20261005. Not a SPRUCE fit. The clay line is $\mathbb{E}(Y \mid x)$ forced to be linear.
+
+## 6 · A subgroup claim needs its own contrast
+
+![Card on subgroup effects: separate intervals are not an interaction, and the model includes a product term.](figures/pitfalls/06-subgroups.png){fig-alt="Card warning that one subgroup interval excluding zero and another including zero is not evidence they differ." width="50%"}
+
+"Significant in fens, not in bogs" is not an interaction. Estimate the difference of effects, with an interval [@riley12thDayChristmas2022]. Overlapping interval bars are not a test.
+
+## 7 · $I^2$ is not the size of the heterogeneity
+
+![Card on heterogeneity, meta-regression, and ecological bias when a study-level association is read as an individual association.](figures/pitfalls/07-heterogeneity.png){fig-alt="Card defining I-squared and warning about ecological bias in meta-regression." width="50%"}
+
+$I^2$ is a **relative** share of variance. Small studies can show a small $I^2$ while the between-site variance is large. Report that variance. A regression on site means is not the core-level slope.
+
+## 8 · A prediction needs three checks
+
+![Card on discrimination, calibration, and clinical utility of a prediction model.](figures/pitfalls/08-prediction.png){fig-alt="Card with a ROC curve, a calibration plot, and a decision curve." width="52%"}
+
+Discrimination, calibration, and usefulness at a decision threshold are different questions [@riley12thDayChristmas2022]. A large AUC with a miscalibrated probability still misleads the decision.
+
+We will not fit a prediction model today. If your purpose is prediction, this card is the checklist.
+
+## 9 · Repeated rows are not replicates
+
+![Card on nested patients and repeated visits, with a mixed-model equation and an intraclass correlation.](figures/pitfalls/09-clustering.png){fig-alt="Card showing nested and repeated observations, and a random-intercept equation." width="48%"}
+
+Ignoring the cluster pretends that rows in the same enclosure are as different as rows in different enclosures [@riley12thDayChristmas2022].
+
+## Count the unit before you count the rows
+
+Teaching arithmetic, not a published study:
+
+- 4 sites, the level that received the treatment
+- 3 plots in each site
+- 20 cores in each plot
+- 3 technical readings on each core
+
+$4 \times 3 \times 20 \times 3 = 720$ rows. If the treatment was applied to the site, you do not have 720 independent replicates.
+
+## 10 · Covariates are a scientific choice
+
+![Card of causal roles: confounder, collider, mediator, and a warning against p-value screening.](figures/pitfalls/10-variable-selection.png){fig-alt="Diagrams of a confounder, a collider, and a mediator, with a note to avoid univariable screening." width="50%"}
+
+For an explanatory model, screening on $p$-values is the wrong gate. Draw the paths first [@riley12thDayChristmas2022]. Lasso and ridge answer a **prediction** problem; they are not a causal adjustment set.
+
+Ridge penalises the squares of the coefficients ($L_2$). Lasso penalises the absolute values ($L_1$). Elastic net mixes the two.
+
+## Three arrows, three estimands
+
+```{mermaid}
+%%| fig-width: 10
+%%| fig-height: 3.2
+flowchart LR
+  moisture[Soil moisture]
+  carbon[Organic carbon]
+  taxon[Taxon count Y]
+  moisture --> carbon
+  moisture --> taxon
+  carbon --> taxon
+```
+
+If the question is the effect of carbon on the taxon, moisture is a confounder: it feeds both. Adjusting for a mediator, or for a collider, answers a different question. We return to this in the causal block.
+
+## 11 · Show that the conclusion can move
+
+![Card on sensitivity analysis: missingness, priors, time-varying effects, and stability of the estimate.](figures/pitfalls/11-sensitivity.png){fig-alt="Card listing sensitivity checks for missing data, priors, and modelling choices." width="50%"}
+
+A constant hazard ratio, a "vague" prior, or a complete-case fit can each carry the result. Refit under a second defensible assumption and say what moved [@riley12thDayChristmas2022].
+
+## 12 · Write so the analysis can be rerun
+
+![Card listing reporting guidelines and phrases to avoid, including multivariate versus multivariable.](figures/pitfalls/12-reporting.png){fig-alt="Card of reporting guidelines and a column of phrases that overstate the result." width="48%"}
+
+SAMPL, on the [EQUATOR Network](https://www.equator-network.org/reporting-guidelines/sampl/), is the checklist we will use at the end [Lang and Altman, 2015](https://pubmed.ncbi.nlm.nih.gov/25441757/).
+
+## Say the precise word
+
+| Prefer | Avoid, unless you mean it |
+| --- | --- |
+| Median and quartiles, when $Y$ is skewed | Mean and SD as the only summary |
+| Multivariable: several covariates | Multivariate: several responses |
+| Association, for an observational coefficient | Effect, when nobody assigned $x$ |
+| The estimate and the interval | "Significant" as the whole result |
+| Quantile: the cut point | Quantile: the group the cut creates |
+
+## Where we go deeper
+
+Of these twelve, the next hour stays with a problem the poster assumes you have already solved: **the distribution of $Y$**.
+
+Soil counts, fluxes, and compositions are often skewed, bounded, discrete, or full of zeros. A Gaussian linear model is then the wrong likelihood, even when the question, the estimand, and the design are clear.
