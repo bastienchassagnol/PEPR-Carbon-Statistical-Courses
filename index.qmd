@@ -36,6 +36,8 @@ format:
     footnotes-hover: true
     code-line-numbers: false
     code-overflow: wrap
+    highlight-style: github
+    code-block-height: 260px
     fig-align: center
     auto-stretch: false
     auto-animate-duration: 0.6

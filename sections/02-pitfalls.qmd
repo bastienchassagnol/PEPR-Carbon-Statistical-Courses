@@ -89,7 +89,7 @@ For a designed contrast or a systematic comparison, name population, interventio
 
 ## Ten minutes: write your PICO :pencil:
 
-Stay here. Four lines, for **your** dataset.
+Four lines, for **your** dataset.
 
 1. **Population** or system, and the unit
 2. **Intervention**, exposure, or factor
@@ -173,9 +173,19 @@ A one-unit step in $x$ need not have the same effect at the bottom and the top o
 
 ## A line can miss the hump
 
-![Illustrative points along a hump-shaped mean, with a straight-line fit and the curve used to simulate the response.](figures/generated/linear-vs-curve.png){fig-alt="Scatter of an illustrative response against warming. A clay straight line misses the green hump used to simulate the points." width="78%"}
+Illustrative simulation, seed 20261005. Not a SPRUCE fit. The clay line on the next slide is $\mathbb{E}(Y \mid x)$ forced to be linear.
 
-Illustrative simulation, seed 20261005. Not a SPRUCE fit. The clay line is $\mathbb{E}(Y \mid x)$ forced to be linear.
+```{r}
+#| echo: true
+#| eval: false
+mu <- 4 + 0.35 * temp - 0.08 * (temp - 4.5)^2
+y <- rnorm(length(temp), mu, 0.35)
+fit_line <- lm(y ~ temp)
+```
+
+## A line can miss the hump
+
+![Illustrative points along a hump-shaped mean, with a straight-line fit and the curve used to simulate the response.](figures/generated/linear-vs-curve.png){fig-alt="Scatter of an illustrative response against warming. A clay straight line misses the green hump used to simulate the points." width="82%"}
 
 ## 6 · A subgroup claim needs its own contrast
 

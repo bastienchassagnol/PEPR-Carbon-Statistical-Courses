@@ -61,9 +61,22 @@ All treatment numbers on the next slides are taken from that page, which cites H
 
 ## Ten enclosures, not a two-group test
 
-![Schematic of ten SPRUCE enclosures: five warming levels from 0 to +9°C, crossed with ambient and elevated CO2. Each tile is one experimental unit.](figures/generated/spruce-allocation.png){fig-alt="Grid of ten SPRUCE treatment combinations: five warming levels crossed with two CO2 levels." width="92%"}
+Ambient and elevated $\mathrm{CO}_2$, each at $+0$, $+2.25$, $+4.5$, $+6.75$, and $+9^\circ\mathrm{C}$. The figure on the next slide is a schematic of that grid, not a map.
 
-Ambient and elevated $\mathrm{CO}_2$, each at $+0$, $+2.25$, $+4.5$, $+6.75$, and $+9^\circ\mathrm{C}$. Plots 4, 10, 11, 16, and 19 receive elevated $\mathrm{CO}_2$. Chamberless areas were also monitored.
+```{r}
+#| echo: true
+#| eval: false
+design <- expand.grid(
+  warming_c = c(0, 2.25, 4.5, 6.75, 9),
+  co2 = c("Ambient CO2", "Elevated CO2")
+)
+```
+
+## Ten enclosures, not a two-group test
+
+![Schematic of ten SPRUCE enclosures: five warming levels crossed with ambient and elevated CO2. Each tile is one experimental unit.](figures/generated/spruce-allocation.png){fig-alt="Grid of ten SPRUCE treatment combinations: five warming levels crossed with two CO2 levels." width="92%"}
+
+Plots 4, 10, 11, 16, and 19 receive elevated $\mathrm{CO}_2$. Chamberless areas were also monitored.
 
 ## What is measured, and what is independent
 

@@ -23,9 +23,24 @@ Look at residuals, or at a residual QQ plot. Do not gate the analysis on a test 
 
 ## How to read the plot :mag:
 
-![Two QQ plots. Left: residuals from a Gaussian response sit near the reference line. Right: residuals from a Gaussian linear model fitted to Poisson counts bend up in the right tail.](figures/generated/qq-gaussian-vs-count.png){fig-alt="QQ plots comparing Gaussian linear-model residuals when the response is Gaussian and when the response is a Poisson count." width="96%"}
-
 Points along the line support the reference shape. A curve, or a tail that leaves the line, is a departure. Illustrative residuals, seed 20261005.
+
+```{r}
+#| echo: true
+#| eval: false
+qq_gaussian <- bind_rows(
+  tibble(model = "Gaussian lm, Gaussian Y", residual = resid(fit_lm_gauss)),
+  tibble(model = "Gaussian lm, Poisson Y", residual = resid(fit_lm_count))
+)
+ggplot(qq_gaussian, aes(sample = residual)) +
+  stat_qq_line() +
+  stat_qq() +
+  facet_wrap(~model)
+```
+
+## How to read the plot :mag:
+
+![Two QQ plots. Left: residuals from a Gaussian response sit near the reference line. Right: residuals from a Gaussian linear model fitted to Poisson counts bend up in the right tail.](figures/generated/qq-gaussian-vs-count.png){fig-alt="QQ plots comparing Gaussian linear-model residuals when the response is Gaussian and when the response is a Poisson count." width="96%"}
 
 ## A normality test is a poor gate
 
@@ -119,9 +134,19 @@ Agresti is the reference for the theory and the worked models [@agrestiFoundatio
 
 ## Quantile residuals check the family
 
-![Two QQ plots of randomised Poisson quantile residuals. The Poisson sample tracks the reference line. The overdispersed sample lifts in the upper tail.](figures/generated/qq-quantile-residuals.png){fig-alt="QQ plots of randomised quantile residuals from a Poisson fit to Poisson counts and from a Poisson fit to overdispersed counts." width="96%"}
-
 These are randomised quantile residuals for a Poisson mean: if the family is right, they should look Gaussian. A heavy upper tail is a reason to leave the Poisson, not a reason to run Shapiro–Wilk on the raw counts.
+
+```{r}
+#| echo: true
+#| eval: false
+lower <- ifelse(y <= 0, 0, ppois(y - 1L, lambda = mu_hat))
+upper <- ppois(y, lambda = mu_hat)
+residual <- qnorm(runif(length(y), min = lower, max = upper))
+```
+
+## Quantile residuals check the family
+
+![Two QQ plots of randomised Poisson quantile residuals. The Poisson sample tracks the reference line. The overdispersed sample lifts in the upper tail.](figures/generated/qq-quantile-residuals.png){fig-alt="QQ plots of randomised quantile residuals from a Poisson fit to Poisson counts and from a Poisson fit to overdispersed counts." width="96%"}
 
 ## Poisson · when the count matches the story {auto-animate=true}
 
@@ -151,9 +176,21 @@ This is not a NEON fit. The script is `scripts/generate-slide-figures.R`.
 
 ## Poisson · the mean, with its band
 
-![Poisson log-linear fit of simulated colony counts against centred soil moisture, with a band for the mean.](figures/generated/poisson-fit.png){fig-alt="Scatter of simulated colony counts against centred soil moisture, with a fitted Poisson mean and a Wald band." width="82%"}
-
 The band is a Wald interval for $\mu$, formed on the log scale and mapped back with $\exp$. It is not a band for a new core's count.
+
+```{r}
+#| echo: true
+#| eval: false
+fit_pois <- glm(y_pois ~ moisture, family = poisson)
+pred <- predict(fit_pois, newdata = grid_m, se.fit = TRUE, type = "link")
+mu <- exp(pred$fit)
+lo <- exp(pred$fit - 1.96 * pred$se.fit)
+hi <- exp(pred$fit + 1.96 * pred$se.fit)
+```
+
+## Poisson · the mean, with its band
+
+![Poisson log-linear fit of simulated colony counts against centred soil moisture, with a band for the mean.](figures/generated/poisson-fit.png){fig-alt="Scatter of simulated colony counts against centred soil moisture, with a fitted Poisson mean and a Wald band." width="86%"}
 
 ## Poisson · what $\hat\beta_1$ says
 
@@ -171,9 +208,22 @@ Wald 95% interval in this draw: **1.14 to 1.32**.
 
 ## Negative binomial · the Poisson is too tight
 
-![Bin mean against bin variance for Poisson draws, which sit on the line, and negative binomial draws, which sit well above it.](figures/generated/mean-variance.png){fig-alt="Mean-variance plot. Poisson bins follow the line variance equals mean. Negative binomial bins lie above it." width="78%"}
+Extra-Poisson variation is the usual state of ecological counts: unmeasured microsites, clumping, and noisy detection. The line on the next slide is $\mathrm{Var} = \mu$.
 
-Extra-Poisson variation is the usual state of ecological counts: unmeasured microsites, clumping, and noisy detection. The line on the plot is $\mathrm{Var} = \mu$.
+```{r}
+#| echo: true
+#| eval: false
+mv <- counts |>
+  mutate(bin = cut(moisture, breaks = 8)) |>
+  summarise(mean_y = mean(y), var_y = var(y), .by = c(family, bin))
+ggplot(mv, aes(mean_y, var_y, colour = family)) +
+  geom_abline(slope = 1, intercept = 0) +
+  geom_point()
+```
+
+## Negative binomial · the Poisson is too tight
+
+![Bin mean against bin variance for Poisson draws, which sit on the line, and negative binomial draws, which sit well above it.](figures/generated/mean-variance.png){fig-alt="Mean-variance plot. Poisson bins follow the line variance equals mean. Negative binomial bins lie above it." width="82%"}
 
 ## Negative binomial · same mean, one extra parameter
 
@@ -189,9 +239,19 @@ In this second simulation, $\hat\theta = 1.48$. The draws are not the Poisson po
 
 ## Negative binomial · the band that was missing
 
-![Negative binomial fit of simulated overdispersed counts. A narrow band marks uncertainty of the mean and a wide band marks the observation scale.](figures/generated/negative-binomial-fit.png){fig-alt="Scatter of overdispersed counts against moisture, with a fitted mean, a narrow mean band, and a wide observation band." width="82%"}
-
 Green: uncertainty of $\mu$. Clay: an approximate $\mu \pm 1.96\,\mathrm{SD}$ band from the fitted variance. The clay band is a sketch of the observation scale, not a calibrated prediction interval.
+
+```{r}
+#| echo: true
+#| eval: false
+fit_nb <- MASS::glm.nb(y_nb ~ moisture)
+theta_hat <- fit_nb$theta
+sd <- sqrt(mu + mu^2 / theta_hat)
+```
+
+## Negative binomial · the band that was missing
+
+![Negative binomial fit of simulated overdispersed counts. A narrow band marks uncertainty of the mean and a wide band marks the observation scale.](figures/generated/negative-binomial-fit.png){fig-alt="Scatter of overdispersed counts against moisture, with a fitted mean, a narrow mean band, and a wide observation band." width="86%"}
 
 ## Negative binomial · read the mean, then $\theta$
 
@@ -269,9 +329,18 @@ Same seed, same script, still not a field dataset.
 
 ## Logit · the curve is the result
 
-![Logit curve of detection probability against centred pH, with jittered binary points and a band for the probability.](figures/generated/logit-fit.png){fig-alt="Binary detections against centred pH, with a fitted logit curve and a Wald band on the probability scale." width="80%"}
-
 The band is for $\pi$, not for a single core. A core is still 0 or 1.
+
+```{r}
+#| echo: true
+#| eval: false
+fit_bin <- glm(y_bin ~ ph, family = binomial)
+pi <- plogis(predict(fit_bin, type = "link"))
+```
+
+## Logit · the curve is the result
+
+![Logit curve of detection probability against centred pH, with jittered binary points and a band for the probability.](figures/generated/logit-fit.png){fig-alt="Binary detections against centred pH, with a fitted logit curve and a Wald band on the probability scale." width="84%"}
 
 ## Logit · odds move by a factor, probabilities do not
 
