@@ -54,13 +54,13 @@ The error term for the large-unit factor is the large-unit variance. Using the i
 
 ```{mermaid}
 %%| fig-width: 10
-%%| fig-height: 3.4
+%%| fig-height: 3.2
 flowchart TD
-  warming[Warming level]
-  co2[CO2 level]
-  enclosure[Enclosure j]
-  collar[Collar or core]
-  date[Date i]
+  warming["Warming on $$j$$"]
+  co2["CO2 on $$j$$"]
+  enclosure["Enclosure $$j$$"]
+  collar["Collar"]
+  date["Date $$i$$"]
   warming --> enclosure
   co2 --> enclosure
   enclosure --> collar --> date
@@ -70,18 +70,16 @@ Warming and $\mathrm{CO}_2$ are crossed on the enclosure. Collars and dates are 
 
 ## A random intercept is a distribution on $u_j$
 
-$$
-Y_{ij} = \beta_0 + \beta_1 x_j + u_j + \varepsilon_{ij},
-$$
-$$
-u_j \sim \mathcal{N}(0, \sigma_u^2), \qquad \varepsilon_{ij} \sim \mathcal{N}(0, \sigma^2).
-$$
+```{mermaid}
+%%| fig-width: 10
+%%| fig-height: 2.6
+flowchart LR
+  mean["$$g(\mu_{ij}) = \beta_0 + \beta_1 x_j + u_j$$"]
+  cluster["$$u_j \sim \mathcal{N}(0,\sigma_u^2)$$"]
+  mean --> cluster
+```
 
-Use this Gaussian sketch only when $Y$ can live on that scale. For a count or a binary detection, the same idea sits on the link:
-
-$$
-g(\mu_{ij}) = \beta_0 + \beta_1 x_j + u_j.
-$$
+Use a Gaussian equation for $Y_{ij}$ only when $Y$ can live on that scale. For a count or a detection, the cluster term sits on the link, as in the diagram.
 
 $u_j$ is a property of the cluster. It is not a covariate you forgot to measure, unless you are willing to say so.
 

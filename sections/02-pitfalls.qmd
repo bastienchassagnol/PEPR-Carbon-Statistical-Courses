@@ -37,14 +37,14 @@ The poster numbers are the workshop numbers. The BMJ article uses the same twelv
 
 ::: {.columns}
 ::: {.column width="50%"}
-- Describe a pattern
-- Compare groups
-- Explain an intervention
+- []{.fragment fragment-index="1"} Describe a pattern
+- []{.fragment fragment-index="2"} Compare groups
+- []{.fragment fragment-index="3"} Explain an intervention
 :::
 ::: {.column width="50%"}
-- Predict a new unit
-- Explore and generate
-- Confirm a pre-specified claim
+- []{.fragment fragment-index="4"} Predict a new unit
+- []{.fragment fragment-index="5"} Explore and generate
+- []{.fragment fragment-index="6"} Confirm a pre-specified claim
 :::
 :::
 

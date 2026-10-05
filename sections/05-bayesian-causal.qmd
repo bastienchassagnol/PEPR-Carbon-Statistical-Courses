@@ -18,11 +18,11 @@ Riley and colleagues note one use directly: a probability such as $\Pr(\text{rat
 
 ```{mermaid}
 %%| fig-width: 10
-%%| fig-height: 2.4
+%%| fig-height: 2.6
 flowchart LR
-  prior[Prior on beta]
-  likelihood[Likelihood of Y given beta]
-  posterior[Posterior of beta given Y]
+  prior["Prior $$p(\beta)$$"]
+  likelihood["$$p(Y \mid \beta)$$"]
+  posterior["$$p(\beta \mid Y)$$"]
   prior --> posterior
   likelihood --> posterior
 ```

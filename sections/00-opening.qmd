@@ -1,14 +1,14 @@
 ## How the four hours are split :hourglass_flowing_sand:
 
-- **30 min.** Who is here, and two datasets we will keep in view
-- **50 min.** The question, a PICO exercise, and twelve reporting pitfalls
-- **70 min.** Non-Gaussian responses: QQ plots, then Poisson, negative binomial, and logit
-- **20 min.** Experimental design and hierarchical models
-- **20 min.** Bayesian regression and causal estimands
-- **30 min.** Quiz, SAMPL, and what to open next
+- []{.fragment fragment-index="1"} **30 min.** Who is here, and two datasets we will keep in view
+- []{.fragment fragment-index="2"} **50 min.** The question, a PICO exercise, and twelve reporting pitfalls
+- []{.fragment fragment-index="3"} **70 min.** Non-Gaussian responses: QQ plots, then Poisson, negative binomial, and logit
+- []{.fragment fragment-index="4"} **20 min.** Experimental design and hierarchical models
+- []{.fragment fragment-index="5"} **20 min.** Bayesian regression and causal estimands
+- []{.fragment fragment-index="6"} **30 min.** Quiz, SAMPL, and what to open next
 
 ::: {.notes}
-The PICO writing block and the closing SAMPL block are protected. If a GLM slide runs long, shorten the tour of pitfalls 6 to 8 rather than the exercises. Speaker view: press S. A chalkboard is available if you want to annotate a PICO live.
+Down walks this section. Right jumps to the next section. The PICO writing block and the closing SAMPL block are protected. If a GLM slide runs long, shorten the tour of pitfalls 6 to 8 rather than the exercises. Speaker view: press S. Hold the mouse button for the spotlight. A chalkboard is available if you want to annotate a PICO live.
 :::
 
 ## Who is speaking :wave:
@@ -40,11 +40,11 @@ Two or three people answer aloud. Listen for Gaussian assumptions, compositional
 
 Not a catalogue of tests. A sequence you can reuse:
 
-- a scientific question, with a purpose
-- an estimand, including its unit
-- a distribution for $Y$ that respects the support of the data
-- a check you can show, preferably a plot
-- a sentence a colleague can re-implement
+- []{.fragment fragment-index="1"} a scientific question, with a purpose
+- []{.fragment fragment-index="2"} an estimand, including its unit
+- []{.fragment fragment-index="3"} a distribution for $Y$ that respects the support of the data
+- []{.fragment fragment-index="4"} a check you can show, preferably a plot
+- []{.fragment fragment-index="5"} a sentence a colleague can re-implement
 
 ::: {.notes}
 This is the pedagogical aim from the course plan. About one minute.

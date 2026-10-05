@@ -11,6 +11,9 @@ bibliography: "Statistical classes.bib"
 citeproc: true
 link-citations: true
 slide-level: 2
+filters:
+  - fragmention
+  - reveal-header
 execute:
   echo: false
   warning: false
@@ -26,7 +29,7 @@ format:
     transition: fade
     background-transition: fade
     hash-type: number
-    navigation-mode: linear
+    navigation-mode: vertical
     controls: true
     progress: true
     preview-links: auto
@@ -35,12 +38,31 @@ format:
     code-overflow: wrap
     fig-align: center
     auto-stretch: false
+    auto-animate-duration: 0.6
+    auto-animate-easing: ease
     chalkboard: true
     mermaid:
       theme: forest
+      securityLevel: loose
+    header: "From the question to the model"
+    header-logo: figures/pepr-mark.svg
+    hide-from-titleSlide: all
+    sc-sb-title: true
     footer: "[PEPR Carbon statistical workshop](https://github.com/bastienchassagnol/PEPR-Carbon-Statistical-Courses)"
     title-slide-attributes:
       data-background-color: "#f7f4ef"
+    spotlight:
+      size: 36
+    quiz:
+      checkKey: "x"
+      resetKey: "q"
+      shuffleOptions: false
+      defaultCorrect: "Yes. That is the claim."
+      defaultIncorrect: "Not this one."
+    revealjs-plugins:
+      - quiz
+      - spotlight
+      - tabset
 ---
 
 {{< include sections/00-opening.qmd >}}

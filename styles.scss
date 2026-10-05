@@ -65,6 +65,11 @@ $presentation-h3-font-size: 1.02em;
   color: #9a3412 !important;
 }
 
+.reveal .slides section section.slide.level2.quiz-question li,
+.reveal .slides section section.slide.level2.quiz-question li span {
+  color: #f7f4ef !important;
+}
+
 .reveal .slides section figcaption {
   display: none;
 }
@@ -82,6 +87,23 @@ $presentation-h3-font-size: 1.02em;
 .reveal:has(section.present.light-text) .footer,
 .reveal:has(section.present.light-text) .slide-number {
   color: #d7ebe3 !important;
+}
+
+:root {
+  --header-font-size: 15px;
+  --header-font-color: #5c6b63;
+}
+
+.reveal .header-logo img,
+.reveal .header-logo svg {
+  max-height: 26px;
+  width: auto;
+}
+
+.reveal .reveal-header .sc-title p,
+.reveal .reveal-header .sb-title p {
+  font-size: 14px;
+  color: #5c6b63;
 }
 
 .reveal .slides section img {

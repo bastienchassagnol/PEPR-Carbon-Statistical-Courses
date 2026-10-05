@@ -15,7 +15,7 @@ Open `docs/index.html`. Speaker view: press `S`.
 
 ## GitHub Pages
 
-The workflow `.github/workflows/quarto-pages.yml` renders the deck and deploys it. In the repository settings, set Pages to **GitHub Actions** as the source. The rendered site is not committed.
+`.github/workflows/publish.yml` renders the deck and publishes it with `quarto publish` to the `gh-pages` branch, which is the source GitHub Pages serves. Rendered HTML stays out of `main`. The site is [https://bastienchassagnol.github.io/PEPR-Carbon-Statistical-Courses/](https://bastienchassagnol.github.io/PEPR-Carbon-Statistical-Courses/).
 
 ## Sources
 

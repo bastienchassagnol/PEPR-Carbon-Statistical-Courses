@@ -74,13 +74,13 @@ It does not replace a likelihood whose support is the support of $Y$.
 
 ```{mermaid}
 %%| fig-width: 10
-%%| fig-height: 2.6
+%%| fig-height: 2.8
 flowchart LR
-  question[Question and estimand]
-  support[Support of Y]
-  family[Family and link]
-  check[Residual plot]
-  report[Estimate and interval]
+  question["Question"]
+  support["Support of $$Y$$"]
+  family["$$Y \mid x \sim \mathrm{family}(\mu)$$"]
+  check["Residual plot"]
+  report["Estimate and interval"]
   question --> support --> family --> check --> report
 ```
 
@@ -101,12 +101,18 @@ Continuous flux is not on this list as a Poisson problem. A count of colonies, r
 
 ## One skeleton for all three :link:
 
-$$
-Y_i \mid x_i \sim \text{family}(\mu_i), \qquad g(\mu_i) = \beta_0 + \beta_1 x_i .
-$$
+```{mermaid}
+%%| fig-width: 10
+%%| fig-height: 2.4
+flowchart LR
+  fam["$$Y_i \mid x_i \sim \mathrm{family}(\mu_i)$$"]
+  link["$$g(\mu_i) = \beta_0 + \beta_1 x_i$$"]
+  mean["$$\mu_i = g^{-1}(\beta_0 + \beta_1 x_i)$$"]
+  fam --> link --> mean
+```
 
-- **Family:** the distribution of $Y$ given $x$, including how $\mathrm{Var}(Y \mid x)$ depends on $\mu$
-- **Link** $g$: the function that makes $\beta_1 x$ linear
+- **Family:** how $\mathrm{Var}(Y \mid x)$ depends on $\mu$
+- **Link** $g$: the scale on which $\beta_1 x$ is linear
 - **Mean** $\mu = \mathbb{E}(Y \mid x)$: what $\beta$ describes, after you invert $g$
 
 Agresti is the reference for the theory and the worked models [@agrestiFoundationsLinearGeneralized2015]. Estimation is by maximum likelihood, not by a normal test of $Y$.
@@ -117,29 +123,27 @@ Agresti is the reference for the theory and the worked models [@agrestiFoundatio
 
 These are randomised quantile residuals for a Poisson mean: if the family is right, they should look Gaussian. A heavy upper tail is a reason to leave the Poisson, not a reason to run Shapiro–Wilk on the raw counts.
 
-## Poisson · when the count matches the story
+## Poisson · when the count matches the story {auto-animate=true}
 
-Use it when $Y$ is a non-negative integer and, to a first approximation,
-
-$$
-\mathrm{Var}(Y \mid x) = \mu = \mathbb{E}(Y \mid x).
-$$
+Use it when $Y$ is a non-negative integer and, to a first approximation, $\mathrm{Var}(Y \mid x) = \mu$.
 
 Colony counts on a plate are a clean example. Sequence-read totals usually are not: they are more variable than a Poisson, and they are compositional.
 
-The log link keeps $\mu > 0$:
-
+::: {data-id="pois-eq"}
 $$
 \log \mu = \beta_0 + \beta_1 x.
 $$
+:::
 
-## Poisson · a simulated plate count
+## Poisson · a simulated plate count {auto-animate=true}
 
 $n = 120$ cores. $x$ is centred soil moisture, in g/g, from $-0.15$ to $0.15$. $Y$ is a colony count.
 
+::: {data-id="pois-eq"}
 $$
 Y \sim \mathrm{Poisson}(\mu), \qquad \log \mu = \beta_0 + \beta_1 x.
 $$
+:::
 
 Fitted in this draw (seed 20261005): $\hat\beta_0 = 2.03$, $\hat\beta_1 = 2.05$. At $x = 0$, $\hat\mu = e^{2.03} \approx 7.6$ colonies.
 
@@ -203,23 +207,59 @@ Wald 95% interval: **1.29 to 1.87**. Wider than the Poisson interval, because $Y
 - the rate ratio is still a statement about $\mu$, on the log link
 - a QQ plot of quantile residuals is the check, not a test that "selects NB"
 
-## Logit · only if $Y$ is really binary
+## Same count, three implementations
+
+::: {.panel-tabset}
+
+### Poisson
+
+$$
+\log \mu = \beta_0 + \beta_1 x, \qquad \mathrm{Var}(Y \mid x) = \mu.
+$$
+
+Per $+0.1$ g/g in this draw: rate ratio **1.23** (1.14 to 1.32).
+
+### Negative binomial
+
+$$
+\log \mu = \beta_0 + \beta_1 x, \qquad \mathrm{Var}(Y \mid x) = \mu + \mu^2/\theta.
+$$
+
+A noisier draw, same true mean: rate ratio **1.55** (1.29 to 1.87), $\hat\theta = 1.48$.
+
+### $\log(Y+1)$, then Gaussian
+
+$$
+\mathbb{E}\{\log(Y+1) \mid x\} = \beta_0 + \beta_1 x.
+$$
+
+That coefficient is not a rate ratio for $\mu$. The two means are not the same function of $x$.
+
+:::
+
+Arrow keys step the tabs. Seed 20261005. None of the three is a NEON fit.
+
+## Logit · only if $Y$ is really binary {auto-animate=true}
 
 Detection of a taxon in a core is binary. A flux cut at an arbitrary threshold is the dichotomisation we have already rejected.
 
+::: {data-id="logit-eq"}
 $$
-Y \mid x \sim \mathrm{Bernoulli}(\pi), \qquad \mu = \pi = \Pr(Y = 1 \mid x).
+\mu = \pi = \Pr(Y = 1 \mid x).
 $$
+:::
 
-The mean of a 0/1 response **is** the probability. The logit gives that probability an unbounded scale:
+The mean of a 0/1 response **is** the probability.
 
+## Logit · a simulated detection {auto-animate=true}
+
+$x$ is centred pH, from $-1.5$ to $1.5$. $Y$ is 1 if the taxon is detected.
+
+::: {data-id="logit-eq"}
 $$
 \mathrm{logit}(\pi) = \log \frac{\pi}{1-\pi} = \beta_0 + \beta_1 x.
 $$
-
-## Logit · a simulated detection
-
-$x$ is centred pH, from $-1.5$ to $1.5$. $Y$ is 1 if the taxon is detected.
+:::
 
 Fitted here: $\hat\beta_0 = -0.32$, $\hat\beta_1 = 1.44$.
 

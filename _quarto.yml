@@ -1,6 +1,8 @@
 project:
-  type: default
+  type: website
   output-dir: docs
+  render:
+    - index.qmd
 
 lang: en-GB
 
