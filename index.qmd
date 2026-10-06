@@ -7,13 +7,38 @@ lang: en-GB
 from: markdown+emoji
 date: today
 date-format: "D MMMM YYYY"
-bibliography: "Statistical classes.bib"
+bibliography:
+  - "Statistical classes.bib"
+  - "references/p-value-fallacy.bib"
+  - "references/multiple-tests.bib"
+resources:
+  - references/burakov-logistic-regression.pdf
 citeproc: true
 link-citations: true
 slide-level: 2
 filters:
   - fragmention
   - reveal-header
+  - custom-callout
+custom-callout:
+  assumption:
+    title: "Assumption"
+    icon: true
+    icon-symbol: "⚖"
+    color: "#8a5a00"
+    appearance: simple
+  model:
+    title: "Model"
+    icon: true
+    icon-symbol: "μ"
+    color: "#1d4e89"
+    appearance: simple
+  theorem:
+    title: "Theorem"
+    icon: true
+    icon-symbol: "⊢"
+    color: "#5c3d7a"
+    appearance: simple
 execute:
   echo: false
   warning: false
@@ -50,11 +75,13 @@ format:
     header-logo: figures/pepr-mark.svg
     hide-from-titleSlide: all
     sc-sb-title: true
+    logo: figures/footer-logos.svg
     footer: "[PEPR Carbon statistical workshop](https://github.com/bastienchassagnol/PEPR-Carbon-Statistical-Courses)"
+    lightbox:
+      match: auto
+      effect: zoom
     title-slide-attributes:
       data-background-color: "#f7f4ef"
-    spotlight:
-      size: 36
     quiz:
       checkKey: "x"
       resetKey: "q"
@@ -63,7 +90,6 @@ format:
       defaultIncorrect: "Not this one."
     revealjs-plugins:
       - quiz
-      - spotlight
       - tabset
 ---
 
@@ -83,21 +109,29 @@ format:
 
 # When Y is not Gaussian {.center}
 
-:microscope: About seventy minutes. QQ plots, transformations, then three GLMs.
+:microscope: About seventy minutes. QQ plots, transformations, three GLMs, then a smooth mean.
 
 {{< include sections/03-non-gaussian.qmd >}}
 
+{{< include sections/03b-smoothing.qmd >}}
+
 # Experimental design {.center}
 
-:abacus: Twenty minutes. The model has to inherit the plan.
+:abacus: Twenty minutes for the plan. Vocabulary, contrasts, and the longitudinal close are the reference stack.
 
 {{< include sections/04-design.qmd >}}
 
 # Bayesian fits and causal estimands {.center}
 
-:balance_scale: Twenty minutes. Same mean model, a different claim.
+:balance_scale: Twenty minutes for the probability statement. Simpson, the DAG roles, and the network search are the reference stack.
 
 {{< include sections/05-bayesian-causal.qmd >}}
+
+# Reproducibility {.center}
+
+:repeat: A reference stack. One source file, then the practices that keep a rerun honest.
+
+{{< include sections/07-reproducibility.qmd >}}
 
 # Close {.center}
 

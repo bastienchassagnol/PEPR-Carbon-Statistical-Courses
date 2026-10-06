@@ -56,7 +56,54 @@ An observational regression of taxon counts on organic carbon does **not** estim
 
 Randomisation is a design fact. Adding covariates is not a substitute for it.
 
-## A confounder in the soil table
+## Two hospitals, one survival rate {#sec-simpson}
+
+François Giltaire, *Le paradoxe de Simpson*. A public-health report prints one number per hospital. Survival is 86% at A and 79% at B. The booking that follows from those two numbers is A.
+
+## Inside each severity, B is higher {#sec-simpson-strata}
+
+A takes mostly light cases. B takes mostly severe cases. Each hospital has 1000 patients.
+
+| | Light cases | Severe cases | Overall |
+| --- | --- | --- | --- |
+| A | 90% of 800 | 70% of 200 | 86% |
+| B | 95% of 200 | 75% of 800 | 79% |
+
+Light cases: B is above A. Severe cases: B is above A. The single published rate still ranks A above B.
+
+## The overall rate is a weighted mean {#sec-simpson-weights}
+
+The overall rate is the subgroup rates weighted by how many patients sit in each subgroup.
+
+$$
+\frac{800 \times 0.9 + 200 \times 0.7}{800 + 200} = 86\%
+$$
+
+$$
+\frac{200 \times 0.95 + 800 \times 0.75}{200 + 800} = 79\%
+$$
+
+The denominators match. A puts a weight of $n = 800$ on the light cases, where the rates are high. B puts a weight of $n = 200$ on those same cases. Giltaire's point: that difference in weights is enough to reverse the overall ranking.
+
+## Severity mixes two hospitals that are not the same {#sec-simpson-dag}
+
+```{mermaid}
+%%| fig-width: 9
+%%| fig-height: 2.8
+flowchart LR
+  severity["Severity"]
+  hospital["Hospital"]
+  survival["Survival"]
+  severity --> hospital
+  severity --> survival
+  hospital --> survival
+```
+
+Severity changes which hospital the patients go to, and it changes the survival rate. Pooling the light cases with the severe cases compares hospitals that did not treat the same mix.
+
+Giltaire's statement of the paradox: a trend that holds in every subgroup can reverse once the subgroups are pooled, because the subgroups do not have the same proportions. The soil version of this arrow pattern is [a confounder in the soil table](#sec-confounder).
+
+## A confounder in the soil table {#sec-confounder}
 
 ```{mermaid}
 %%| fig-width: 9
@@ -72,9 +119,9 @@ flowchart LR
 
 Both carbon and the taxon respond to moisture. The unadjusted slope of $Y$ on carbon mixes the carbon path with the moisture path.
 
-If the estimand is the association **at a given moisture**, moisture belongs in the model. If moisture is how carbon affects the taxon, moisture is a mediator, and adjusting for it removes part of the effect you wanted.
+If the estimand is the association **at a given moisture**, moisture belongs in the model. If moisture is how carbon affects the taxon, moisture is a mediator, and adjusting for it removes part of the effect you wanted. The pitfalls drawing is [three arrows, three estimands](#sec-arrows).
 
-## A mediator is a different question
+## A mediator is a different question {#sec-mediator}
 
 ```{mermaid}
 %%| fig-width: 10
@@ -91,7 +138,133 @@ The top path is indirect. The lower path is direct. The **total** effect of assi
 
 Write the path you mean before you add the covariate.
 
-## Sensitivity is the causal report
+## The explanatory target is $do(x)$ {#sec-do}
+
+Johannes Hertel, *Linking statistics, computational biology and biochemistry*. The question he sets is the effect of varying the independent variable on the response, in an observational study.
+
+Lewis (1973), as Hertel quotes it: an event $E$ depends causally on $C$ when $E$ would have occurred had $C$ occurred, and would not have occurred had $C$ not. Pearl (2000) writes the explanatory statement as $P(\text{cancer} \mid do(\text{smoking}))$ and the statistical statement as $P(\text{cancer} \mid \text{smoking})$.
+
+Confounder, selection bias, and mediation are defined inside that framework. A prediction of $Y$ from $x$ does not use the $do$.
+
+## One independence, two causal stories {#sec-same-ci}
+
+Hertel: a directed acyclic graph is what lets you check a correlation pattern against a causal theory. One pattern can belong to more than one theory.
+
+The shared statistical statement in his pair of examples: $T$ is correlated with $X$ and with $Z$ whether or not you condition, and $Z$ is conditionally independent of $X$ given $T$.
+
+## $T$ is a common cause {#sec-fork}
+
+```{mermaid}
+%%| fig-width: 8
+%%| fig-height: 2.4
+flowchart LR
+  T["T"] --> X["X"]
+  T --> Z["Z"]
+```
+
+$T$ causes $X$ and $T$ causes $Z$. There is no direct arrow between $Z$ and $X$. Conditioning on $T$ leaves $Z$ independent of $X$.
+
+## $Z$ acts through $T$ {#sec-chain}
+
+```{mermaid}
+%%| fig-width: 8
+%%| fig-height: 2.2
+flowchart LR
+  Z["Z"] --> T["T"] --> X["X"]
+```
+
+$Z$ causes $T$ and $T$ causes $X$. The conditional independence is the same as in the fork. The arrows are not settled by that independence.
+
+## The DAG is a set of assumptions {#sec-dag-assumptions}
+
+Hertel lists three, before the arrows can be read as causes.
+
+::: assumption
+There is a DAG that is a causal representation of the system. A variable is independent of its non-effects given its direct causes. The only conditional independences in the data are the ones that DAG states.
+:::
+
+The second sentence is his causal Markov condition. The third is faithfulness. He notes that a complete measurement of every variable in the graph is generally impossible, so the practical question is which variables the analysis has to include.
+
+## A third variable has a job {#sec-hertel-confounder}
+
+His names, for an observational effect of $X$ on $Y$. A confounder causes both. His example is age, between a disease phenotype and a metabolite. $X$ and $Y$ are then correlated even when they are unrelated. That is the soil-moisture diagram, [a confounder in the soil table](#sec-confounder).
+
+A mediator sits on the path from $X$ to $Y$. Controlling for it reduces, and can remove, the correlation. That is [a mediator is a different question](#sec-mediator).
+
+## A variance factor touches only $Y$ {#sec-variance-factor}
+
+```{mermaid}
+%%| fig-width: 8
+%%| fig-height: 2.4
+flowchart LR
+  X["X"] --> Y["Y"]
+  Z["Z"] --> Y
+```
+
+$Z$ causes $Y$ and does not cause $X$. Hertel's example is a batch effect. $Z$ does not create a correlation between $X$ and $Y$. It can mask one. He would control it, by design or in the model, to recover power.
+
+## An instrument touches only $X$ {#sec-instrument}
+
+```{mermaid}
+%%| fig-width: 8
+%%| fig-height: 2.2
+flowchart LR
+  Z["Z"] --> X["X"] --> Y["Y"]
+```
+
+$Z$ causes $X$ and does not cause $Y$. Hertel's example is a genetic variant. $Z$ does not create a correlation between $X$ and $Y$. It does not have to enter the regression. Some designs use it on purpose.
+
+## A collider is a common effect {#sec-collider}
+
+```{mermaid}
+%%| fig-width: 8
+%%| fig-height: 2.4
+flowchart LR
+  X["X"] --> Z["Z"]
+  Y["Y"] --> Z
+```
+
+$X$ and $Y$ both cause $Z$. Hertel's example is inflammation. Controlling for $Z$ induces a correlation between $X$ and $Y$. A study restricted to healthy people is his selection-bias version of the same arrow: the restriction can create correlations that were not there.
+
+He would not control a collider. His word for doing it anyway is overmatching. The Bayesian-network notes call this arrow a v-structure, and they connect it to selection bias.
+
+## A moderator changes the path {#sec-moderator}
+
+Hertel: $Z$ changes the causal path from $X$ to $Y$. His example is sex. Women and men may show different metabolite profiles in response to a disease.
+
+The analysis is then a stratum, or an interaction. Matching on $Z$ does not do that job, and the sample has to be large enough for the interaction.
+
+## Adjust what the role requires {#sec-adjust-rules}
+
+Hertel's control list, for an explanatory analysis.
+
+[]{.fragment fragment-index="1"} A confounder: control it, by matching or in the model, or the interpretation is wrong.
+
+[]{.fragment fragment-index="2"} A collider: leave it out.
+
+[]{.fragment fragment-index="3"} A variance factor: control it, for power.
+
+[]{.fragment fragment-index="4"} A mediator: leave it out, unless the question is that path.
+
+[]{.fragment fragment-index="5"} A moderator: an interaction or a stratum, not a match alone.
+
+[]{.fragment fragment-index="6"} An instrument: optional. Some designs are built around it.
+
+## Which of these is age, and which is diet? {#sec-parkinson}
+
+Hertel's discussion, left as a discussion. Parkinson's disease and the blood metabolome. The candidates he writes down: age, sex, BMI, kidney function, exercise, diet, smoking, Parkinson's medication, and other medication.
+
+The question he asks is which of those you would control, and which assumption that control uses. The six labels under his sketch are confounder, variance factor, collider, instrument, mediator, and moderator.
+
+## The simulated association matches only if the arrow is real {#sec-sem-iff}
+
+His last slide is a structural equation model on a DAG: host factors, a microbiome layer, community secretion, and the host metabolome. The sentence he draws from it:
+
+> "in silico association statistics" will correlate with "in vivo association statistics" if and only if the microbiome is causal for a metabolite in the host.
+
+An association computed from the model tracks the association in the host when that causal arrow is the one in the diagram.
+
+## Sensitivity is the causal report {#sec-causal-sensitivity}
 
 For an observational claim, say what would have to be true for the conclusion to change:
 
@@ -100,4 +273,52 @@ For an observational claim, say what would have to be true for the conclusion to
 - a different family, if the mean is sensitive to the variance assumption
 - a different prior, if the fit is Bayesian and the sample is small
 
-SPRUCE still needs a sensitivity story for the chamber itself: the design page monitors chamberless areas because the enclosure is not identical to an open bog.
+SPRUCE still needs a sensitivity story for the chamber itself: the design page monitors chamberless areas because the enclosure is not identical to an open bog. The pitfalls card is [show that the conclusion can move](#sec-sensitivity).
+
+## A direct link is not a direction {#sec-bn-direction}
+
+The Bayesian-network course notes separate two graphs. A dependency network joins two variables that still share a statistical relationship once the others are accounted for. That removes indirect co-variation. It does not say which way the link runs.
+
+A regulatory direction needs a further claim, in the notes' words: a change in $X$ produces a change in $Y$, and a change in $Y$ does not change $X$. That is the same gap as Hertel's fork and chain, [one independence, two causal stories](#sec-same-ci).
+
+## Three graphs, one distribution {#sec-cpdag}
+
+With $Z$ between $X$ and $Y$, and no direct arrow from $X$ to $Y$, the notes count four directed acyclic graphs. Three of them encode the same conditional independences. Those three are one Markov equivalence class, drawn as a completed partially directed acyclic graph: an edge is directed only when the direction is identified, and left undirected when it is not.
+
+Statistics on the observational distribution will not separate the three. The notes' next step is a causal analysis.
+
+## A knock-out supplies the direction {#sec-knockout}
+
+When the graph was not drawn by an expert, the notes' first source of direction is a perturbation. If knocking out $X$ changes $Y$, the notes write $X \to Y$. They identify that experiment with the $do$-operator.
+
+It is empirical, and it does not need a fitted network. It is a wet-lab result. Orienting a whole network this way needs many perturbations, which the notes say does not scale.
+
+## Time supplies the direction {#sec-dbn}
+
+The other source in the notes is a series. The regression is the dependency-network regression, moved forward one time step.
+
+::: model
+$$
+Y(t+1) \approx a_1 X_1(t) + \cdots + a_k X_k(t).
+$$
+:::
+
+If $a_i \ne 0$, then $X_i$ regulates $Y$ from one time to the next. The notes call this a dynamic Bayesian network: an initial state, the same transition from time to time, and the chain unrolled.
+
+## Tests, or a score, when nobody states the graph {#sec-bn-search}
+
+The notes' three searches, for the case with no expert graph.
+
+[]{.fragment fragment-index="1"} Constraint-based: test a conditional independence. If the test rejects independence, the nodes are joined.
+
+[]{.fragment fragment-index="2"} Score-based: give each candidate graph a score for how well it describes the data, and maximise the score.
+
+[]{.fragment fragment-index="3"} Hybrid: learn the skeleton from the constraints, then refine it with a score.
+
+Marco Scutari's benchmark, as the notes report it, for the developer of `bnlearn`: at small samples the constraint-based algorithms were more accurate than the score-based ones, and as accurate as the hybrids. Tabu search, a score-based method, was faster than the constraint-based algorithms and faster than simulated annealing.
+
+## A searched graph is still a DAG {#sec-bn-caveats}
+
+The notes' limits on that search. The graph has no cycles, so a feedback loop or a self-regulation is outside it. Adding observations can change the direction of an edge. A network of thousands of nodes is too large to enumerate, and the search then needs a heuristic.
+
+The two implementations they name are `bnlearn` in R and `PyAgrum` in Python.

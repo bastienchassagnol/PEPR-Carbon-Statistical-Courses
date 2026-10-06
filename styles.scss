@@ -30,6 +30,13 @@ $presentation-h3-font-size: 1.02em;
   text-align: center;
 }
 
+.reveal .slides section .ask {
+  margin: 0.05em 0 0.15em;
+  font-size: 4.2rem;
+  line-height: 1;
+  text-align: center;
+}
+
 .reveal .slides section#title-slide {
   border-top: 14px solid #0e4d3a;
 }
@@ -79,6 +86,16 @@ $presentation-h3-font-size: 1.02em;
   color: #5c6b63 !important;
 }
 
+.reveal .slide-logo {
+  max-height: 34px !important;
+  max-width: 46% !important;
+  height: auto !important;
+  bottom: 12px !important;
+  right: 8.5rem !important;
+  left: auto !important;
+  top: auto !important;
+}
+
 .reveal .slide-number {
   font-size: 0.45em !important;
   color: #5c6b63 !important;
@@ -106,6 +123,35 @@ $presentation-h3-font-size: 1.02em;
   color: #5c6b63;
 }
 
+.reveal .slides section.algebra-wide img {
+  width: 96% !important;
+  max-width: 96% !important;
+  height: auto !important;
+  max-height: 250px !important;
+}
+
+.reveal .slides section.algebra-panel img {
+  width: auto !important;
+  max-width: 70% !important;
+  height: 390px !important;
+  max-height: 390px !important;
+}
+
+.reveal .slides section.math-strip img {
+  width: 98% !important;
+  max-width: 98% !important;
+  max-height: 120px !important;
+  height: auto !important;
+}
+
+.reveal .slides section.fit-fig img {
+  max-height: 310px !important;
+}
+
+.reveal .slides section .embedpdf {
+  margin: 0.15rem 0 0 0;
+}
+
 .reveal .slides section img {
   border: none;
   box-shadow: none;
@@ -131,4 +177,10 @@ $presentation-h3-font-size: 1.02em;
 .reveal .slides section .equation {
   text-align: center;
   font-size: 0.92em;
+}
+
+.reveal .slides section#references .csl-entry {
+  font-size: 0.78em;
+  line-height: 1.25;
+  margin-bottom: 0.3em;
 }

@@ -11,7 +11,7 @@ The teaching table is the soil microbe community product.
 Source: NEON product API text retrieved for this deck. Do not present any later slide's simulation as a NEON result. About two minutes.
 :::
 
-## What $Y$ is in that table
+## What $Y$ is in that table {#sec-neon-y}
 
 $Y$ is a **count**, or a **share of a count**.
 
@@ -20,7 +20,7 @@ $Y$ is a **count**, or a **share of a count**.
 - many taxa are zero in many cores
 - the sampling variance is not a free Gaussian $\sigma$
 
-Moisture, pH, soil chemistry, and organic carbon are the covariates we will want. They are companion measurements, not columns you should assume are already on this product.
+Moisture, pH, soil chemistry, and organic carbon are the covariates we will want. They are companion measurements, not columns you should assume are already on this product. The symbols are on the [notation](#sec-notation) slide.
 
 ## Why a Gaussian `lm` is the wrong first tool
 
@@ -78,7 +78,7 @@ design <- expand.grid(
 
 Plots 4, 10, 11, 16, and 19 receive elevated $\mathrm{CO}_2$. Chamberless areas were also monitored.
 
-## What is measured, and what is independent
+## What is measured, and what is independent {#sec-spruce-unit}
 
 The response we will keep in view is a **flux**: soil $\mathrm{CO}_2$ or $\mathrm{CH}_4$.
 
@@ -86,6 +86,8 @@ The response we will keep in view is a **flux**: soil $\mathrm{CO}_2$ or $\mathr
 - collars and dates sit inside the enclosure
 - a weekly series is a repeated measure, not a new experimental unit
 - there are **10** enclosures in the warmed regression design
+
+Which of those rows is a replicate depends on the question: [where the replicate is](#sec-replicate).
 
 ## The model the design is asking for
 

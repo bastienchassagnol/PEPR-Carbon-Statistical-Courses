@@ -1,4 +1,10 @@
-## The shape is often the scientific object
+## The pipeline rewrites the column first {#sec-feature-pipeline}
+
+![A machine-learning pipeline from data collection through feature transformation, selection, dimension reduction, and modelling, with model evaluation and tuning circled.](figures/sources/egu-feature-pipeline.png){fig-alt="Flow chart. Data collection and a feature database feed preparation, then feature extraction and transformation, feature selection, and dimension reduction, then modelling. Model evaluation and tuning is circled and feeds back." width="78%"}
+
+[Hartmann and Rudolph](https://github.com/soga-lab/EGU2026_SC), EGU 2026 short course SC2.28, draw the usual order. The circled step is where the score is judged. A rewrite of the column that changes the mean shows up there as a number you cannot interpret. This hour is about that rewrite.
+
+## The shape is often the scientific object {#sec-shape}
 
 Environmental $Y$ is often:
 
@@ -7,7 +13,25 @@ Environmental $Y$ is often:
 - full of zeros, or censored at a detection limit
 - dependent in time or in space
 
-A Gaussian `lm` can still be a useful approximation for a mean. It is a poor default when the support of $Y$ makes the approximation impossible.
+A Gaussian `lm` can still be a useful approximation for a mean. It is a poor default when the support of $Y$ makes the approximation impossible. This hour follows [where we go deeper](#sec-deeper). Skew, in particular, is ordinary: [Quetilismus](#sec-quetilismus).
+
+## Quetilismus {#sec-quetilismus}
+
+[Adrian Olszewski](https://www.2kmm.pl/blog/On-the-ubiquity-of-skewness-in-nature/) names the habit after Edgeworth's word for Quetelet. A unimodal curve is treated as a normal curve. Skew is then a defect to repair: drop the tails, wait for a larger sample, or transform until the histogram looks symmetric.
+
+The [2KMM note of 15 May 2023](https://www.2kmm.pl/blog/On-the-ubiquity-of-skewness-in-nature/) and the PDF of that essay are the same text. The spelling-cleaned copy is the [Medium post of 2 January 2026](https://medium.com/@r.clin.res/on-the-ubiquity-of-skewness-in-nature-challenging-the-cult-of-the-gaussian-distribution-a1821dfe0f9a).
+
+## A product is not a sum
+
+The classical central limit theorem is a statement about a **sum**, and it needs a finite variance. A product of positive steps is a different limit. Cascades, growth, and decay land on a log-normal, which is skewed. Cauchy, Lévy, and Pareto sit outside that classical sum.
+
+Species abundance and environmental concentrations are on the product side ([Limpert, Stahel, and Abbt, 2001](https://doi.org/10.1641/0006-3568(2001)051[0341:LNDATS]2.0.CO;2); [Andersson, 2021](https://doi.org/10.1038/s41598-021-96010-6)). More rows do not turn a product into a sum.
+
+## Skew is a description {#sec-skew-summary}
+
+His summary, from the opening of the [Medium post](https://medium.com/@r.clin.res/on-the-ubiquity-of-skewness-in-nature-challenging-the-cult-of-the-gaussian-distribution-a1821dfe0f9a): a skewed description of a real process does not become less legitimate because the sample grew. Treating the normal law as the dominant description sets aside the mechanisms that generate the skew.
+
+The next slide is the modelling consequence. The Gaussian assumption, when it is used, is about $Y \mid \mathbf{x}$, not about the raw histogram.
 
 ## The assumption is conditional
 
@@ -38,9 +62,13 @@ ggplot(qq_gaussian, aes(sample = residual)) +
   facet_wrap(~model)
 ```
 
-## How to read the plot :mag:
+## How to read the plot :mag: {#sec-qq-read}
 
 ![Two QQ plots. Left: residuals from a Gaussian response sit near the reference line. Right: residuals from a Gaussian linear model fitted to Poisson counts bend up in the right tail.](figures/generated/qq-gaussian-vs-count.png){fig-alt="QQ plots comparing Gaussian linear-model residuals when the response is Gaussian and when the response is a Poisson count." width="96%"}
+
+## The ends are allowed to wander
+
+[Rodrigue](https://www.linkedin.com/pulse/normality-tests-q-q-plots-natalie-rodrigue-qxlqc/): the horizontal axis is the quantile under the reference distribution. The vertical axis is the observed quantile. A straight line, with extra scatter at the ends, is the reference. Order statistics are noisier in the tails. A systematic curve is the departure. The named shapes are the [shape figures](#sec-qq-shapes).
 
 ## A normality test is a poor gate
 
@@ -49,7 +77,170 @@ ggplot(qq_gaussian, aes(sample = residual)) +
 - the $p$-value does not say whether the **estimand** is distorted
 - the test is aimed at the wrong object if you apply it to raw $Y$ rather than to the model you will trust
 
-Prefer the QQ plot, and then a likelihood that matches $Y$.
+Prefer the QQ plot, and then a likelihood that matches $Y$. A formal test is a poor substitute for that plot.
+
+## Two sample sizes, two failures
+
+Adrian Olszewski's rule, which this hour follows: stop using them, except when a reviewer demands the number. He counts more than 90 procedures.
+
+- A small sample leaves them underpowered, so a real departure often passes.
+- Past about 150–200 observations they reject almost any departure, including one too small to matter, while the central limit theorem for a **mean** is improving.
+- Families aimed at skew, at kurtosis, and at the whole distribution contradict one another. Shapiro–Wilk is one of those families, not a universal test.
+
+## The same sample, opposite answers
+
+![A normal QQ plot with a step, two histograms of the same sample, and a table of normality-test p-values that disagree.](figures/sources/qq-versus-normality-tests.png){fig-alt="For a sample of 400 with skewness near zero and kurtosis near 3, the QQ plot steps in the middle and the histogram has two modes. Shapiro–Wilk gives 0.123. Several moment tests do not flag the sample. Lilliefors, Cramér–von Mises, and Anderson–Darling do." width="92%"}
+
+$n = 400$, skewness about 0, kurtosis about 3. Shapiro–Wilk gives $p = 0.123$. Lilliefors, Cramér–von Mises, and Anderson–Darling reject. The QQ plot shows the step either way.
+
+## Four shapes on the QQ plot {#sec-qq-shapes}
+
+![Four normal QQ plots: Gaussian points on the line, heavy tails as an S-curve, right skew as a concave-up bend, light tails as a flat S.](figures/sources/qq-four-shapes.png){fig-alt="Four QQ plots against a normal reference. Gaussian points follow the line. Heavy tails flare at both ends. Right skew bends concave-up. Light tails make a flatter S." width="96%"}
+
+Ends that flare are heavy tails. A concave-up bend is right skew. A concave-down bend is left skew. A flat S is light tails. The shaded ribbon on the Gaussian panel is a generic band. The band to use is the [tail-sensitive one](#sec-qq-band).
+
+## Jumps, steps, and stray points
+
+[Rodrigue](https://www.linkedin.com/pulse/normality-tests-q-q-plots-natalie-rodrigue-qxlqc/) names three patterns that are not a smooth curve.
+
+[]{.fragment fragment-index="1"} A jump or a gap: two groups pooled, or a rounding artefact.
+
+[]{.fragment fragment-index="2"} A staircase: a discrete or heavily rounded response. The residuals keep that discreteness.
+
+[]{.fragment fragment-index="3"} One or two points off an otherwise straight line: outliers. Check whether they move the fit before deleting them.
+
+Below about 30 observations, even a Gaussian sample wiggles. Do not read that noise as a new shape.
+
+## The straight line is the Gaussian case
+
+![A grid of QQ plots and histograms for Gaussian, beta, uniform, skewed, bimodal, truncated, discrete, and outlier samples.](figures/sources/qq-distribution-gallery.png){fig-alt="Sixteen distributions. Each row shows a normal QQ plot and the matching histogram. Only the Gaussian row follows the reference line. Skew bends the plot, bimodality steps it, and heavy tails flare the ends." width="96%"}
+
+Click the figure. Each distribution is a QQ plot against a normal reference, then the histogram. Only the Gaussian row stays on the line. The others are the shapes from the previous slide, including discrete samples and a sample with outliers.
+
+## A tail-sensitive band {#sec-qq-band}
+
+The ribbon to draw is the simultaneous tail-sensitive band of [Aldor-Noiman and colleagues (2013)](https://doi.org/10.1080/00031305.2013.847865). In [`qqplotr`](https://cran.r-project.org/package=qqplotr) that is `bandType = "ts"`. It is implemented for a **normal** QQ plot. A pointwise ribbon is a different object.
+
+```{r}
+#| echo: true
+#| eval: false
+ggplot(residuals, aes(sample = residual)) +
+  qqplotr::stat_qq_band(bandType = "ts") +
+  qqplotr::stat_qq_line() +
+  qqplotr::stat_qq_point()
+```
+
+Points outside that band are the departure. A $p$-value from a normality test is not a summary of the same picture. The workshop residuals are the [two QQ plots](#sec-qq-read) above, read this way.
+
+## Three means, three questions {#sec-three-means}
+
+![Table of the arithmetic, geometric, and harmonic means, with formulas and the inequality A at least G at least H.](figures/sources/arithmetic-geometric-harmonic.jpeg){fig-alt="Three columns. Arithmetic mean is a sum divided by n. Geometric mean is the n-th root of a product. Harmonic mean is the reciprocal of the mean of reciprocals. For positive numbers, A is at least G, which is at least H." width="78%"}
+
+[Sharmi Murali](https://medium.com/@sharmi.v.murali/arithmetic-mean-vs-geometric-mean-vs-harmonic-mean-b956cf1b2b3f): a sum, a product, or a reciprocal. $A \ge G \ge H$ for positive numbers, with equality only when every value is the same. A product process wants $G$, and logging $Y$ [changes the estimand](#sec-log-estimand) to that mean.
+
+## A box plot hides the shape
+
+A box plot reports a median, a box, and whiskers. It does not show a second mode, a pile of ties, or how many points sit in the tail. [The case against using it alone](https://medium.com/data-science/why-a-box-plot-should-not-be-used-alone-and-some-plots-to-use-it-with-23381f7e3cb6) is that those are often the features a carbon response actually has.
+
+Prefer a plot that keeps the raw points. A raincloud adds a density and a short summary beside them ([Scherer, 6 June 2021](https://www.cedricscherer.com/2021/06/06/visualizing-distributions-with-raincloud-plots-and-how-to-create-them-with-ggplot2/)).
+
+## Show the difference, not a star {#sec-gardner-altman}
+
+![Five panels from Ho and colleagues: a bar chart, a box plot, a scatter with means, a null distribution of the difference, and a Gardner–Altman plot of the mean difference with an interval.](figures/sources/gardner-altman-figure-1.png){fig-alt="Figure 1 of Ho and colleagues. Panels a to c summarise two groups. Panel d shows a permutation null for the mean difference and a p-value. Panel e shows the mean difference, its bootstrap distribution, and a 95 percent interval on a difference axis." width="86%"}
+
+[Ho and colleagues](https://doi.org/10.1038/s41592-019-0470-3). Panel e is the graphic this workshop keeps: $\Delta$ and an interval.
+
+## Four questions, not one test {#sec-four-comparisons}
+
+![Four cards: tests of whole distributions, stochastic superiority, specific features such as quantiles, and parametric parameters.](figures/sources/four-kinds-of-comparison.jpeg){fig-alt="Four panels. Whole empirical distributions ask whether two distribution functions are equal. Stochastic superiority asks whether one sample tends to be larger. Quantiles and scales ask about a named feature. Parametric tests ask about a parameter of a named distribution." width="88%"}
+
+[Olszewski](https://www.linkedin.com/posts/adrianolszewski_there-exist-900-statistical-tests-many-share-7479152921432018944-tEK7/) groups comparisons of two or more samples by the question, from the most general to the most specific. About nine hundred named procedures sit in these groups. The name of the procedure is not the hypothesis.
+
+## Whole distributions, then the tails
+
+A test of the empirical distribution functions asks only whether $F = G$. It does not say whether the difference is a shift, a scale, or a shape.
+
+[Olszewski's family](https://www.linkedin.com/feed/update/urn:li:activity:7413639530941091841/): Kolmogorov–Smirnov uses the largest vertical gap, and it is the least sensitive of the three. Cramér–von Mises integrates the squared gap, so a small gap that persists can count. Anderson–Darling uses the same integral with extra weight in the tails. For a heavy-tailed flux, Anderson–Darling is the one that looks where the mass of the question sits.
+
+## A rank test is not a mean test
+
+![Two examples. Left: equal medians, Mann–Whitney p below 0.001, and about 70 percent stochastic superiority. Right: medians differ by 10, Mann–Whitney p above 0.999, and stochastic superiority of 50 percent.](figures/sources/mann-whitney-not-a-median-test.jpeg){fig-alt="Left panel: two samples with the same median and Mann–Whitney p below 0.001, with about 70 percent of pairs ordered one way. Right panel: medians differ by 10, Mann–Whitney p above 0.999, and stochastic superiority of one half." width="78%"}
+
+Mann–Whitney estimates $P(B>A)+\tfrac12 P(B=A)$. Equal medians can be decisive. A gap of 10 can be invisible. For a median, use [quantile regression](https://gist.github.com/adrianolszewski/2cec75678e1183e4703589bfd22fa8b2).
+
+## Ranks answer a different question
+
+Unless the two distributions differ only by a shift, a rank test mixes location, scale, and shape. Mann–Whitney can be small when the means are equal and the variances are not, and large when the means differ and the variances differ the other way. That is Studentization: the null of a rank test is not the null of a mean.
+
+If the planned question is a mean, stay with a procedure for a mean: a permutation Welch test, Freedman–Lane, or a wild bootstrap. Brunner–Munzel is the rank procedure that allows unequal variances, and it still estimates a probability, not $\mu$. The map of those choices is [the six columns](https://www.linkedin.com/posts/adrianolszewski_there-exist-900-statistical-tests-many-share-7479152921432018944-tEK7/).
+
+## Six routes, one of them a mean
+
+![Six columns of nonparametric comparisons: whole distributions, stochastic superiority, generalised locations, quantiles, robust mean-like estimators, and arithmetic means.](figures/sources/nonparametric-comparison-map.png){fig-alt="A diagram with six columns, from tests of the whole distribution, through ranks and quantiles, to permutation tests of an arithmetic mean." width="92%"}
+
+The columns are questions. Mann–Whitney is the second, not a median. The last column is still a mean: permutation Welch, Freedman–Lane, a wild bootstrap.
+
+## Keep the mean, and change the standard error
+
+![Table of ways to compare two means when variances differ, when there are outliers, or when the distribution is not Gaussian.](figures/sources/compare-means-no-covariate.png){fig-alt="A table. Equal variances: the ordinary t-test. Unequal variances: Welch. Outliers: Yuen or a robust regression, which changes the estimand to a trimmed or weighted mean. Non-Gaussian: a permutation or bootstrap t-test." width="86%"}
+
+[Olszewski](https://www.linkedin.com/feed/update/urn:li:activity:7445521856679407619/) keeps the mean when that is the question. Welch does not need a pretest of the variances. Yuen changes the target to a trimmed mean. A permutation Welch test keeps the mean when the distribution is not Gaussian.
+
+## The same mean, with a covariate
+
+![The lower half of the same table: ANCOVA by ordinary least squares, sandwich standard errors, generalised least squares, Freedman–Lane, and a wild bootstrap.](figures/sources/compare-means-with-covariate.png){fig-alt="Rows for a covariate-adjusted comparison of two means. Ordinary least squares when variances match and slopes are parallel. Sandwich standard errors or generalised least squares when variances differ. Freedman–Lane or a wild bootstrap when the distribution is not Gaussian." width="96%"}
+
+Adding a covariate does not force a rank test. Ordinary least squares is the ANCOVA when the variances match and the slopes are parallel. Unequal variances move the standard error to a sandwich estimator or to generalised least squares. A non-Gaussian residual moves the test to Freedman–Lane, or to a wild bootstrap, still for the mean.
+
+## Prefer Welch when the model is this simple
+
+![Side-by-side equivalence of a pooled t-test with ordinary least squares, and a Welch test with generalised least squares and Satterthwaite degrees of freedom.](figures/sources/welch-versus-ols-1.png){fig-alt="Two blocks. A pooled t-test matches a Wald test from ordinary least squares, estimate minus 2.99, p 0.049. A Welch test matches generalised least squares with Satterthwaite degrees of freedom, the same estimate, p 0.052." width="72%"}
+
+Start from Welch ([Olszewski](https://www.linkedin.com/feed/update/urn:li:activity:7400680154634686464/)). The pooled test forces a common variance. In his sketch the estimate is $-2.99$ either way; the $p$-values are 0.049 and 0.052.
+
+## A permutation $p$ for the same Welch statistic {#sec-perm-welch}
+
+[Olszewski](https://www.linkedin.com/feed/update/urn:li:activity:7490552621573922816/): `MKinfer::perm.t.test` uses the Welch–Satterthwaite statistic unless you set `var.equal = TRUE`. Leave the default. Do not pretest the variances with an $F$ test.
+
+```{r}
+#| echo: true
+#| eval: false
+result <- MKinfer::perm.t.test(
+  response ~ group, data = data, permStat = TRUE
+)
+MKinfer::h0plot(result)
+```
+
+::: {.notes}
+The call returns the classical $p$ and the permutation $p$. Compare them, and look at the null distribution of the permuted statistic as well as the residual QQ plot. Use more than 9999 draws for a stable $p$, and on the order of 50,000 if the level of interest is below 0.001. Record the seed. Permuting the raw difference of means quietly assumes equal variances. The studentized statistic is the one Janssen (1997) gives for unequal variances; he lists that paper under the post. A reported permutation $p$ of exactly 0 is a convention about the draws, not a probability.
+:::
+
+## Compare the two $p$-values, then the null plot
+
+The function returns the classical Welch $p$ and the permutation $p$ for the same statistic. If they disagree, the Gaussian approximation was doing work. If they agree, it was not.
+
+`h0plot()` shows the permuted statistic under the null. A residual QQ plot does not replace that picture. Use more than 9999 draws, and on the order of 50,000 if you care about a level below 0.001. Record the seed. Permuting the raw difference of means assumes equal variances. The studentized statistic does not: that is the point of the Welch form (Janssen, 1997, as cited under the post).
+
+## A bell curve is not a feature test {#sec-meaningless-sigma}
+
+![Recovery rates piled against 100 percent, with a 1-sigma interval of 92 plus or minus 12 and a 2-sigma interval of 92 plus or minus 24, beside a normal bell marked 68, 95, and 99.7 percent.](figures/sources/egu-recovery-two-sigma.png){fig-alt="Histogram of percent area recovered within 30 years, piled at 100 percent. A 1-sigma band of 92 plus or minus 12 stays inside 0 to 100. A 2-sigma band of 92 plus or minus 24 does not. A Gaussian bell sits beside the histogram." width="92%"}
+
+[Hartmann and Rudolph](https://github.com/soga-lab/EGU2026_SC). The 2-sigma interval is 92 ± 24%, so it leaves 0–100. The bell beside it is the 68%, 95%, 99.7% picture. A normality test does not turn that interval into a recovery rate. The same objection applies to a concentration, a count, or a composition.
+
+## The excuse is not a diagnosis
+
+The same slides list the defences of that summary. Everybody reports it this way. The variance was large. \(n\) was too small for anything more accurate. It is the reporting standard. One only wanted the mean and the variability. The statistically careful version made the story disappear.
+
+None of these is a reason to attach a Gaussian spread to a feature whose scale forbids it. The [QQ plot](#sec-qq-read) shows the shape. It does not choose the summary.
+
+## Before you transform $Y$
+
+Write two answers, and keep them.
+
+1. Why is transforming the response usually a bad default?
+2. What do you do instead when a Gaussian model for $Y$ does not fit?
+
+[Olszewski's](https://www.linkedin.com/pulse/why-transforming-response-regression-analysis-testing-olszewski/) answers, from the 2022 note, follow the variance-stabilising case. A multiplicative process is the case he keeps. A skewed histogram is not.
 
 ## A transformation can be the right scale
 
@@ -59,9 +250,153 @@ A transform is justified when it matches the science:
 - a variance that grows with the mean, and a log that stabilises it
 - a physical rate that is already defined on a log scale
 
-It is not justified by "the histogram looked skewed" alone.
+It is not justified by "the histogram looked skewed" alone. What that shortcut costs starts at [a transform rewrites the question](#sec-transform-rewrite).
 
-## $\log Y$ changes the estimand
+## Match the transform to $v(\mu)$ {#sec-vst}
+
+[Huber, chapter 13](https://www.huber.embl.de/msmb/13-chap.html#mean-variance-relationships-and-variance-stabilizing-transformations), writes $v(\mu)$ for the way the variance trends with the mean. Three prototypes cover most assays:
+
+- constant: $v(\mu) = c$
+- Poisson-like: $v(\mu) = a\mu$
+- quadratic: the standard deviation proportional to the mean, so $v(\mu) = b\mu^2$
+
+A real measurement can add them. For microarray fluorescence he cites Rocke and Durbin (2001): background plus a multiplicative noise, $v(\mu) = b\mu^2 + c$. A variance-stabilising transformation is built from that curve, so replicate spread no longer tracks the mean. One power for the whole sample, as on the [Yeo–Johnson slide](#sec-yeo), does not use $v(\mu)$.
+
+## A VST is for a Euclidean next step {#sec-vst-pca}
+
+Huber's reasons for analysing the transformed scale:
+
+[]{.fragment fragment-index="1"} a plot, or a heatmap, that spends its ink across the range
+
+[]{.fragment fragment-index="2"} PCA, or a clustering that uses correlation, no longer dominated by a few very large means
+
+[]{.fragment fragment-index="3"} a method that assumes identical, homoskedastic noise
+
+That is the machine-learning case: a method whose geometry is Euclidean and wants a roughly constant spread. The transformation is still a new response. Inference for $\mu$ on the original support stays with the [link](#sec-glm-versus-transform).
+
+## A transform rewrites the question {#sec-transform-rewrite}
+
+A logarithm changes a difference of arithmetic means into a ratio of geometric means. A Box–Cox power such as $-0.67$ is not a unit anyone measured.
+
+On $\log Y$ against $x$, a small coefficient is nearly a percentage: $\exp(0.05) \approx 1.05$. A coefficient of $0.5$ is not a 50% change, because $\exp(0.5) \approx 1.65$. The inequality that separates the two means is [written later](#sec-log-estimand).
+
+## The variance travels with the mean
+
+In a Gaussian model the mean and the variance are separate parameters. After a log they are tied: a log-normal variance depends on the mean. A power chosen only to stabilise the spread changes that relationship even when the power is not a logarithm.
+
+## The interval does not travel back
+
+$$
+g\{\mathbb{E}(Y \mid x)\} \ne \mathbb{E}\{g(Y) \mid x\}
+$$
+
+unless $g$ is linear. A confidence interval, a moment, or a test computed on $g(Y)$ is not the same object on the original scale after you apply $g^{-1}$. A $p$-value on the transformed response and an interval on the original scale can disagree about the claim. The log case is the [estimand slide](#sec-log-estimand).
+
+## A logarithm needs a positive response
+
+$\log Y$ is undefined when $Y$ can be negative. Adding a constant, as in $\log(Y + c)$, defines a different response. A bone-density T-score is one measurement that is allowed to be negative. Quantile regression does not need the sign. Yeo–Johnson is the power that allows negatives, and the [later slide](#sec-yeo) says what that power costs.
+
+## The pooled histogram is the wrong picture
+
+Conditional Gaussian groups with different means look skewed once you pool them. In his sketch the groups are normal, seed 1000, and the model is `lm(DV ~ IV)`. Logging the pooled $Y$ because the histogram is skewed spoils residuals that were already close to Gaussian.
+
+Transform when the **conditional** distribution is skewed. That is what the residual plot checks. If $\mathbb{E}(Y \mid x)$ is already approximately Gaussian, the transform is not the remedy.
+
+## The centre has to match the scale {#sec-scales}
+
+```{r}
+#| echo: false
+math <- function(tex) gt::html(sprintf('<span class="math inline">\\(%s\\)</span>', tex))
+
+scales <- data.frame(
+  Scale = c(
+    "Binomial", "Nominal", "Ordinal", "Interval",
+    "Rational", "Logistic", "Concentration"
+  ),
+  Measure = I(c(
+    "Success or failure",
+    "Category membership",
+    math("\\text{ordered by } <"),
+    math("d=|x_1-x_2|"),
+    math("x_1/x_2"),
+    math("(x-l)/(u-x)"),
+    "Part of a constant sum"
+  )),
+  Example = c(
+    "Rainy days", "Soil types", "Hurricane category",
+    "Time, location", "Length, weight, isotope ratio",
+    "Elevation, depth", "TOC, recovery rate"
+  ),
+  Similarity = c(
+    "Equality only", "Equality", "Rank order",
+    "Additive, near 0", "Multiplicative, near 1",
+    "Log-ratio", "Aitchison distance"
+  ),
+  Centre = I(c(
+    math("np"),
+    math("\\text{mode, }\\bar{x}_{\\mathrm{geo}},\\, np_i"),
+    math("Q_{50}"),
+    "Arithmetic mean",
+    "Geometric mean",
+    "Logistic mean",
+    "Geometric mean"
+  )),
+  Spread = I(c(
+    math("np(1-p)"),
+    "Entropy",
+    math("Q_{75}-Q_{25}"),
+    "Arithmetic sd",
+    "Geometric sd",
+    "Logistic variance",
+    "Compositional variance"
+  )),
+  stringsAsFactors = FALSE
+)
+
+scales |>
+  gt::gt() |>
+  gt::tab_options(
+    table.font.size = "15px",
+    data_row.padding = gt::px(2),
+    column_labels.font.size = "15px"
+  )
+```
+
+[Hartmann and Rudolph](https://github.com/soga-lab/EGU2026_SC). An arithmetic mean is the interval row. A ratio wants a geometric mean. TOC and a recovery are parts of a sum, not interval measurements.
+
+## A constant sum is a simplex
+
+If the parts add to a constant, the point is not free in the plane. Their picture: \(x + y = 1\) is a line segment, not a square. A sequencing library is the same constraint. The counts in one sample add to the library size, so a gene is a share of that sum. A Gaussian interval on the count, or on a shifted logarithm of the count, does not respect it.
+
+## Five steps that rewrite \(Y\)
+
+Their recipe for a positive \(x\) is a checklist. Inspect a histogram, a box plot, or a QQ plot. If the lower limit is positive, add a constant. Take \(\log x\). Check that the logs look more Gaussian. Average the logs and take their standard deviation. Exponentiate both. Report the geometric mean times or divided by the geometric standard deviation.
+
+They note that this interval stays positive. That is not the same as an interval for \(\mathbb{E}(Y)\).
+
+## The exponential does not return the moment
+
+\(\exp(\overline{\log x})\) is the geometric mean. It is not \(\mathbb{E}(Y)\). Exponentiating the standard deviation of the logs does not return the standard deviation of \(Y\). A shift before the logarithm is a third response. The [inequality](#sec-log-estimand) is why the two means differ. Prefer a model for \(\mu\), or a robust summary, over this sequence.
+
+## A logit link stays inside the bounds
+
+For a recovery, or any proportion, model \(\operatorname{logit}(\pi)\) with \(\pi = \mathbb{E}(Y \mid x)\). When \(Y\) is binary this is logistic regression. The same link is the model for a proportion. The reported interval is the inverse logit of the interval for the linear predictor. It stays in \((0, 1)\), and the test is a test of \(\pi\).
+
+It is not the arithmetic mean of a column that was transformed until a QQ plot looked straight.
+
+## Put the curve in $\mu$, not in $Y$
+
+A nonlinear regression lets $\mu$ be a nonlinear function of $x$. A generalised linear model leaves $Y$ alone and puts a link on $\mu$. Both keep the original response. The link is the rest of this hour, from the [skeleton](#sec-skeleton).
+
+## Or model the variance, or change the summary
+
+[]{.fragment fragment-index="1"} [Generalised least squares or estimating equations](#sec-ols-replacements) when the variance or the correlation is the problem, and the mean is still the target.
+
+[]{.fragment fragment-index="2"} Quantile regression when the target is a quantile, including a median, and including censored $Y$.
+
+[]{.fragment fragment-index="3"} A robust or rank procedure when the question is not an arithmetic mean. The [map](#sec-four-comparisons) is that choice. A [permutation Welch test](#sec-perm-welch) is the choice when the mean remains the question.
+
+## $\log Y$ changes the estimand {#sec-log-estimand}
 
 A Gaussian model for $\log Y$ targets $\mathbb{E}(\log Y \mid x)$.
 
@@ -75,15 +410,56 @@ $\log(Y+1)$ is a third response. Zeros were the reason for the $+1$, and they ar
 
 For counts, start from a distribution on the non-negative integers ([O'Hara and Kotze, 2010](https://doi.org/10.1111/j.2041-210X.2010.00021.x); [@agrestiFoundationsLinearGeneralized2015]).
 
-## Powers that chase a Gaussian shape
+## Powers that chase a Gaussian shape {#sec-yeo}
 
-Yeo–Johnson chooses a power, including for zeros and negative values, so that the transformed sample is closer to Gaussian.
+Yeo–Johnson chooses a power, including for zeros and negative values, so that the transformed sample is closer to Gaussian. When the next method is Euclidean, such as a PCA, the transform that follows $v(\mu)$ is the [variance-stabilising transformation](#sec-vst).
 
 - the criterion is closeness to a bell shape, not a scientific unit
 - the inverse transform is awkward, so a mean on the transformed scale is hard to say in the original unit
 - if you use it, describe the original $Y$ with the median and the quartiles
 
 It does not replace a likelihood whose support is the support of $Y$.
+
+## A test is a model with one factor {#sec-tests-as-linear}
+
+[Lindeløv](https://lindeloev.github.io/tests-as-linear/) writes the common tests as linear models. A Pearson correlation is the slope in `lm(scale(y) ~ scale(x))`: standardising both variables makes that slope equal to $r$. A $\chi^2$ test of counts is a Poisson log-linear model, `glm(counts ~ group, family = poisson)`, compared with an intercept-only model.
+
+The model is the more flexible object. It keeps the same contrast and adds a covariate, a variance weight, or a link. A named test usually cannot.
+
+## A paired $t$ reports the mean
+
+[Loïc](https://statsxomics.blog/2024/05/25/why-you-should-use-regression-models-instead-of-tests-for-statistical-inferences/), seed 1234, 100 people measured twice. The Wilcoxon signed-rank test gives $V = 1711$ and $p = 0.005$. The paired $t$ test gives a mean difference of $-0.42$, an interval from $-0.69$ to $-0.14$, and $p = 0.003$. The sign is the order of the two levels.
+
+Both reject. Only the paired $t$ test says how large the mean change is. The signed-rank test is a statement about the ranks of the within-person differences.
+
+## The pair is a random intercept
+
+An ordinary `lm` on the same rows, without the person, keeps the estimate at $0.42$ and inflates the standard error to $0.28$, so $p = 0.14$. A random intercept, `(1 | ind)`, keeps $0.42$ and brings the standard error back to $0.14$. The $t$ statistic returns to $2.99$, the paired test.
+
+In that fit the person-level variance is $3.06$ and the residual variance is $0.96$. Dropping the pair does not change the estimate. It charges the within-person contrast with the between-person noise.
+
+## When ordinary least squares is the wrong skeleton {#sec-ols-replacements}
+
+If the Gaussian, independent, constant-variance assumptions fail, the replacements are still models.
+
+- Generalised least squares: a known pattern for the variance, which is the Welch test when the pattern is a group.
+- Generalised estimating equations: a working correlation and a sandwich standard error.
+- A generalised linear model: a distribution for $Y$ and a link for $\mu$.
+- A generalised additive model: a smooth function of $x$ in place of a straight line.
+
+This hour then stays with the generalised linear model. The others are named so a later choice is a choice of estimand, not a new religion.
+
+## `aov()` is Type I {#sec-anova-type}
+
+![A warning that aov() in R is Type I ANOVA, so the test of treatment depends on whether baseline or treatment is entered first.](figures/sources/ancova-type-i-order.jpeg){fig-alt="Four rows. lm, car::Anova with type 2, and permuco are marked safe. aov is marked not safe, because the order of baseline and treatment changes the sums of squares." width="78%"}
+
+[Olszewski](https://www.linkedin.com/feed/update/urn:li:activity:7444337265641684992/): `aov()` is Type I, so the treatment $F$ in his sketch is 16.6 or 38.7 depending on order. `car::Anova(type = 2)` does not inherit that order.
+
+## Three types, then a deviance {#sec-deviance}
+
+Type I tests each term after the terms written before it. Type II tests each main effect after the other main effects, and an interaction after the mains. Type III tests each term after every other term, including interactions. The three answer different questions. Pick one before fitting, and do not use Type I unless the order is the scientific order.
+
+For a generalised linear model the same partition is an analysis of deviance. The statistic is a likelihood-ratio $\chi^2$, or a score test, rather than an $F$ on residual sums of squares. `anova(glm(...), test = "LRT")` is that comparison of nested models. It is still a test of a term in a model, not a new model. His 2025 notes put the conditional mean, the probability, the quantile, and the hazard on one page as the functions that comparison can target.
 
 ## Favour the model, not a pretest
 
@@ -103,7 +479,173 @@ A pretest that switches you from a $t$-test to a rank test still does not estima
 
 The teaching sequence for the three models follows the SIB day on logistic regression and GLMs ([slides](https://github.com/sib-swiss/advanced-statistics/blob/master/docs/assets/pdf/Day2-LogisticregressionandGLM-2026.pdf), [course](https://www.sib.swiss/training/course/20260907_ADDMG)).
 
-## The response chooses the family
+## Two names, one role each {#sec-lm-names}
+
+[Angelino and Marcone](https://www.sib.swiss/training/course/20260907_ADDMG) (SIB, Lausanne, September 2026) use two roles. The **response**, also called the dependent variable, is what the model describes or predicts. That is \(Y\) on the [notation](#sec-notation) slide.
+
+The **explanatory variable** is also called an independent variable, a predictor, or a covariate. That is \(x\). The question picks it. Their general line is \(Y = f(x) + \text{error}\). A function \(g(Y)\) on the left is a transformed response, which is the case the [previous slides](#sec-log-estimand) treat as a change of estimand.
+
+## The formula is the model {#sec-lm-formula}
+
+In R the same line is `response ~ predictors`. Read `~` as "described by".
+
+[]{.fragment fragment-index="1"} `+` adds a term. `-` or `-1` drops one, including the intercept.
+
+[]{.fragment fragment-index="2"} `:` is an interaction. `*` is the interaction and the main effects. `^n` adds interactions up to degree \(n\).
+
+[]{.fragment fragment-index="3"} `I()` is arithmetic. `age^2` in a formula is not \(age^2\). The square is `I(age^2)`.
+
+`y ~ 1` is the null model: the mean, and no covariate. Their example of a mixed formula is `Income ~ age^2 + I(weight/height^2) + gender`.
+
+## One row, then every row {#sec-lm-matrix}
+
+For one observation,
+
+$$
+Y_i = \beta_0 + \beta_1 x_{i1} + \cdots + \beta_{p-1} x_{i,p-1} + \varepsilon_i.
+$$
+
+Stacked, that is \(\mathbf{Y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\varepsilon}\). The first column of \(\mathbf{X}\) is 1 when the model has an intercept. Least squares chooses \(\boldsymbol{\beta}\) to minimise the sum of squared vertical residuals. The fitted values are \(\hat{\mathbf{Y}} = \mathbf{H}\mathbf{Y}\), and \(\mathbf{H}\) is the [hat matrix](#sec-hat).
+
+## Ordinary least squares is BLUE {#sec-gauss-markov}
+
+The [Gauss–Markov theorem](https://en.wikipedia.org/wiki/Gauss%E2%80%93Markov_theorem): if \(\mathbb{E}(\varepsilon_i) = 0\), the \(\varepsilon_i\) are uncorrelated, each has the same finite variance \(\sigma^2\), and \(\mathbf{X}\) has full column rank, then
+
+$$
+\hat{\boldsymbol{\beta}} = (\mathbf{X}^{\top}\mathbf{X})^{-1}\mathbf{X}^{\top}\mathbf{Y}
+$$
+
+has the smallest variance among linear unbiased estimators. The errors do not have to be Gaussian for that result. Gauss used normality. Markov removed it.
+
+If, in addition, the \(\varepsilon_i\) are independent and Gaussian, that same \(\hat{\boldsymbol{\beta}}\) is the maximum-likelihood estimator. The \(t\) tests and the \(F\) test on the printout use this extra assumption. If the variances differ or the errors are correlated, the corresponding estimator is generalised least squares, which is the [Welch case](#sec-ols-replacements) when the variance is a group.
+
+## A coefficient is a \(t\) {#sec-lm-t}
+
+`summary(lm)` tests each coefficient against 0. The statistic is the estimate divided by its standard error. [Angelino and Marcone](https://www.sib.swiss/training/course/20260907_ADDMG) note that this test assumes Gaussian residuals. It is the interesting test for a slope. It is rarely the question for the intercept.
+
+In a model with several covariates, each line is the test of that coefficient **with the other terms already in the model**. [Mahanty](https://www.linkedin.com/pulse/interpreting-linear-model-output-r-anil-mahanty/) (9 January 2018) maps the same printout. Two of his readings do not travel: multiple \(R\) is not a count of points on the line, and a small \(p\) is not a verdict that the model fits.
+
+## The \(F\) test compares two nested models {#sec-lm-f}
+
+The \(F\) statistic on the same printout compares the fitted model with the intercept-only model. Angelino and Marcone write it as the drop in the residual sum of squares, per extra parameter, divided by the remaining residual mean square:
+
+$$
+\frac{\{\mathrm{SS}(\mathrm{mean}) - \mathrm{SS}(\mathrm{fit})\}/(p_{\mathrm{fit}} - p_{\mathrm{mean}})}{\mathrm{SS}(\mathrm{fit})/(n - p_{\mathrm{fit}})}.
+$$
+
+With a single slope, this \(F\) matches the \(t\) test of that slope. With several slopes, every coefficient can be quiet and the \(F\) test can still reject. \(R^2\) is the share of the variance of \(Y\) that the fit captures. Adjusted \(R^2\) charges a cost for each extra term. The residual degrees of freedom are \(n\) minus the number of estimated parameters.
+
+## A factor shifts the intercept {#sec-lm-ancova}
+
+Their height model is `Height ~ Age + Gender`. Gender is a factor, so R codes it as an indicator against a reference level. Women are the baseline in their printout. The line for women is \(124.52 + 2.72\,\mathrm{Age}\). The line for men has the same slope and a higher intercept, \(127.3 + 2.72\,\mathrm{Age}\).
+
+That is an analysis of covariance: one continuous covariate, one categorical factor, and a common slope unless you add `Age:Gender`. The gender coefficient is a difference of intercepts, not the raw difference of the two mean heights. The sums of squares for that fit still depend on [which ANOVA type](#sec-anova-type) you ask for.
+
+## Four plots, then two more {#sec-lm-plot}
+
+`plot()` on an `lm` draws four checks by default: residuals against fitted values, a normal QQ plot, scale against location, and residuals against leverage ([`plot.lm`](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/plot.lm)). Those are `which = c(1, 2, 3, 5)`.
+
+[Tay](https://www.r-bloggers.com/2019/11/the-hidden-diagnostic-plots-for-the-lm-object/) (14 November 2019) notes the two that are not in that panel. `which = 4` is Cook's distance against the row number. `which = 6` is Cook's distance against leverage over one minus leverage. He treats a Cook's distance above 1 as a point to inspect. The next four slides are the default four, each with a fit that respects the assumption and a fit that does not. Illustrative draws, seed `20261005`.
+
+## Residuals against the fitted values
+
+![Two residual-versus-fitted plots. Left: a flat cloud around zero. Right: a U-shape from fitting a straight line to a quadratic.](figures/generated/lm-resid-fitted.png){fig-alt="Left, residuals from a straight-line fit sit in a flat band around zero. Right, residuals from a straight line fitted to a quadratic curve form a U." width="96%"}
+
+A flat cloud is the linear mean. A curve means \(f(x)\) is still in the residual.
+
+## The residual QQ plot
+
+![Two normal QQ plots of residuals. Left: points along the line. Right: heavy tails from a t distribution.](figures/generated/lm-qq.png){fig-alt="Left, Gaussian residuals follow the normal reference line. Right, residuals from a heavy-tailed draw flare at both ends." width="92%"}
+
+Same reading as the [shape figures](#sec-qq-shapes). A line supports the Gaussian assumption behind the \(t\) and \(F\) tests. A flare is a heavy tail, and the next slide changes the model for \(Y\).
+
+## Scale against location
+
+![Two scale-location plots. Left: a flat smooth of the square-root absolute residual. Right: the smooth rises because the variance grows with x.](figures/generated/lm-scale-location.png){fig-alt="Left, the square root of the absolute residual stays level across fitted values. Right, it rises as the fitted value increases." width="96%"}
+
+A flat smooth is constant variance, the Gauss–Markov condition. A rise is a variance that travels with the mean: [generalised least squares](#sec-ols-replacements), or a family in which the variance depends on \(\mu\).
+
+## Leverage and Cook's distance
+
+![Two residual-versus-leverage plots. Left: points near the origin, inside the Cook contours. Right: one point far to the right with a large residual.](figures/generated/lm-leverage.png){fig-alt="Left, residuals sit at small leverage. Right, one observation has high leverage and a large residual, beyond a Cook's-distance contour." width="96%"}
+
+Leverage \(h_{ii}\) is the diagonal of the hat matrix. Angelino and Marcone quote the cut \(2p/n\) or \(3p/n\) from Belsley, Kuh, and Welsch (1980). The contours are Cook's distance 0.5 and 1.
+
+## The link acts on $\mu$, not on $Y$ {#sec-glm-link-mean}
+
+Agresti writes a generalised linear model as one object: a distribution for $Y$, a linear predictor, and a link on the conditional mean [@agrestiFoundationsLinearGeneralized2015].
+
+::: model
+$$
+g(\mu_i) = \eta_i = \mathbf{x}_i^{\top}\boldsymbol{\beta},
+\qquad \mu_i = \mathbb{E}(Y_i \mid \mathbf{x}_i).
+$$
+:::
+
+A transformation route instead fits $g(Y_i) = \mathbf{x}_i^{\top}\boldsymbol{\beta} + \varepsilon_i$. The first line keeps the estimand on $\mu$. The second rewrites each observation before the fit.
+
+After the fit, $\mathbb{E}(Y \mid \mathbf{x}) = g^{-1}(\mathbf{x}^{\top}\boldsymbol{\beta})$ is a mean on the scale you measured: a probability, an expected count, a positive rate. You do not model $g(Y)$ and then argue backwards to $\mathbb{E}(Y)$. The [estimand slides](#sec-log-estimand) are what that argument costs.
+
+## $E\{g(Y)\}$ is not $g\{E(Y)\}$ {#sec-glm-jensen}
+
+For a nonlinear $g$,
+
+$$
+\mathbb{E}\{g(Y) \mid \mathbf{x}\} \ne g\{\mathbb{E}(Y \mid \mathbf{x})\}.
+$$
+
+Regressing $\log Y$ targets $\mathbb{E}(\log Y \mid \mathbf{x})$. A log link targets $g(\mu) = \log \mu$. In general $\exp\{\mathbb{E}(\log Y \mid \mathbf{x})\} \ne \mathbb{E}(Y \mid \mathbf{x})$. A transformation model and a log-link GLM are different sentences about $Y$.
+
+## The family matches the type of $Y$ {#sec-glm-family-match}
+
+Ordinary least squares on a transformed response still carries a Gaussian error on whatever scale you chose.
+
+A GLM keeps $Y$ on its support and changes the family:
+
+- Bernoulli or binomial for a 0/1 outcome or a proportion
+- Poisson for a non-negative integer count
+- Gaussian on the identity link when that support is appropriate
+
+The [family table](#sec-family-table) is the first menu. The point here is that the likelihood is written for $Y$, not for $g(Y)$.
+
+## Variance travels with $\mu$ {#sec-glm-variance-mu}
+
+Classical linear regression often assumes
+
+$$
+\operatorname{Var}(Y \mid \mathbf{x}) = \sigma^2.
+$$
+
+In a GLM the variance is tied to the mean through the family:
+
+$$
+\operatorname{Var}(Y_i \mid \mathbf{x}_i) = \phi\, V(\mu_i).
+$$
+
+Poisson: $V(\mu) = \mu$. Binomial with mean $\pi$: variance $\pi(1-\pi)$. That mean–variance link is part of the model, not a post hoc fix on the residuals. When the variance rises with the mean, [scale against location](#sec-lm-scale-location) was already warning you.
+
+## The link keeps $\mu$ in range {#sec-glm-link-range}
+
+$\mathbf{x}^{\top}\boldsymbol{\beta}$ can be any real number. The inverse link maps it into the support of $\mu$.
+
+- $\operatorname{logit}(\pi) = \mathbf{x}^{\top}\boldsymbol{\beta}$ forces $0 < \pi < 1$
+- $\log(\mu) = \mathbf{x}^{\top}\boldsymbol{\beta}$ forces $\mu > 0$
+
+A straight line on a transformed $Y$ does not give the same guarantee on the mean of the original response. That is why the [link stays on the mean](#sec-glm-versus-transform), not on $Y$.
+
+## Coefficients read on the link scale {#sec-glm-coef-meaning}
+
+The link is chosen so $\boldsymbol{\beta}$ answers a substantive question on the mean.
+
+For $\log(\mu) = \beta_0 + \beta_1 x$,
+
+$$
+\frac{\mu(x+1)}{\mu(x)} = e^{\beta_1}.
+$$
+
+For a logit on $\pi$, $e^{\beta_1}$ is an odds ratio. The goal is not to make a histogram look Gaussian. The goal is a coefficient that names an effect on $\mu$. The compact contrast is [the link stays on the mean](#sec-glm-versus-transform).
+
+## The response chooses the family {#sec-family-table}
 
 | Support of $Y$ | A first model |
 | --- | --- |
@@ -112,9 +654,15 @@ The teaching sequence for the three models follows the SIB day on logistic regre
 | Non-negative integer, variance near the mean | Poisson, log link |
 | Same, with extra-Poisson variance | Negative binomial, log link |
 
-Continuous flux is not on this list as a Poisson problem. A count of colonies, reads, or events is.
+The next slides keep $\mu = \mathbb{E}(Y \mid x)$ and change the family. A transformation of $Y$ is the other route, already set aside on the [estimand slides](#sec-log-estimand).
 
-## One skeleton for all three :link:
+## The link stays on the mean {#sec-glm-versus-transform}
+
+[Angelino and Marcone](https://www.sib.swiss/training/course/20260907_ADDMG) write the earlier models as $g(Y) = f(x) + \text{error}$. On a 0/1 response that line can return a probability below 0, because a straight line is not confined to $(0, 1)$.
+
+In the generalised linear model the linearity sits on $g(\mu)$. The family then draws $Y$. The quantity you report is still a mean of the response you measured.
+
+## One skeleton for all three :link: {#sec-skeleton}
 
 ```{mermaid}
 %%| fig-width: 10
@@ -130,7 +678,107 @@ flowchart LR
 - **Link** $g$: the scale on which $\beta_1 x$ is linear
 - **Mean** $\mu = \mathbb{E}(Y \mid x)$: what $\beta$ describes, after you invert $g$
 
-Agresti is the reference for the theory and the worked models [@agrestiFoundationsLinearGeneralized2015]. Estimation is by maximum likelihood, not by a normal test of $Y$.
+Agresti is the reference for the theory and the worked models [@agrestiFoundationsLinearGeneralized2015]. Estimation is by maximum likelihood, not by a normal test of $Y$. The letters are fixed on the [notation](#sec-notation) slide.
+
+## A continuous response, on the identity {#sec-glm-gaussian}
+
+Angelino and Marcone send a continuous response to a linear regression. The drawing is Gaussian, and the link is the identity, so $\mu$ and the linear predictor are the same number.
+
+```{mermaid}
+%%| fig-width: 10
+%%| fig-height: 2.2
+flowchart LR
+  x["$$x$$"] --> eta["$$\eta = \beta_0 + \beta_1 x$$"]
+  eta --> mu["$$\mu = \eta$$"]
+  mu --> y["$$Y \mid x \sim \mathrm{Normal}(\mu,\sigma^2)$$"]
+```
+
+## A binary response, on the logit {#sec-glm-bernoulli}
+
+A binary response goes to a logistic regression. Here $\mu = \pi = \Pr(Y = 1 \mid x)$. The logit is the link they use. The probit is the alternative they mention later, and it stays close to this curve.
+
+```{mermaid}
+%%| fig-width: 10
+%%| fig-height: 2.2
+flowchart LR
+  x["$$x$$"] --> eta["$$\mathrm{logit}(\pi) = \beta_0 + \beta_1 x$$"]
+  eta --> pi["$$\pi = \mu$$"]
+  pi --> y["$$Y \mid x \sim \mathrm{Bernoulli}(\pi)$$"]
+```
+
+## A count, on the log {#sec-glm-poisson}
+
+A count goes to a Poisson regression. They write the mean as $\lambda$. That symbol is $\mu$ on these slides. The log link keeps $\mu > 0$, and $\exp(\beta_1)$ is a multiplicative change in the mean count.
+
+```{mermaid}
+%%| fig-width: 10
+%%| fig-height: 2.2
+flowchart LR
+  x["$$x$$"] --> eta["$$\log \mu = \beta_0 + \beta_1 x$$"]
+  eta --> mu["$$\mu = \exp(\eta)$$"]
+  mu --> y["$$Y \mid x \sim \mathrm{Poisson}(\mu)$$"]
+```
+
+Their four working assumptions: $Y$ is a count per unit of time or space; $\log \mu$ is linear in $x$; the observations are independent; and $\mathrm{Var}(Y \mid x) = \mu$.
+
+## The fit maximises the likelihood {#sec-glm-mle}
+
+Angelino and Marcone estimate by maximum likelihood. For a Gaussian linear model that maximiser is the least-squares fit. For the logit and the Poisson log link they say there is no closed form: the estimates come from an iterative algorithm.
+
+The Newton step for the logit, from the chapter embedded [below](#sec-burakov), uses the Bernoulli variances as weights:
+
+$$
+\boldsymbol{\beta}^{(t+1)} = \boldsymbol{\beta}^{(t)} + (\mathbf{X}^{\top}\mathbf{W}^{(t)}\mathbf{X})^{-1}\mathbf{X}^{\top}(\mathbf{y} - \boldsymbol{\pi}^{(t)}),
+\qquad w_i = \pi_i(1-\pi_i).
+$$
+
+::: {.notes}
+Angelino and Marcone state that the maximiser is iterative and do not write the update. The displayed step is Burakov's equation (2.87), in the chapter embedded later. $\mathbf{W}$ is diagonal. At convergence, $(\mathbf{X}^{\top}\mathbf{W}\mathbf{X})^{-1}$ is the estimated covariance of $\hat{\boldsymbol{\beta}}$.
+:::
+
+## Hat values and Cook's distance, again {#sec-glm-influence}
+
+The same two diagnostics carry over. Angelino and Marcone keep the hat-value cut at $2p/n$ or $3p/n$, the cut already used for the [linear model](#sec-lm-plot).
+
+They treat a Cook's distance above about $4/n$ as a point to inspect. The [checks figure](#sec-glm-checks) below uses a Cook's distance above 1 as its own rule of thumb. Quote the rule with the source.
+
+## Three residual scales {#sec-glm-resid}
+
+Angelino and Marcone separate three residuals after a GLM.
+
+[]{.fragment fragment-index="1"} A deviance residual, plotted against the fitted value and against each covariate. A curve is a missing piece of the linear predictor.
+
+[]{.fragment fragment-index="2"} A Pearson residual, $(Y - \mu)$ divided by the fitted standard deviation. A trend against a covariate is a term the model does not yet contain.
+
+[]{.fragment fragment-index="3"} A quantile residual. Under the fitted family it is uniform on $(0,1)$. A QQ plot against normal quantiles is the picture. Extra-large tails are their signal to leave the Poisson for a quasi-Poisson or a negative binomial.
+
+`acf()` is their quick check that the observations are not ordered in a way the independence assumption forbids. The Poisson simulation later draws the quantile residual for that family.
+
+## Two tiers of checks for a logit {.fit-fig #sec-glm-checks}
+
+![Two tiers of logistic-regression checks: linearity of the log-odds, VIF, independence, Cook's distance; then separation, events per variable, and sparse categories.](figures/sources/logistic-model-checks.svg){fig-alt="Tier 1: a straight line on the log-odds scale, a VIF warning above 5 and a red flag above 10, independence as a design problem, and Cook's distance above 1. Tier 2: a zero cell and huge odds ratios, at least 10 events per variable as a rule of thumb that some recent work relaxes, and a category with no events to collapse." width="96%"}
+
+The figure supplied with [this note](https://www.linkedin.com/feed/update/urn:li:activity:7483052950236401665/). A bent log-odds line, a variance-inflation factor above 5, separation, and fewer than ten events per variable are the figure's warnings. Firth's penalised likelihood is the remedy it names for separation.
+
+::: {.notes}
+The LinkedIn post is behind a login wall, so the thresholds are the figure's own wording: VIF above 5 is a warning and above 10 a red flag; Cook's distance above 1 is a cause for concern; ten events per variable is a rule of thumb the figure says some recent work relaxes. Angelino and Marcone's Cook cut for a GLM is about $4/n$, stated on the previous influence slide.
+:::
+
+## Deviance is the residual sum of squares {#sec-glm-deviance}
+
+Angelino and Marcone measure lack of fit by the deviance. The null deviance $D_0$ compares the intercept-only model with the saturated model. The residual deviance $D$ compares the fitted model with the saturated model. Maximising the log-likelihood is the same operation as making $D$ small.
+
+For nested models the likelihood-ratio statistic is the drop in deviance,
+
+$$
+D_{\text{small}} - D_{\text{large}} \sim \chi^2,
+$$
+
+with degrees of freedom equal to the number of extra parameters. In R that is `anova(model1, model2, test = "Chisq")`. This is the GLM form of the [analysis of deviance](#sec-deviance).
+
+::: {.notes}
+Their pseudo-$R^2$ is $1 - D/D_0$. They say that several pseudo-$R^2$ exist, and that a nested comparison should be the likelihood-ratio test. AIC is the comparison they allow when the models are not nested: deviance, plus a penalty for the number of parameters.
+:::
 
 ## Quantile residuals check the family
 
@@ -299,6 +947,203 @@ That coefficient is not a rate ratio for $\mu$. The two means are not the same f
 
 Arrow keys step the tabs. Seed 20261005. None of the three is a NEON fit.
 
+## Equidispersion is one parameter doing two jobs {#sec-count-equi}
+
+StatHarbor Analytics, *Count Data Models: From Poisson to Zero-Inflated Models*, starts from $Y \sim \mathrm{Poisson}(\mu)$ with $\mathbb{E}(Y) = \mathrm{Var}(Y) = \mu$. One rate controls the centre and the spread. The log link makes a one-unit step in $x_j$ multiply $\mu$ by $e^{\beta_j}$, a rate ratio.
+
+The Poisson fit is the one they keep when the conditional mean is close to the conditional variance, the zeros are no more numerous than the Poisson predicts, and events are independent inside a fixed exposure. When $\mathrm{Var}(Y) > \mathbb{E}(Y)$, the same fit understates the standard errors. They name unobserved heterogeneity, omitted covariates, and clustering as the usual sources.
+
+## A gamma latent rate is a negative binomial {#sec-count-nb}
+
+The same notes derive the negative binomial as a Poisson–gamma compound: the Poisson rate is itself a gamma draw, and that draw is integrated out. The extra variance is unobserved heterogeneity.
+
+$$
+\mathrm{Var}(Y \mid x) = \mu + \frac{\mu^2}{\alpha}
+\qquad\text{or}\qquad
+\mathrm{Var}(Y \mid x) = \mu + \alpha\mu^2.
+$$
+
+McCullagh and Nelder use the first form. The simulation slides call that shape $\theta$. In the second form, $\alpha \to 0$ returns the Poisson. Estimating $\alpha$ leaves the one-parameter exponential family.
+
+::: {.notes}
+Treating $\alpha$ as known keeps the model inside a one-parameter GLM. Estimating it is full maximum likelihood. StatHarbor reaches for the negative binomial when the variance exceeds the mean and the zeros come from the same process as the positive counts, and compares it with the Poisson by a likelihood-ratio test.
+:::
+
+## A point mass of zeros is a mixture {#sec-count-zip}
+
+A zero-inflated model is a different generative story. With probability $\pi_0$ the observation is a structural zero. With probability $1-\pi_0$ it is a draw from a count distribution $f$. StatHarbor writes $\pi_0$ as $p$.
+
+$$
+\Pr(Y=0) = \pi_0 + (1-\pi_0)\,f(0),
+\qquad
+\Pr(Y=k>0) = (1-\pi_0)\,f(k).
+$$
+
+```{mermaid}
+%%| fig-width: 10
+%%| fig-height: 2.6
+flowchart LR
+  z["$$\pi_0$$"] --> zero["structural zero"]
+  z --> count["$$1-\pi_0$$"]
+  count --> f["$$f$$: Poisson or NB"]
+  f --> y["$$Y$$"]
+  zero --> y
+```
+
+A logit for $\pi_0$ plus a log-linear Poisson is the zero-inflated Poisson. The negative binomial in $f$ is the zero-inflated negative binomial. Neither is an exponential-family GLM.
+
+::: {.notes}
+StatHarbor compares a zero-inflated model with an ordinary Poisson by AIC, BIC, or a Vuong test, because those two models are not nested.
+:::
+
+## Four count models, three questions {#sec-count-table}
+
+| Model | Extra variance | Structural zeros | Exponential family |
+| --- | --- | --- | --- |
+| Poisson | No | No | Yes |
+| Negative binomial | Yes | No | Only if the dispersion is fixed |
+| Zero-inflated Poisson | No | Yes | No |
+| Zero-inflated negative binomial | Yes | Yes | No |
+
+StatHarbor's summary. The practical line under the table: diagnose dispersion and extra zeros before you quote a rate ratio. An ill-matched family understates the uncertainty.
+
+## The count measures a latent share {#sec-measure}
+
+[Sarkar and Stephens](https://doi.org/10.1038/s41588-021-00873-4) separate a measurement model from a model for the latent intensity. The paper is about genes in single cells. The same split applies to any feature counted inside a sample of finite depth: a taxon, a transcript, a fragment.
+
+Let $s_i$ be the library size, the total count in sample $i$, and let $\lambda_{i\ell}$ be the relative intensity of feature $\ell$, a share of that sample. The measurement model is
+
+$$
+Y_{i\ell} \mid s_i, \lambda_{i\ell} \sim \mathrm{Poisson}(s_i \lambda_{i\ell}).
+$$
+
+Dividing by the depth is this rate: the offset $\log s_i$, with its coefficient fixed at 1.
+
+## The measurement drawing {#sec-measure-dag}
+
+```{mermaid}
+%%| fig-width: 10
+%%| fig-height: 2.4
+flowchart LR
+  lam["$$\lambda_{i\ell}$$"] --> rate["$$\mu_{i\ell}=s_i\lambda_{i\ell}$$"]
+  s["$$s_i$$"] --> rate
+  rate --> y["$$Y_{i\ell}\sim\mathrm{Poisson}(\mu_{i\ell})$$"]
+```
+
+Library size and relative intensity meet in the Poisson mean. The Pearson-residual figure below is this regression, with the slope of $\log s_i$ fixed.
+
+## Three assumptions in the measurement layer {#sec-box1}
+
+Box 1 of Sarkar and Stephens lists the assumptions behind that Poisson measurement model.
+
+[]{.fragment fragment-index="1"} In each sample, each molecule is equally likely to be observed.
+
+[]{.fragment fragment-index="2"} Each molecule is observed independently of the others.
+
+[]{.fragment fragment-index="3"} Only a small proportion of the molecules present are observed. They cite 10–20% in a typical single-cell experiment.
+
+Assumptions 2 and 3 are the ones they treat as plausible. Assumption 1 fails when stability, cellular location, or sequence changes the chance that a molecule is seen. A bias that is shared across samples can enter the Poisson model as a covariate. A bias that changes from sample to sample is extra noise, and the measurement model that carries it is negative binomial. If a later protocol observes a larger share of the molecules, the measurement variance falls relative to a Poisson.
+
+## A zero is an observation {#sec-zeros}
+
+Sarkar and Stephens refuse the phrase "missing data" for a zero count. Their picture: a minute with no cars at an intersection is a zero; an hour when the observer is away is a missing record. A sequencing zero is the first of those. Imputing only the zeros treats them as holes.
+
+They also drop the word "dropout" for a supposed device that writes a zero whatever the true intensity. Spike-in controls, in the papers they cite, did not support a zero-inflated *measurement* model. A zero-inflated *observation* model can still be the right margin when the latent intensity itself has a point mass at zero.
+
+## The observation model is the margin {#sec-obs-model}
+
+An expression model, in their words, is a distribution $g_\ell$ for the latent share $\lambda_{i\ell}$. The observation model is the distribution of $Y$ after $\lambda$ has been integrated out.
+
+```{mermaid}
+%%| fig-width: 10
+%%| fig-height: 2.4
+flowchart LR
+  g["$$\lambda_{i\ell}\sim g_\ell$$"] --> poi["$$Y_{i\ell}\mid s_i,\lambda_{i\ell}\sim\mathrm{Poisson}(s_i\lambda_{i\ell})$$"]
+  poi --> marg["margin of $$Y_{i\ell}$$"]
+```
+
+A gamma $g_\ell$ produces a negative-binomial margin. A point-gamma $g_\ell$, a spike at zero plus a gamma, produces a zero-inflated negative-binomial margin. The Poisson recommendation is for the measurement layer. The margin is usually wider, because the latent share varies across samples.
+
+## One feature at a time {.smaller #sec-tbl-single}
+
+| Latent model for $\lambda$ | Margin of $Y$ | Methods they name |
+| --- | --- | --- |
+| Point mass | Poisson | Analytic |
+| Gamma | Negative binomial | MASS, edgeR, DESeq2, SAVER, BASiCS |
+| Point-gamma | Zero-inflated NB | PSCL |
+| Unimodal, nonparametric | Unimodal | ashr |
+| Point-exponential family | Flexible | DESCEND |
+| Fully nonparametric | Flexible | ashr |
+
+Table 1 of Sarkar and Stephens. Each row is a latent model for one feature, combined with the Poisson measurement model. The method column is the software they list for that margin.
+
+## Several features together {#sec-tbl-multi}
+
+| Link $h$ | Noise on the latent scale | Methods they name |
+| --- | --- | --- |
+| Identity | None | NMF, scHPF |
+| Identity | Gamma | NBMF |
+| Log | None | GLM-PCA |
+| Log | Gamma | scNBMF, GLM-PCA |
+| Log | Point-gamma | ZINB-WaVE |
+| Neural network | Point-gamma | scVI, DCA |
+
+Table 2. A multi-feature model writes the share through a low-rank factorisation and a link $h$, then adds a noise distribution for the stochastic piece. Overdispersion relative to the Poisson measurement changes the variance of $Y$ and leaves the mean of the structured part to be read with that measurement model in mind.
+
+## Depth in the offset, dispersion in $\theta$ {.fit-fig #sec-pearson-nb}
+
+![Negative binomial observation model: latent state and sequencing depth, an offset regression on depth, Pearson residuals, and a shrinkage of the dispersion across features.](figures/sources/pearson-residuals-nb.svg){fig-alt="Panel A: a negative binomial observation model whose variance is mu plus mu squared over theta, with a biological latent state and technical sequencing depth. Panel B: log mu equals a feature intercept plus log depth, slope fixed at 1, and residuals after that regression. Panel C: the Pearson residual divides the raw residual by the negative-binomial standard deviation. Panel D: a shrinkage of the per-feature dispersion toward a trend in the mean." width="98%"}
+
+Read the gene labels as any feature. Depth is the offset. The quadratic term in $\theta_\ell$ is the extra variance.
+
+## The Pearson residual for that fit
+
+$$
+\log \mu_{i\ell} = \beta_{0\ell} + \log s_i,
+\qquad
+r_{i\ell} = \frac{Y_{i\ell}-\mu_{i\ell}}{\sqrt{\mu_{i\ell}+\mu_{i\ell}^2/\theta_\ell}}.
+$$
+
+The coefficient of $\log s_i$ is fixed at 1. A Poisson model has no $\theta_\ell$, so the split between a latent intensity and a depth has a parameter in the negative binomial. The figure's last panel shrinks a noisy $\hat\theta_\ell$ toward a smooth of the mean.
+
+## Condition on the total, or integrate a prior {.fit-fig #sec-count-map}
+
+![A map of six count distributions: Poisson to negative binomial by a gamma prior; gamma to Dirichlet by normalising; Poisson to multinomial, and negative binomial to Dirichlet-multinomial, by conditioning on the sum.](figures/sources/count-distribution-connections.svg){fig-alt="Poisson with mean equal to variance; a gamma prior integrated out gives the negative binomial with variance mu plus mu squared over alpha; normalising independent gammas gives a Dirichlet; conditioning independent Poissons on their sum gives a multinomial; conditioning independent negative binomials on their sum gives a Dirichlet-multinomial. Gamma and Dirichlet are the continuous members." width="92%"}
+
+[Townes](https://arxiv.org/abs/2001.04343). Vertical arrows condition on the sum. Horizontal arrows integrate a continuous prior. Gamma and Dirichlet are the continuous nodes.
+
+## The first two moments, by the tower rule {#sec-tower}
+
+Write the Poisson rate as a latent $\lambda$ with $\mathbb{E}(\lambda) = \mu$. The law of total expectation and the law of total variance give the margin without a new pmf:
+
+$$
+\mathbb{E}(Y) = \mathbb{E}\{\mathbb{E}(Y\mid\lambda)\} = \mu,
+\qquad
+\mathrm{Var}(Y) = \mathbb{E}(\lambda) + \mathrm{Var}(\lambda) = \mu + \mathrm{Var}(\lambda).
+$$
+
+## Compound, mixture, and the Tweedie line
+
+[]{.fragment fragment-index="1"} $\lambda$ fixed: $\mathrm{Var}(\lambda) = 0$, and $Y$ is Poisson.
+
+[]{.fragment fragment-index="2"} $\lambda$ continuous: a compound distribution. A gamma $\lambda$ is the negative binomial. A normal draw for $\log\lambda$ is the Poisson log-normal. Townes notes that this margin has a heavier tail than the negative binomial.
+
+[]{.fragment fragment-index="3"} The latent discrete: a mixture. The zero-inflated model is the spike at a structural zero plus a count distribution.
+
+Townes's Poisson–Tweedie has $\mathrm{Var}(Y) = \mu + \phi\mu^{p}$. The negative binomial is $p = 2$. These margins generally have no closed likelihood.
+
+## Independent counts, given their sum {#sec-multinomial-sum}
+
+Townes's identity: independent Poisson counts, conditioned on their total, are one multinomial draw. If $Y_\ell \sim \mathrm{Poisson}(\lambda_\ell)$ independently and $M = \sum Y_\ell$, then
+
+$$
+\mathbf{Y} \mid M \sim \mathrm{Multinomial}\!\left(M,\; \pi_\ell = \lambda_\ell \big/ \textstyle\sum_k \lambda_k\right).
+$$
+
+The same step with independent negative binomials that share a scale parameter returns a Dirichlet-multinomial. The shared scale is required. Negative binomials with a shared shape and different means do not, after conditioning, stay Dirichlet-multinomial.
+
+A sequencing library is this conditioning. The Sarkar rate $s_i\lambda_{i\ell}$ is the Poisson layer. Given the library size, the vector of features is multinomial. Modelling the counts as independent Poissons with an offset, or as one multinomial, are the two sides of that identity.
+
 ## Logit · only if $Y$ is really binary {auto-animate=true}
 
 Detection of a taxon in a core is binary. A flux cut at an arbitrary threshold is the dichotomisation we have already rejected.
@@ -356,6 +1201,106 @@ In this fit, $\hat\pi$ goes from about **0.42** at $x = 0$ to about **0.75** at 
 
 The interval is symmetric on the logit scale. It is not symmetric on the probability scale.
 
+## The regression is for $\pi$ {#sec-logit-is-regression}
+
+[Olszewski](https://medium.com/@r.clin.res/is-logistic-regression-a-regression-46dcce4945dd) places logistic regression in the generalised linear model: the target is a function of $\mathbb{E}(Y \mid x)$. For a Bernoulli response that function is $\mathrm{logit}(\pi)$, and $\pi$ is the conditional mean. A classifier that thresholds $\pi$ is one use of the fitted probability.
+
+He dates the logit to Berkson, as an alternative to the probit, and the unified GLM to Nelder and Wedderburn (1972, [their paper](http://www.medicine.mcgill.ca/epidemiology/hanley/bios601/Likelihood/NelderWedderburn1972.pdf)). In R the same statement is `glm(y ~ x, family = binomial(link = "logit"))`.
+
+## A test of two proportions is this model {#sec-proportion-tests}
+
+In the [first of the two follow-ups](https://medium.com/@r.clin.res/testing-hypotheses-about-proportions-through-the-logistic-regression-and-friends-57f4b4a8d93c), the Wald statistic for a difference of two proportions, with unpooled variances, matches the average marginal effect of a logistic regression with one binary predictor. The sampling scheme is two independent binomials, without a small-sample correction. He calls the algebra a conceptual bridge: the statistics match, and the note does not re-prove the asymptotic distribution.
+
+The [second note](https://medium.com/@r.clin.res/testing-hypotheses-about-proportions-through-the-logistic-regression-and-friends-part-ii-b917f48da6f3) matches the pooled two-proportion $z$, the statistic behind `prop.test()`, to the Rao score test of the same logistic model. Wald, score, and likelihood-ratio statistics agree asymptotically. The pooled statistic is the score test. Several grouping factors are an analysis of deviance for proportions, the GLM form of the [deviance partition](#sec-deviance). A numeric covariate beside the group is the [analysis-of-covariance](#sec-lm-ancova) analogue.
+
+## The fitting criterion is cross-entropy {#sec-cross-entropy}
+
+Denis Burakov, in the chapter embedded below, starts from Fisher's binomial likelihood and writes the average negative log-likelihood. For $y_i \in \{0,1\}$ and fitted probabilities $\hat\pi_i$,
+
+$$
+-\frac{1}{n}\sum_{i=1}^{n}\left[y_i\log\hat\pi_i + (1-y_i)\log(1-\hat\pi_i)\right].
+$$
+
+The factor $1/n$ does not move the maximiser. This is the log loss, also called cross-entropy. In his table, $y = 1$ and $\hat\pi = 0.19$ costs $-\log 0.19 = 1.66$; $\hat\pi = 0.79$ costs $0.23$. With an intercept in the model, the fitted probabilities add up to the number of observed events.
+
+## The logit, rather than the probit {#sec-logit-not-probit}
+
+Burakov quotes Berkson's reasons for the logistic curve over the probit: a closed-form derivative, fits that on Berkson's data were as close as the probit or closer, and coefficients that exponentiate to odds ratios. A probit coefficient is a change in a standard normal deviate.
+
+Angelino and Marcone add the complementary log-log link, $\log\{-\log(1-\pi)\} = \mathbf{x}^{\top}\boldsymbol{\beta}$, for a curve that is asymmetric about $1/2$. They report that probit and complementary log-log fits are often close to the logit. The link on these slides stays the logit, so that $\beta_1$ remains a change in log odds.
+
+## One-hot coding is a contrast with a reference {#sec-one-hot}
+
+Burakov's worked table has 700 borrowers, 100 defaults. High delinquency: 80 defaults out of 180. Low delinquency: 20 out of 520. The model is $\mathrm{logit}(\pi) = \beta_0 + \beta_1 x$, with $x = 1$ for high delinquency.
+
+The intercept $\hat\beta_0 = -3.219$ is the log-odds in the reference group, a probability of $0.0385$. The slope $\hat\beta_1 = 2.996$ multiplies the odds by $e^{2.996} = 20$. One category is absorbed into the intercept. The coefficient is the contrast with that category.
+
+## Weight of evidence centres on the sample {#sec-woe}
+
+Weight of evidence asks a different contrast with the same fit. The sample default rate is $100/700 = 0.1429$, and its logit is $-1.7918$. A category's weight of evidence is its own log-odds minus that overall logit.
+
+The difference of the two weights equals the one-hot slope: $\Delta\mathrm{WOE} = 2.9957 = \hat\beta_1$. Subtracting a constant does not change a variance, so the standard error of a weight of evidence equals the standard error of that category's log-odds.
+
+With a single categorical predictor the two codings describe one model. With several categorical predictors, Burakov notes that one-hot coefficients move when the reference level changes, while the weights of evidence stay centred on the overall event rate.
+
+## Softmax is the logit for $K$ classes {#sec-softmax}
+
+For $K$ mutually exclusive classes, $\sum_k \pi_k = 1$, Burakov writes the softmax
+
+$$
+\Pr(Y = k \mid \mathbf{x})
+  = \frac{\exp(\mathbf{x}^{\top}\boldsymbol{\beta}_k)}{\sum_{j=1}^{K}\exp(\mathbf{x}^{\top}\boldsymbol{\beta}_j)}.
+$$
+
+Fixing $\boldsymbol{\beta}_K = \mathbf{0}$ leaves $K-1$ vectors. Estimating all $K$ is the unconstrained softmax. The probabilities match. $K = 2$ with a zero reference class is binary logistic regression.
+
+## Softmax, drawn
+
+```{mermaid}
+%%| fig-width: 10
+%%| fig-height: 2.2
+flowchart LR
+  x["$$\mathbf{x}$$"] --> scores["$$\eta_k=\mathbf{x}^{\top}\boldsymbol{\beta}_k$$"]
+  scores --> sm["softmax"]
+  sm --> pi["$$\pi_k$$"]
+  pi --> y["$$Y\in\{1,\ldots,K\}$$"]
+```
+
+The class probabilities sum to 1. The cross-entropy is $-\sum_i\sum_k t_{ik}\log\pi_{ik}$, with $t_{ik}$ the 1-of-$K$ indicator.
+
+::: {.notes}
+Ordered categories are a cumulative model. Burakov notes them and stays with the unordered softmax.
+:::
+
+## The chapter, on this slide {#sec-burakov}
+
+Denis Burakov, *Logistic Regression: From Maximum Likelihood to Machine Learning*, is the source of the loss, the weight-of-evidence arithmetic, and the softmax. The viewer scrolls the chapter.
+
+{{< pdf references/burakov-logistic-regression.pdf width=100% height=500 >}}
+
+## A Wald interval is a large-sample interval for $\pi$ {#sec-wald-pi}
+
+Burakov builds the interval for a new covariate row $\mathbf{x}_0$ on the logit, then inverts it. The covariance of $\hat{\boldsymbol{\beta}}$ is $(\mathbf{X}^{\top}\mathbf{W}\mathbf{X})^{-1}$, with $w_i = \hat\pi_i(1-\hat\pi_i)$.
+
+$$
+\mathbf{x}_0^{\top}\hat{\boldsymbol{\beta}}
+  \pm 1.96\sqrt{\mathbf{x}_0^{\top}\widehat{\mathrm{Cov}}(\hat{\boldsymbol{\beta}})\,\mathbf{x}_0}.
+$$
+
+The endpoints are symmetric on the logit. After the inverse logit they sit inside $(0,1)$ and they are not symmetric on the probability scale. The justification is the asymptotic normality of the maximum-likelihood estimator. A small sample, or the perfect separation on the [checks figure](#sec-glm-checks), is outside that justification.
+
+## A conformal interval uses a calibration set {#sec-conformal}
+
+The same chapter then builds an interval whose coverage is finite-sample, under exchangeability, from a calibration set that was not used to fit $\boldsymbol{\beta}$.
+
+[]{.fragment fragment-index="1"} Fit the logit on the training rows.
+
+[]{.fragment fragment-index="2"} On the calibration rows, score each residual. The Pearson form he uses is $(y - \hat\pi)/\sqrt{\hat\pi(1-\hat\pi)}$.
+
+[]{.fragment fragment-index="3"} Add and subtract a quantile of those scores. On the logit scale the interval is symmetric around $\mathrm{logit}(\hat\pi)$, and the inverse logit brings it back to $(0,1)$ without clipping.
+
+A classical conformal prediction set for a binary label is a set of classes. The interval here is for $\pi$. Whether the 0/1 outcome falls inside a narrow band for $\pi$ is a different question, and he treats it as the wrong coverage check.
+
 ## Hold the other covariates still
 
 With several covariates,
@@ -368,10 +1313,142 @@ $\exp(\beta_1)$ is the multiplicative change in the mean, or in the odds, for a 
 
 If $x_2$ is a mediator or a collider, "held still" is a different estimand, not a more adjusted one.
 
+## Ad hoc, post hoc, intrinsic {#sec-hoc}
+
+[Qin Ma](https://doi.org/10.1038/s41587-025-02852-0) uses the three words for bioinformatics, and they transfer. An ad hoc analysis answers one question with one pre-chosen tool. A post hoc analysis, in that paper, reconciles several tools or several datasets after the fact. An intrinsic analysis builds the check into the model.
+
+In this workshop "post hoc" also means the comparisons you make after a model that has more than two levels. Those are not the same operation. The next slides are the second meaning. Choosing the comparison because it was the significant one is [data dredging](https://en.wikipedia.org/wiki/Data_dredging): the hypothesis was suggested by the same data that are asked to confirm it.
+
+## Contrasts from the model you fitted
+
+When the groups and the covariates are in one model, the comparisons are contrasts from that fit. [Heiss](https://www.andrewheiss.com/blog/2022/05/20/marginalia/) separates two averages. An average marginal effect averages the contrast over the observed rows. A marginal effect at the mean evaluates it at the average covariate. `marginaleffects` defaults to the first. `emmeans` defaults to the second. They differ when the model is not linear.
+
+Reporting several of those contrasts is still a family. The adjustment is simultaneous inference for the family you planned, not a correction chosen after the significant rows appear.
+
+## A row of coefficients is a family {#sec-multiplicity}
+
+$$
+H_{0j}: \beta_j = 0, \quad j = 1, \ldots, p.
+$$
+
+One row per coefficient hides that family. The matching statement is a joint region, or simultaneous intervals: Bonferroni intervals for a Bonferroni test, Tukey or Scheffé intervals for those contrast families. A logistic, Poisson, or negative-binomial model has the same family. The criterion does not change because the distribution did.
+
+::: {.notes}
+StatHarbor Analytics, *Multiple Testing Correction* (2026), from the slide "Multiplicity in Linear Models". Testing and interval estimation are dual: a family-wise procedure induces simultaneous intervals with joint coverage at least \(1-\alpha\). Pointwise bands on a curve are the individual-test object; a simultaneous band is the corrected one.
+:::
+
+## The follow-up matches the family
+
+After a global analysis of variance, name the contrasts before you test them.
+
+[]{.fragment fragment-index="1"} All pairwise means: Tukey.
+
+[]{.fragment fragment-index="2"} Each treatment against a control: Dunnett.
+
+[]{.fragment fragment-index="3"} Arbitrary contrasts: Scheffé, or simultaneous inference from the fitted model.
+
+The correction belongs to that family. It is not a fee paid because several means exist.
+
+## Genomics is a large exploratory family
+
+A screen of thousands of genes, tens of thousands of proteins, or millions of variants is a different family. Missing a true signal is costly, and a controlled share of false leads is acceptable.
+
+That is a false-discovery rate: Benjamini–Hochberg, an adaptive version, or a \(q\)-value. A \(q\)-value is not a posterior probability that the finding is true. A family-wise guarantee of no false claim at all spends power the screen cannot afford.
+
+## One false claim, or some false signal
+
+[]{.fragment fragment-index="1"} A family-wise error rate is the right target when even one false claim is costly.
+
+[]{.fragment fragment-index="2"} A false-discovery rate is the right target when the aim is broad discovery and some controlled false signal is acceptable.
+
+[]{.fragment fragment-index="3"} Dependence, a hierarchy, or a structured set of contrasts often recovers power that a generic worst-case correction spends.
+
+A procedure that controls the family-wise rate also controls the false-discovery rate, usually at that cost in power.
+
+::: {.notes}
+Because \(V \le R\) whenever \(R > 0\), the false-discovery rate is at most the family-wise error rate. Holm rejects every hypothesis Bonferroni rejects, for the same family and the same level. Questions before choosing: what is the family, is the setting confirmatory or exploratory, what false-positive burden is tolerable, and are the tests independent, positively dependent, or structured? Report the family, the criterion, the procedure, and the adjusted summary. Do not choose the correction after seeing which rows were small.
+:::
+
+## Which procedure for which family
+
+| Scenario | Family | Typical procedure |
+| --- | --- | --- |
+| Primary confirmatory endpoints | Small and prespecified | Holm, gatekeeping, closed testing |
+| All pairwise means | Structured contrasts | Tukey HSD |
+| Many genomic features | Very large, exploratory | Benjamini–Hochberg, adaptive BH, \(q\)-values |
+| Complex dependence | Structured and correlated | Westfall–Young, or a bootstrap calibration |
+
+Define the family and the error criterion before the claims. This grid is from StatHarbor Analytics, *Multiple Testing Correction* (2026).
+
+## Two places to go next
+
+[@bretzMultipleComparisonsUsing2016a] develops these procedures as maximum statistics and shows the R implementations. [@farcomeniReviewModernMultiple2008] reviews the false-discovery proportion, dependence among the statistics, and the genomic case.
+
+## A table of counts is a log-linear model {#sec-loglinear}
+
+[Penn State STAT 504, Lesson 10](https://online.stat.psu.edu/stat504/Lesson10) models a contingency table by a Poisson GLM. The cell count is $Y_{ab} \sim \mathrm{Poisson}(\mu_{ab})$. The lesson is this log-linear model. Independence, with neither margin as the response, is
+
+$$
+\log \mu_{ab} = \alpha + \alpha_a + \alpha_b.
+$$
+
+## Independence, drawn
+
+```{mermaid}
+%%| fig-width: 10
+%%| fig-height: 2.2
+flowchart LR
+  a["level $$a$$"] --> eta["$$\log\mu_{ab}=\alpha+\alpha_a+\alpha_b$$"]
+  b["level $$b$$"] --> eta
+  eta --> y["$$Y_{ab}\sim\mathrm{Poisson}(\mu_{ab})$$"]
+```
+
+The fitted counts are row total times column total over $n$, and every odds ratio equals 1. A logit model is the conditional distribution of one margin. This log-linear model is the joint distribution. Dummy coding changes the separate coefficients. Differences of coefficients, the log odds, stay put.
+
+::: {.notes}
+A logit-equivalent log-linear model includes every association among the predictors. The lesson contrasts R's dummy coding, first level set to 0, with the zero-sum constraint in `loglin()`. Expected counts do not depend on that choice.
+:::
+
+## A normal latent on the log mean {.fit-fig #sec-pln}
+
+![The Poisson log-normal model: counts and covariates enter a latent Gaussian layer, the counts are Poisson given the latent, and the same layer is constrained for a known grouping, a mixture, a low-rank covariance, or a sparse precision.](figures/sources/poisson-log-normal.webp){fig-alt="Standard Poisson log-normal. Counts Y and covariates X enter a latent Z drawn normal with mean mu and covariance Sigma. Given Z, the counts are Poisson with mean exp of Z. The mean of Z is X times a coefficient matrix. Extensions constrain that mean for known classes or unknown groups, and constrain Sigma to low rank or to a sparse precision." width="96%"}
+
+[Chiquet, Mariadassou, and Robin](https://doi.org/10.3389/fevo.2021.588292). The figure's $\mu$ is the mean of the latent Gaussian. Here that mean is $m$, and $\mu$ stays $\mathbb{E}(Y \mid x)$.
+
+## The Poisson log-normal drawing
+
+$$
+\mathbf{Z}_i \sim \mathrm{Normal}(\mathbf{m}_i, \boldsymbol{\Sigma}),
+\quad
+m_{i\ell} = \mathbf{x}_i^{\top}\boldsymbol{\theta}_\ell,
+\quad
+Y_{i\ell}\mid Z_{i\ell} \sim \mathrm{Poisson}\!\left(\exp(o_{i\ell}+Z_{i\ell})\right).
+$$
+
+Townes: replace the gamma prior on the rate by a log-normal. The normal is the distribution of $\log$ of the Poisson mean.
+
+## The moments sit above the Poisson line {#sec-pln-moments}
+
+Aitchison and Ho, as quoted by Chiquet, Mariadassou, and Robin, give the margin after integrating the latent:
+
+$$
+\mathbb{E}(Y_{i\ell}) = \exp\!\left(o_{i\ell} + m_{i\ell} + \sigma_{\ell\ell}/2\right),
+$$
+
+$$
+\mathrm{Var}(Y_{i\ell}) = \mathbb{E}(Y_{i\ell}) + \mathbb{E}(Y_{i\ell})^2\left(e^{\sigma_{\ell\ell}}-1\right).
+$$
+
+The variance exceeds the mean. The covariance of two features has the sign of $\sigma_{\ell\ell'}$. Given $\mathbf{Z}_i$, the features are independent, so the dependence lives in $\boldsymbol{\Sigma}$. Twice the effort adds $\log 2$ to the offset $o_{i\ell}$.
+
+::: {.notes}
+The likelihood has no closed form once $\mathbf{Z}$ is integrated out. The paper fits it by a variational approximation, in the R package `PLNmodels`. The four corners of the figure constrain either $\mathbf{m}$ (a known class, or a mixture) or $\boldsymbol{\Sigma}$ (low rank, or a sparse precision).
+:::
+
 ## What these three models do not cover
 
-- zero-inflation: a second process for structural zeros
-- compositions: a log-ratio, after a deliberate treatment of zeros
+- a zero-inflated count is the [mixture](#sec-count-zip) already named, and it sits outside the exponential family
+- a composition is the [conditioning on the library size](#sec-multinomial-sum); a log-ratio, after a deliberate treatment of the zeros, is a further model
 - a continuous flux: often a positive continuous distribution, or a Gaussian model on a scale you can defend
 - dependence in space or in time: the design block is next
 

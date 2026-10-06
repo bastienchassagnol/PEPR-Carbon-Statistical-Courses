@@ -30,5 +30,16 @@
     "exp_low": [0.4744, 2.4285],
     "exp_high": [1.1104, 7.4023]
   },
-  "note": "Illustrative simulations. Coefficients are estimates from one seed, not NEON or SPRUCE results."
+  "sd_versus_se": {
+    "seed": 42,
+    "n": 50,
+    "replicates": 1000,
+    "population_mean": 100,
+    "population_sd": 15,
+    "sample_sd": 17.2721,
+    "sample_mean": 99.4649,
+    "se_of_means": 2.1139,
+    "source": "https://www.r-bloggers.com/2025/07/standard-deviation-vs-standard-error-meaning-misuse-and-the-math-behind-the-confusion/"
+  },
+  "note": "Illustrative simulations. Coefficients are estimates from one seed, not NEON or SPRUCE results. The SD-versus-SE panel uses seed 42."
 }

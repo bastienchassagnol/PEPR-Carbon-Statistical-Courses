@@ -15,18 +15,31 @@ This repository is the reveal.js deck for the PEPR Carbon statistical workshop. 
   - \(j\): cluster or experimental unit when the treatment sits on the cluster
 - When \(Y\) is binary, \(\mu = \pi\). Do not introduce a second letter for the response.
 
+## Model statements
+
+A slide that states what a model assumes, or what it generates, uses the `custom-callout` extension ([Reveal.js support](https://quarto.thecoatlessprofessor.com/custom-callout/qcustom-callout-revealjs.html)). The three types are defined once, under `custom-callout` in `index.qmd`:
+
+- `assumption`: the conditions the fit requires
+- `model`: the generative equation, in the deck's notation
+- `theorem`: a named result from the source, stated as that source states it
+
+Reveal.js does not collapse callouts. Keep each one to a few lines. The callout is the statement; the sentence around it says what the statement is for. Do not invent a new colour or icon on a single slide. This applies to every model in the deck, not only to smoothers and generalised additive models.
+
 ## Diagrams and motion
 
 - Describe a statistical model with a Mermaid flowchart whose nodes hold the equations, using [Mermaid's maths support](https://mermaid.ai/open-source/config/math.html). Keep `securityLevel: loose` in the reveal.js `mermaid` options so KaTeX in a node is rendered. One diagram per slide. A display equation on its own is enough when a graph would only repeat it.
 - Fragments use [fragmention](https://m.canouil.dev/quarto-revealjs-fragmention/examples.html): an empty marker `[]{.fragment fragment-index="1"}` at the start of the item, so Reveal.js steps the whole item. Use fragments when several related points belong on one slide. Leave a writing prompt or a checklist fully visible.
 - Auto-animate only adjacent slides that share a claim. Give the persistent piece an explicit `data-id`. Do not mark the whole deck.
 - Vertical stacks are the navigation. Level-1 headings are the sections; level-2 headings are the slides inside them. `navigation-mode` stays `vertical`: Down walks the section, Right moves to the next section.
+- Cross-links use a heading id, `{#sec-…}`, and a Markdown link `[label](#sec-…)`. Do not link by slide index (`#/2/1`): the index changes when a slide is inserted. Do not turn on `number-sections`. `preview-links` stays `auto`, so an external URL can open in an overlay and a `#sec-…` link still moves inside the deck.
 - Reveal.js extensions, installed under `_extensions/` and committed:
   - `fragmention` for fragments
   - `quiz` for the closing multiple-choice questions (check with `x`, reset with `q`)
   - `reveal-header` for the running header and the PEPR mark
-  - `spotlight` with `size: 36`, smaller than the extension default of 60
   - `tabset` when one slide compares implementations of the same model
+  - `custom-callout` for an assumption, a model equation, or a theorem
+- Partner marks from `logos.svg` sit in the reveal.js footer via `logo: figures/footer-logos.svg`. Do not put that strip back into the header.
+- Lightbox is on for every figure (`lightbox.match: auto`). A single image can still set `width` and the `lightbox` class, for example `{width="80%" .lightbox}`. Add `.nolightbox` only when a click must not enlarge the image.
 
 ## Figures
 
@@ -37,10 +50,18 @@ This repository is the reveal.js deck for the PEPR Carbon statistical workshop. 
 - Store borrowed images under `figures/sources/` and generated images under `figures/generated/`. Use `snake_case` file names.
 - Do not upscale a source that is too small to read. Redraw it, and point to the original in `figures/sources/` if you still need it.
 - Alt text on every image. Credit a figure when the source image carries a credit.
+- `Statistical classes.bib` stays at the repository root. It is the deck bibliography.
+- Any other figure, exported deck, or bibliography left at the root is intake. Once that content is on a slide, or has been copied under `figures/`, delete the root copy. Do not leave it beside `index.qmd`.
+
+## Tables
+
+- A plain two-column slide stays Markdown.
+- A table with merged rows, merged columns, or row and column groups is a [`gt`](https://gt.rstudio.com/) table. `gt` 1.3.0 is the version to use. Group columns with `tab_spanner()`, group rows with `tab_row_group()`, and merge cells with `cols_merge()` or `cols_merge_range()`. Do not draw that table as an image, and do not fake a span with empty Markdown cells.
+- Install it when it is missing: `install.packages("gt")`. The publish workflow installs `gt` with knitr, because the linear-algebra slide renders a grouped table.
 
 ## Citations
 
-- Literature citations come from `Statistical classes.bib`. Do not invent BibTeX entries, citation keys, or DOIs.
+- Literature citations come from `Statistical classes.bib`, plus `references/p-value-fallacy.bib` for the Nature Methods exchange on the $P$ value, plus `references/multiple-tests.bib` for the multiplicity readings. Do not invent BibTeX entries, citation keys, or DOIs. Do not point the bibliography at `temp_rag_pvalue/`.
 - For a source that is not in that file, link the original page or DOI at the point of use.
 - Software that only draws a figure does not need a bibliography entry. Name the script instead.
 

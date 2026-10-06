@@ -325,14 +325,144 @@ summary_nb <- list(
   se_theta = unname(fit_nb$SE.theta)
 )
 
+# Tüzen (10 July 2025): one sample, then the sampling distribution of the mean.
+# Seed 42 is that note's seed, not the workshop seed used above.
+set.seed(42)
+sd_sample <- rnorm(50, mean = 100, sd = 15)
+sd_means <- replicate(1000, mean(rnorm(50, mean = 100, sd = 15)))
+sd_se <- list(
+  seed = 42L,
+  n = 50L,
+  replicates = 1000L,
+  population_mean = 100,
+  population_sd = 15,
+  sample_sd = sd(sd_sample),
+  sample_mean = mean(sd_sample),
+  se_of_means = sd(sd_means),
+  source = "https://www.r-bloggers.com/2025/07/standard-deviation-vs-standard-error-meaning-misuse-and-the-math-behind-the-confusion/"
+)
+p_sd_se <- patchwork::wrap_plots(
+  ggplot(data.frame(y = sd_sample), aes(y)) +
+    geom_histogram(aes(y = after_stat(density)), binwidth = 5, fill = "#0e4d3a", colour = "white", alpha = 0.85) +
+    geom_vline(xintercept = mean(sd_sample), colour = "#9a3412", linewidth = 0.8) +
+    labs(title = "One sample: spread of Y", x = "Y", y = "Density"),
+  ggplot(data.frame(m = sd_means), aes(m)) +
+    geom_histogram(aes(y = after_stat(density)), binwidth = 1, fill = "#9a3412", colour = "white", alpha = 0.85) +
+    geom_vline(xintercept = mean(sd_means), colour = "#0e4d3a", linewidth = 0.8) +
+    labs(title = "1,000 means: spread of the mean", x = "Sample mean", y = "Density"),
+  ncol = 2
+) +
+  patchwork::plot_annotation(
+    title = "Standard deviation is not the standard error",
+    subtitle = "Illustrative draw from N(100, 15). Seed 42. Not a carbon dataset."
+  ) &
+  theme_slide()
+save_fig(p_sd_se, "sd-versus-se.png", width = 11, height = 5.2)
+
+# Schematic of Thiese, Ronna, and Ott (2016), Figure 1, adapted there from Rothman.
+# The heights are not data. They only show which error moves with n.
+error_n <- seq(20, 400, length.out = 200)
+error_df <- rbind(
+  data.frame(n = error_n, error = 6 / sqrt(error_n / 20), kind = "Random error of the estimate"),
+  data.frame(n = error_n, error = 2.4, kind = "Systematic error")
+)
+p_error <- ggplot(error_df, aes(n, error, colour = kind)) +
+  geom_line(linewidth = 1.1) +
+  scale_colour_manual(values = c(
+    "Random error of the estimate" = "#0e4d3a",
+    "Systematic error" = "#9a3412"
+  )) +
+  labs(
+    title = "More rows shrink noise, not bias",
+    subtitle = "Illustrative curves. The shape follows Thiese, Ronna, and Ott, Figure 1.",
+    x = "Sample size",
+    y = "Size of the error",
+    colour = NULL
+  )
+save_fig(p_error, "random-versus-systematic-error.png", width = 9, height = 4.6)
+
 payload <- list(
   seed = seed,
   n = n,
   poisson = wald(fit_pois),
   negative_binomial = c(wald(fit_nb), summary_nb),
   logit = wald(fit_bin),
-  note = "Illustrative simulations. Coefficients are estimates from one seed, not NEON or SPRUCE results."
+  sd_versus_se = sd_se,
+  note = "Illustrative simulations. Coefficients are estimates from one seed, not NEON or SPRUCE results. The SD-versus-SE panel uses seed 42."
 )
 
 write_json(payload, file.path(out_dir, "estimates.json"), pretty = TRUE, auto_unbox = TRUE)
+
+# Diagnostic pairs for plot.lm. Own seed so this block does not depend on
+# the draw above. Illustrative, not a carbon dataset.
+set.seed(seed)
+n_diag <- 80L
+x_diag <- seq(-1, 1, length.out = n_diag)
+y_ok <- 1 + 2 * x_diag + rnorm(n_diag, sd = 0.35)
+y_curve <- x_diag^2 + rnorm(n_diag, sd = 0.08)
+y_tail <- 1 + 2 * x_diag + rt(n_diag, df = 3) * 0.45
+y_het <- 1 + 2 * x_diag + rnorm(n_diag, sd = 0.12 + 1.1 * (x_diag - min(x_diag)))
+x_lev <- c(x_diag, 4)
+y_lev <- c(y_ok, 1 + 2 * 4 + 8)
+fit_ok <- lm(y_ok ~ x_diag)
+fit_curve <- lm(y_curve ~ x_diag)
+fit_tail <- lm(y_tail ~ x_diag)
+fit_het <- lm(y_het ~ x_diag)
+fit_lev <- lm(y_lev ~ x_lev)
+
+save_lm_pair <- function(fit_left, fit_right, which, file) {
+  ragg::agg_png(
+    file.path(out_dir, file),
+    width = 1200, height = 560, units = "px", res = 140
+  )
+  op <- par(mfrow = c(1, 2), mar = c(4.2, 4.2, 2.4, 1), oma = c(0, 0, 0, 0))
+  on.exit({
+    par(op)
+    dev.off()
+  }, add = TRUE)
+  plot(fit_left, which = which, caption = "Fits", sub.caption = "", id.n = 0)
+  plot(fit_right, which = which, caption = "Does not fit", sub.caption = "", id.n = 2)
+}
+
+save_lm_pair(fit_ok, fit_curve, 1, "lm-resid-fitted.png")
+save_lm_pair(fit_ok, fit_tail, 2, "lm-qq.png")
+save_lm_pair(fit_ok, fit_het, 3, "lm-scale-location.png")
+save_lm_pair(fit_ok, fit_lev, 5, "lm-leverage.png")
+
+# Longitudinal illustration. Own seed, so a full rerun does not move earlier draws.
+set.seed(seed)
+if (requireNamespace("lme4", quietly = TRUE)) {
+  n_enc <- 12L
+  n_time <- 6L
+  enclosure <- factor(rep(seq_len(n_enc), each = n_time))
+  time <- rep(seq_len(n_time) - 1, n_enc)
+  warming <- rep(rep(c("ambient", "warmed"), each = n_enc / 2), each = n_time)
+  u0 <- rnorm(n_enc, sd = 1.1)
+  u1 <- rnorm(n_enc, sd = 0.28)
+  Y <- 2 + u0[enclosure] +
+    (0.25 + u1[enclosure]) * time +
+    0.45 * (warming == "warmed") * time +
+    rnorm(n_enc * n_time, sd = 0.3)
+  longi <- data.frame(enclosure, time, warming, Y)
+  fit_longi <- lme4::lmer(
+    Y ~ time * warming + (time | enclosure),
+    data = longi,
+    REML = TRUE
+  )
+  longi$fitted <- predict(fit_longi)
+  p_longi <- ggplot(longi, aes(time, Y, group = enclosure, colour = warming)) +
+    geom_point(size = 2.2) +
+    geom_line(aes(y = fitted), linewidth = 0.7) +
+    scale_colour_manual(values = c(ambient = "#1d4e89", warmed = "#c45c26")) +
+    labs(
+      title = "One mean line, a slope and an intercept per enclosure",
+      subtitle = "Illustrative. Seed 20261005. Lines are the random-intercept, random-slope fit.",
+      x = "Time",
+      y = "Y",
+      colour = NULL
+    ) +
+    theme_slide()
+  save_fig(p_longi, "longitudinal-random-slope.png", width = 9, height = 5)
+}
+
 message("Wrote figures to ", out_dir)

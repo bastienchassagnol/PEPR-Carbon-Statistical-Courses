@@ -6,4 +6,7 @@ project:
 
 lang: en-GB
 
-bibliography: "Statistical classes.bib"
+bibliography:
+  - "Statistical classes.bib"
+  - "references/p-value-fallacy.bib"
+  - "references/multiple-tests.bib"

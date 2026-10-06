@@ -8,7 +8,7 @@
 - []{.fragment fragment-index="6"} **30 min.** Quiz, SAMPL, and what to open next
 
 ::: {.notes}
-Down walks this section. Right jumps to the next section. The PICO writing block and the closing SAMPL block are protected. If a GLM slide runs long, shorten the tour of pitfalls 6 to 8 rather than the exercises. Speaker view: press S. Hold the mouse button for the spotlight. A chalkboard is available if you want to annotate a PICO live.
+Down walks this section. Right jumps to the next section. The PICO writing block and the closing SAMPL block are protected. If a GLM slide runs long, shorten the tour of pitfalls 6 to 8 rather than the exercises. Speaker view: press S. A chalkboard is available if you want to annotate a PICO live.
 :::
 
 ## Who is speaking :wave:
@@ -20,6 +20,41 @@ Down walks this section. Right jumps to the next section. The PICO writing block
 
 ::: {.notes}
 Do not invent a CV. If asked for a longer biography, point to the DeCovarT work and then return to the participants. One minute.
+:::
+
+## FairCarboN, and why the carbon budget needs it
+
+The [Paris Agreement](https://www.pepr-faircarbon.fr/objectifs-organisation/contexte) asks to hold warming well below $2^\circ\mathrm{C}$, and to reach climate neutrality in the second half of this century. Continental ecosystems have to cut emissions and absorb those that remain: forests, grassland, cropland, fresh water, peatland, coasts, and cities. That has to happen without giving up the other services those ecosystems provide.
+
+[FairCarboN](https://www.pepr-faircarbon.fr/) is the French programme for that science. CNRS and INRAE co-lead it, with €40 million over 2023–2029.
+
+::: {.notes}
+One minute. The point is the contribution the ecosystems are being asked to make, not a tour of the governance chart.
+:::
+
+## Three scientific objectives
+
+From the [programme objectives](https://www.pepr-faircarbon.fr/objectifs-organisation/objectifs-scientifiques):
+
+1. The processes that govern the carbon cycle, its coupling with nitrogen, phosphorus, and water, and the ecological, agronomic, and socio-economic levers for climate neutrality
+2. Open data, and a new generation of models of carbon stocks and fluxes in soils and vegetation
+3. Land-use and management pathways, built with stakeholders and tested from the territory to the national scale
+
+::: {.notes}
+Read the three lines. Do not open the project list yet.
+:::
+
+## Four scientific axes
+
+The same questions are grouped on the [axes page](https://www.pepr-faircarbon.fr/objectifs-organisation/axes-scientifiques):
+
+1. **Land to water.** Sources, transfer, transformation, and storage along the terrestrial–aquatic continuum
+2. **Coupled cycles.** Carbon with nitrogen and phosphorus, and the water that constrains both
+3. **Biomass.** What sets plant traits and production, and whether a new use is viable and acceptable
+4. **Economy and society.** Behaviour, public policy, and the environmental and economic consequences
+
+::: {.notes}
+Name one axis that matches a person in the room if you already know the group. Otherwise leave it as a map.
 :::
 
 ## Who is in the room? :speech_balloon:
@@ -50,7 +85,45 @@ Not a catalogue of tests. A sequence you can reuse:
 This is the pedagogical aim from the course plan. About one minute.
 :::
 
-## Notation we will not rename
+## Linear algebra, before the statistics {#sec-algebra}
+
+```{r}
+#| echo: false
+math <- function(tex) gt::html(sprintf('<span class="math inline">\\(%s\\)</span>', tex))
+
+algebra <- data.frame(
+  Symbol = I(c(
+    math("\\mathbf{A}"),
+    math("\\mathbf{a}"),
+    math("a_{ij}"),
+    math("\\mathbf{a}^{\\top}\\mathbf{b}"),
+    math("\\mathbf{a}\\times\\mathbf{b}"),
+    math("\\mathbf{A}\\mathbf{x}")
+  )),
+  Meaning = c(
+    "Matrix: bold, uppercase",
+    "Vector: bold, lowercase",
+    "Scalar, or the entry in row i and column j",
+    "Inner product",
+    "Cross product, in three dimensions",
+    "Matrix–vector product"
+  ),
+  stringsAsFactors = FALSE
+)
+
+algebra |>
+  gt::gt() |>
+  gt::tab_row_group(label = "Operators", rows = 4:6) |>
+  gt::tab_row_group(label = "Objects", rows = 1:3) |>
+  gt::tab_options(
+    table.font.size = "18px",
+    data_row.padding = gt::px(3)
+  )
+```
+
+A scalar stays in italics. A vector is not a matrix with one row unless we say so.
+
+## Notation {.smaller #sec-notation}
 
 | Symbol | Meaning |
 | --- | --- |
@@ -64,5 +137,160 @@ This is the pedagogical aim from the course plan. About one minute.
 When $Y$ is binary, $\mu = \pi = \Pr(Y = 1 \mid \mathbf{x})$.
 
 ::: {.notes}
-Say the table aloud once. Later slides reuse these symbols and do not switch to other letters for the response.
+Say the table aloud once. Later slides reuse these symbols and do not switch to other letters for the response. The three GLMs share [one skeleton](#sec-skeleton). Twelve panels from the algebra poster come next, then the spread of $Y$ versus the spread of $\bar Y$.
 :::
+
+## Inner product and norm {.algebra-panel}
+![Panel 1 of the StatHarbor algebra poster: the inner product, the Euclidean norm, and distance as the norm of a difference.](figures/sources/algebra-01.png){fig-alt="Formula for the inner product of x and y, the Euclidean norm, and a sketch of the angle between two vectors."}
+
+An inner product measures alignment. The norm is a length. [StatHarbor Analytics](https://www.linkedin.com/posts/statistics-linearalgebra-biostatistics-share-7484322853023154176-qHXd/) drew these twelve panels.
+
+## Matrix multiplication {.algebra-panel}
+![Panel 2: eta equals X beta, with a schematic of a design matrix times a coefficient vector.](figures/sources/algebra-02.png){fig-alt="The equation eta equals X beta, and a small picture of a design matrix multiplying a coefficient vector."}
+
+$\eta = X\beta$ is the linear predictor. Each column of $X$ is a covariate. Each row is one observation.
+
+## Least squares {.algebra-panel}
+![Panel 3: the ordinary least-squares estimator and the orthogonality of residuals.](figures/sources/algebra-03.png){fig-alt="The formula for beta hat when X has full column rank, and the statement that residuals are orthogonal to the columns of X."}
+
+Least squares minimises $\|y - X\beta\|^2$. The residual is orthogonal to the columns of $X$. That orthogonality is the [projection](#sec-algebra) from the notation block.
+
+## The hat matrix {.algebra-panel #sec-hat}
+![Panel 4: the projection matrix onto the column space of X.](figures/sources/algebra-04.png){fig-alt="The formula for the hat matrix, and a sketch of y projected onto the column space with an orthogonal residual."}
+
+$P_X$ projects $y$ onto the column space. When $X$ has full column rank, $P_X = X(X^{\mathsf T}X)^{-1}X^{\mathsf T}$, and $\hat y = P_X y$.
+
+## A quadratic form {.algebra-panel}
+![Panel 5: the quadratic form x transpose A x, drawn as ellipses.](figures/sources/algebra-05.png){fig-alt="The quadratic form x transpose A x, with a sketch of elliptical level curves."}
+
+$x^{\mathsf T}Ax$ is a squared length that depends on $A$. A variance, and a Mahalanobis distance, are this shape.
+
+## Spectral decomposition {.algebra-panel}
+![Panel 6: the eigenvalue decomposition of a symmetric matrix.](figures/sources/algebra-06.png){fig-alt="A equals Q Lambda Q transpose, with a note that the columns of Q are orthonormal eigenvectors."}
+
+A symmetric matrix rotates to principal axes and then scales by its eigenvalues. Principal components are this decomposition of a covariance.
+
+## Singular values {.algebra-panel}
+![Panel 7: the singular value decomposition of a rectangular matrix.](figures/sources/algebra-07.png){fig-alt="A equals U Sigma V transpose, with a note that this is the decomposition behind principal components for a rectangular matrix."}
+
+A singular value decomposition does not need $A$ to be square. It is the same geometry for a rectangular design matrix.
+
+## Positive semidefinite {.algebra-panel}
+![Panel 8: a positive semidefinite matrix and its Cholesky factor.](figures/sources/algebra-08.png){fig-alt="The definition that x transpose Sigma x is at least zero, and Sigma equals L L transpose."}
+
+A covariance is positive semidefinite: $x^{\mathsf T}\Sigma x \ge 0$. Cholesky writes $\Sigma = LL^{\mathsf T}$, which is how a simulation draws a correlated vector.
+
+## Score and information {.algebra-panel}
+![Panel 9: the score as the gradient of the log-likelihood, and the Fisher information as its curvature.](figures/sources/algebra-09.png){fig-alt="The score U of theta and the Hessian, with a sketch of a curved log-likelihood."}
+
+The score is the gradient of the log-likelihood. Observed information is the curvature. More curvature means a more precise estimate.
+
+## A conditional covariance {.algebra-panel}
+![Panel 10: the Schur complement as a conditional covariance.](figures/sources/algebra-10.png){fig-alt="A two-by-two block covariance and the Schur complement for the covariance of one block given the other."}
+
+The Schur complement is the covariance of one block after conditioning on the other. Conditioning on a covariate is this reduction.
+
+## The identities the other panels use {.algebra-wide}
+![Panel 11: transpose, inverse, vectorisation, trace, and the derivative of a residual sum of squares.](figures/sources/algebra-11.png){fig-alt="A list of matrix identities: transpose of a product, inverse of a product, the trace cyclic property, and the derivative of the residual sum of squares."}
+
+Transpose, inverse, trace, and $\partial \|y-X\beta\|^2 / \partial \beta = -2X^{\mathsf T}(y-X\beta)$ are the working rules behind the estimator and the score.
+
+## Mahalanobis distance {.algebra-wide}
+![Panel 12: Mahalanobis distance as a quadratic form in the inverse covariance, with elliptical contours.](figures/sources/algebra-12.png){fig-alt="The Mahalanobis distance formula and concentric ellipses around a mean."}
+
+$d_M(x,\mu)^2 = (x-\mu)^{\mathsf T}\Sigma^{-1}(x-\mu)$ measures distance after scale and correlation. The level sets are ellipses. Outlier rules that ignore $\Sigma$ treat those ellipses as circles.
+
+## Two spreads, not one {#sec-sd-se}
+
+$$
+s = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n}(Y_i - \bar Y)^2}
+\qquad
+\mathrm{SE}(\bar Y) = \frac{s}{\sqrt{n}}
+$$
+
+$s$ describes how far the observations sit from their mean. The standard error describes how far that mean would move if the sample were drawn again. Dividing by $\sqrt{n}$ is the whole difference. In the draw on the next slides, the standard deviation of the 1,000 means is 2.11, against $15/\sqrt{50} = 2.12$.
+
+## One sample, then a thousand means
+
+The draw is [M. Fatih Tüzen's](https://www.r-bloggers.com/2025/07/standard-deviation-vs-standard-error-meaning-misuse-and-the-math-behind-the-confusion/): $Y \sim N(100, 15)$, $n = 50$, then 1,000 independent means. Seed 42 is his. It is not the workshop seed, and it is not a carbon series.
+
+```{r}
+#| echo: true
+#| eval: false
+set.seed(42)
+sd_sample <- rnorm(50, mean = 100, sd = 15)
+sd_means <- replicate(1000, mean(rnorm(50, mean = 100, sd = 15)))
+```
+
+## The mean moves less than the observations do
+
+![Two histograms from an illustrative normal draw. Left: one sample of 50 observations. Right: 1,000 sample means.](figures/generated/sd-versus-se.png){fig-alt="Left histogram: fifty observations spread widely around 100. Right histogram: one thousand sample means packed tightly around 100." width="92%"}
+
+The left-hand spread is $s$. The right-hand spread is the standard error. [Variance, later on the map](#sec-math-variance), is the same distinction.
+
+## Multivariable is not multivariate {#sec-multivariable}
+
+![Diagram contrasting multivariable regression, one outcome with several predictors, and multivariate analysis, several outcomes modelled jointly.](figures/sources/multivariable-versus-multivariate.jpeg){fig-alt="Two panels. Left: age, sex, BMI, and smoking point to one outcome. Right: the same predictors point to three outcomes that are correlated." width="78%"}
+
+[Timothy Achala](https://www.linkedin.com/feed/update/urn:li:activity:7479203625551065088/) drew the distinction this way. Click the figure if the type is small. The wording we will police is [say the precise word](#sec-words).
+
+## One outcome, or several
+
+**Multivariable:** one $Y$, several predictors. A logistic regression of detection on age, sex, body mass, and smoking is multivariable. It is not multivariate.
+
+**Multivariate:** several responses, in one model, with the correlation between them. A multivariate probit, or a GEE for several binary outcomes. Systolic and diastolic pressure together, not as two separate fits.
+
+Calling the first model "multivariate logistic regression" names a different analysis. Clinical papers often swap the words. [ICH E9(R1)](https://database.ich.org/sites/default/files/E9-R1_Step4_Guideline_2019_1203.pdf) and [CONSORT](https://www.equator-network.org/reporting-guidelines/consort/) are the reason to keep them apart.
+
+## Functions and models {.math-strip}
+![Row 1 of the StatHarbor poster: functions and models, the conditional distribution P of Y given X.](figures/sources/math-statistics-01.png){fig-alt="Poster row. Question: how do we represent relationships under uncertainty? Core object: a conditional distribution, not just a rule. Role: regression, prediction, structural models."}
+
+A model is a conditional distribution, $P(Y \mid X)$, not a fitted curve treated as the process that made the data.
+
+[StatHarbor Analytics](https://www.linkedin.com/feed/update/urn:li:activity:7453946688710377472/) drew the ten rows. The next nine are the rest of that poster.
+
+## Derivatives, local change {.math-strip}
+![Row 2 of the StatHarbor poster: first derivatives and the gradient of the log-likelihood.](figures/sources/math-statistics-02.png){fig-alt="Poster row. Question: how does a quantity change locally? Core object: first-order derivatives. Role: score functions, marginal effects, influence, gradients."}
+
+A derivative is the local slope. The score is that slope for the log-likelihood, and it is what a small change in a parameter does to the fit.
+
+## Integrals and sums {.math-strip}
+![Row 3 of the StatHarbor poster: integrals and sums as aggregation over a measure.](figures/sources/math-statistics-03.png){fig-alt="Poster row. Question: how do we aggregate quantities over uncertainty? Core object: an integral or a sum. Role: expectation, risk, marginalisation."}
+
+An expectation, a marginal likelihood, and a sum of squared residuals are the same move: add the contributions.
+
+## Probability and distributions {.math-strip}
+![Row 4 of the StatHarbor poster: probability as a measure on outcomes.](figures/sources/math-statistics-04.png){fig-alt="Poster row. Question: how do we formalise uncertainty? Core object: a probability measure. Role: random variables, joint distributions, conditioning, independence."}
+
+$P(X \in A)$ is a number attached to a set of outcomes. The distribution is the model of that uncertainty.
+
+## Expectation {.math-strip}
+![Row 5 of the StatHarbor poster: expectation of a functional of the distribution.](figures/sources/math-statistics-05.png){fig-alt="Poster row. Question: what functional of the distribution summarises behaviour? Core object: an expectation. Role: means, risks, prediction error, other targets."}
+
+The target is a functional of the distribution, $\psi(P)$. In this workshop that functional is usually $\mu = \mathbb{E}(Y \mid \mathbf{x})$, [the conditional mean](#sec-notation), not the raw rows.
+
+## Variance and uncertainty {.math-strip #sec-math-variance}
+
+![Row 6 of the StatHarbor poster: variance as dispersion, and standard errors as uncertainty of an estimator.](figures/sources/math-statistics-06.png){fig-alt="Poster row. Question: how variable is a quantity or an estimator? Core object: variance. Role: standard errors, confidence intervals, hypothesis tests."}
+
+Variance is dispersion. It is not bias, and it is not distance to the truth. The [standard deviation and the standard error](#sec-sd-se) are the two scales that sentence has to keep apart.
+
+## Likelihood and optimisation {.math-strip}
+![Row 7 of the StatHarbor poster: the parameter that maximises the likelihood, and the score set to zero.](figures/sources/math-statistics-07.png){fig-alt="Poster row. Question: which parameter best fits the observed data? Core object: the maximiser of the likelihood. Role: maximum likelihood, regularisation, model selection."}
+
+$\hat\theta = \arg\max \ell(\theta)$ is the best fit relative to the likelihood and the criterion you chose. AIC and BIC change the criterion. They do not change the meaning of "best".
+
+## Geometry and linear algebra {.math-strip}
+![Row 8 of the StatHarbor poster: least squares as a projection, with the residual orthogonal to the column space.](figures/sources/math-statistics-08.png){fig-alt="Poster row. Question: how do we represent and compare data structurally? Core object: a projection. Role: least squares, orthogonality, principal components."}
+
+Least squares is a projection. The fitted vector is $P_X y$, and the residual is orthogonal to the columns of $X$. The [symbols for that projection](#sec-algebra) are the ones on the earlier slide.
+
+## Tangent space and local models {.math-strip}
+![Row 9 of the StatHarbor poster: the score as a derivative along the tangent space of the model.](figures/sources/math-statistics-09.png){fig-alt="Poster row. Question: what infinitesimal variations of the model are possible? Core object: the score on the tangent space. Role: influence functions, efficiency bounds, semiparametric inference."}
+
+The directions in which the model can move, locally, are what an influence function and a standard error are built from.
+
+## Asymptotics {.math-strip}
+![Row 10 of the StatHarbor poster: the scaled estimator converging to a normal limit as n grows.](figures/sources/math-statistics-10.png){fig-alt="Poster row. Question: what happens as the sample size grows? Core object: a normal limit for the scaled estimator. Role: the central limit theorem, the delta method, Wald inference."}
+
+$\sqrt{n}(\hat\theta - \theta_0)$ settling toward $N(0, V)$ is why a Wald interval shrinks. A large sample does not, by itself, remove bias or a misspecified mean. That limit is the [large-sample fallacy](#sec-large-n) in the pitfalls block.
