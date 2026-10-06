@@ -10,3 +10,8 @@ bibliography:
   - "Statistical classes.bib"
   - "references/p-value-fallacy.bib"
   - "references/multiple-tests.bib"
+
+# CI publishes with Quarto only; commit _freeze after local renders.
+# https://quarto.org/docs/projects/code-execution.html#freeze
+execute:
+  freeze: true

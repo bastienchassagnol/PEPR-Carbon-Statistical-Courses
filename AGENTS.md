@@ -72,6 +72,8 @@ Rscript scripts/generate-slide-figures.R
 quarto render index.qmd
 ```
 
+The project uses `execute: freeze: true` in `_quarto.yml`. R chunks run on your machine; their output lives in `_freeze/`, which you commit. GitHub Actions installs Quarto only and reuses the freeze ([Quarto freeze](https://quarto.org/docs/projects/code-execution.html#freeze), [GitHub Pages](https://quarto.org/docs/publishing/github-pages.html#freezing-computations)). After you change an evaluated chunk, render that file once (`quarto render index.qmd` does not re-execute under freeze) or delete `_freeze/` and render again. You need `gt` (and knitr) locally for the table chunks.
+
 Rendered HTML goes to `docs/` and is published to the `gh-pages` branch by `.github/workflows/publish.yml`. Do not commit `docs/`.
 
 Speaker view is `S`. The timing targets are on the section slides: 30, 50, 70, 20, 20, and 30 minutes.
