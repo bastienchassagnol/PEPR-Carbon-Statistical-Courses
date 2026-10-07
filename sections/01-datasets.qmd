@@ -1,116 +1,278 @@
-## NEON soil microbes :microscope:
+## CA-SYS soil bacteria :microscope: {#sec-casys}
 
-The teaching table is the soil microbe community product.
+The count table for this workshop is the CA-SYS 16S survey [@klockenbring16SRRNA2026].
 
-- Product [DP1.10081.001](https://data.neonscience.org/data-products/DP1.10081.001): counts and relative abundances
-- Archaea, bacteria, and fungi in soil, observations from 2014–2018
-- From the 2025 release, NEON supersedes it with taxonomy product [DP1.10081.002](https://data.neonscience.org/data-products/DP1.10081.002)
-- We use the scientific structure, not a fitted NEON model
+- 120 ha of arable land at the Domaine d'Épiosses, near Dijon
+- Four pesticide-free cropping systems, sampled 2018–2021
+- 42 plots, four subplots each; 640 samples, 595 after quality control
+- 10,633 OTUs from 16S rRNA amplicon sequencing
 
-The next slide is the teaching product, [DP1.10081.001](https://data.neonscience.org/data-products/DP1.10081.001).
+Data and the analysis vignettes are public [@klockenbringCASYS16SData2026]. The next slide is that record.
 
 ::: {.notes}
-Source: NEON product API text retrieved for this deck. Do not present any later slide's simulation as a NEON result. About two minutes. If the frame is blank, NEON has refused the embed; the link still opens in the preview overlay.
+Two minutes. The headline is that this is a real count table with a real sampling design, not a tidy teaching matrix. The four systems are the treatment, the plot is the unit, the subplot is the repeat. Hold the statistics until the next slide. If someone asks why not NEON: the NEON soil-microbe product now requires an account for portal downloads and a token for the API, so it no longer satisfies "click a link and download".
 :::
 
-## {background-iframe="https://data.neonscience.org/data-products/DP1.10081.001" background-interactive="true"}
+## {background-iframe="https://entrepot.recherche.data.gouv.fr/dataset.xhtml?persistentId=doi%3A10.57745%2FLO2KIF" background-interactive="true"}
 
-## What $Y$ is in that table {#sec-neon-y}
+::: {.notes}
+Recherche Data Gouv record for the CA-SYS deposit. If the frame is blank, the link on the previous slide opens in the preview overlay.
+:::
 
-$Y$ is a **count**, or a **share of a count**.
+## Four systems, two contrasts {#sec-casys-design}
 
-- a taxon abundance is a non-negative integer
-- a relative abundance is a composition: parts of a whole
-- many taxa are zero in many cores
-- the sampling variance is not a free Gaussian $\sigma$
+| System | Tillage | Nitrogen input |
+| --- | --- | --- |
+| SD1 | Permanent no-till | — |
+| SD2 | Non-permanent no-till | — |
+| TS1 | Tilled | Exogenous nitrogen |
+| TS2 | Tilled | None |
 
-Moisture, pH, soil chemistry, and organic carbon are the covariates we will want. They are companion measurements, not columns you should assume are already on this product. The symbols are on the [notation](#sec-notation) slide.
+The systems sit in three zones: a no-till zone, a tilled zone, and a mixed zone where both occur. That spatial arrangement is deliberate, and it is the reason the tillage contrast is not a clean comparison. The consequence is on [the practice contrast and where it sits](#sec-casys-confounding).
 
-## Why a Gaussian `lm` is the wrong first tool
+::: {.notes}
+The zone structure is the key design fact to plant now. It pays off twice: in the design block, where it is a blocking question, and in the causal block, where it is confounding by construction. Do not yet give the numbers.
+:::
 
-- $Y$ cannot be negative, and a Gaussian mean can predict negative counts
-- the variance of a count usually moves with the mean
-- a proportion is bounded, and an increase in one taxon is a decrease in the share of another
-- zeros are a feature of community tables, not a nuisance to delete
+## Reading the published object {#sec-casys-code}
 
-The deep dive after the pitfalls is this problem, with three likelihoods.
+```{r}
+#| echo: true
+#| eval: false
+ps <- readRDS("data/16s_RNA_sequencing/casys_phyloseq_clean.rds")
 
-## Four analyses, only one of them today
+counts <- unclass(attributes(ps)$otu_table)   # 10,633 OTUs x 595 samples
+taxonomy <- as.data.frame(unclass(attributes(ps)$tax_table))
+meta <- as.data.frame(unclass(attributes(ps)$sam_data))
+
+casys <- tibble(
+  sample_id = colnames(counts),
+  system = factor(meta$System, levels = c("SD1", "SD2", "TS1", "TS2")),
+  year = as.integer(meta$Year),
+  plot = meta$Parcelle,
+  total_reads = colSums(counts),
+  richness = colSums(counts > 0),
+  nitrospira_reads = colSums(counts[taxonomy$Genus == "Nitrospira", ])
+)
+```
+
+`scripts/prepare-teaching-data.R` is this code, with the checks. It writes `data/derived/casys_teaching.csv`.
+
+::: {.notes}
+Two points. First, the published object is a phyloseq object, and reading its slots directly avoids a Bioconductor dependency the deck does not otherwise need. Second, the derived table is written by a script, so the raw deposit stays untouched. That is the reproducibility rule from the last block, applied here.
+:::
+
+## What $Y$ is in that table {#sec-casys-y}
+
+Three responses, three supports:
+
+- []{.fragment fragment-index="1"} **Reads for one taxon.** A non-negative integer, with a sampling effort that differs between samples
+- []{.fragment fragment-index="2"} **Richness.** The number of OTUs observed in a sample, an integer bounded by 10,633
+- []{.fragment fragment-index="3"} **Presence.** Whether a taxon was seen at all, a 0/1 response
+
+None of the three is a free Gaussian. The family that matches each is the [family table](#sec-family-table).
+
+::: {.notes}
+Ask which of the three the room would have analysed with a t-test. The honest answer is usually a relative abundance, which is a fourth object again: a composition. Say that compositions are deliberately out of scope today and are on the what-next slides.
+:::
+
+## Two facts about the count table {#sec-casys-sparsity}
+
+![Left, a histogram of OTU prevalence: most OTUs appear in a small fraction of samples. Right, a histogram of library size per sample.](figures/generated/casys-sparsity.png){fig-alt="Two panels. Left, OTU prevalence is concentrated near zero and 74.6 per cent of table entries are zero. Right, reads per sample range from about 11,000 to 85,000." width="96%"}
+
+74.6% of entries are zero, and the library size runs from 11,123 to 85,010 reads. Both numbers come from `scripts/generate-data-figures.R`.
+
+::: {.notes}
+These two panels do most of the work for the GLM block. The zeros kill the Gaussian story. The unequal library sizes are why a raw taxon count cannot be compared across samples, and they are the reason the offset appears later. The 74.6% figure matches the published data descriptor, which is a useful check that the object was read correctly.
+:::
+
+## Sampling effort is a covariate {#sec-casys-offset}
+
+If sample A has twice the reads of sample B, it has about twice the chance of showing any given taxon, with no biology involved.
+
+::: model
+$$
+\log \mu_i = \mathbf{x}_i^{\top}\boldsymbol{\beta} + \log(\text{library size}_i)
+$$
+:::
+
+The last term is an **offset**: a column with a coefficient fixed at 1. The model is then about a rate per read, not a raw count. The fitted version is [one mean, two variance assumptions](#sec-casys-nb).
+
+::: {.notes}
+This is the slide where a modelling idea comes from a property of the measurement rather than from a textbook. Note the offset is not a covariate whose coefficient is estimated. If someone asks about rarefying to a common depth instead: it throws away data and it does not remove the dependence, and the offset is the model-based alternative. Keep it short; the evidence is two slides later.
+:::
+
+## Why a Gaussian `lm` is the wrong first tool {#sec-casys-why-not-lm}
+
+- A count cannot be negative, and a Gaussian mean can predict a negative count
+- The variance of these counts rises with the mean, so one $\sigma^2$ does not fit
+- A proportion is bounded, and a rise in one taxon is a fall in another's share
+- Zeros are a property of community tables, not rows to delete
+
+The evidence for the second line is on the [mean against variance](#sec-casys-mean-variance) slide. The deep dive is after the pitfalls.
+
+## Mean against variance, for every OTU {#sec-casys-mean-variance}
+
+![Log-log scatter of per-OTU variance against per-OTU mean, with the line variance equals mean.](figures/generated/casys-mean-variance-real.png){fig-alt="Scatter of variance against mean on log axes for 10,603 OTUs. The cloud lies above the diagonal line where variance equals mean." width="88%"}
+
+9,924 of 10,603 OTUs have a variance above their mean. A Poisson fixes those two quantities to be equal, which is the assumption the [negative binomial](#sec-nb-theta) relaxes.
+
+::: {.notes}
+This is the real version of the simulated mean-variance figure the deck used to show. Each point is one OTU: its mean across the 595 samples against its variance. The diagonal is the Poisson. Note honestly that a few hundred OTUs sit on or below the line, which is what you expect for the very rare ones where almost every count is zero.
+:::
+
+## Four analyses, only one of them today {#sec-casys-four}
 
 | Approach | What it targets |
 | --- | --- |
-| Naive comparison of proportions | A share, with a false independence story |
-| Poisson or negative binomial | $\mathbb{E}(Y \mid x)$ for a count |
+| Compare proportions between systems | A share, with a false independence story |
+| Poisson or negative binomial, with an offset | $\mathbb{E}(Y \mid x)$ for a count, per read |
 | Log-ratio (CLR and its relatives) | A composition, after the zeros are handled |
-| Absolute versus relative | Whether the taxon changed, or only its share |
+| Absolute against relative | Whether the taxon changed, or only its share |
 
-Today we fit the count models. Compositions return on the "what next" slides.
+Today we fit the count models and the logit. Compositions return on the [what-next](#sec-next-response) slides.
 
 ::: {.notes}
-This is the pedagogical contract from the course plan. Do not start a CLR derivation here.
+This is the pedagogical contract. Do not start a CLR derivation. If pressed, say that a log-ratio needs a rule for the 74.6% zeros before any transformation, and that this rule is a scientific decision rather than a default.
 :::
 
-## SPRUCE :evergreen_tree:
+## The hierarchy in the sampling {#sec-casys-hierarchy}
 
-A whole-ecosystem warming experiment on the S1 bog, Marcell Experimental Forest.
+```{mermaid}
+%%| fig-width: 10
+%%| fig-height: 2.6
+flowchart LR
+  year["Year, 2018 to 2021"] --> plot["Plot, 42 of them"]
+  plot --> sub["Subplot, four per plot"]
+  sub --> otu["OTU counts"]
+```
+
+The cropping system is a property of the plot. Four subplots in one plot are not four independent trials of that system. 2018 was sampled before the treatments were applied, so it is a baseline rather than a treated year.
+
+::: {.notes}
+Two things to flag. The subplot point is the replication pitfall, three hours early; the design block returns to it as a random intercept on the plot. The baseline year matters because a naive model with year as a factor will happily report a 2018 "effect" of a treatment that did not exist yet. That is a design fact you can only get from the dataset documentation.
+:::
+
+## SPRUCE :evergreen_tree: {#sec-spruce}
+
+A whole-ecosystem warming experiment on the S1 bog, Marcell Experimental Forest, Minnesota.
 
 - Question on the design page: how do plants, microbes, and ecosystem processes respond to warming, and how does elevated $\mathrm{CO}_2$ change that response?
-- Air and deep soil warmed from ambient to $+9^\circ\mathrm{C}$
+- Air and deep peat warmed from ambient to $+9^\circ\mathrm{C}$
 - Elevated $\mathrm{CO}_2$ atmospheres of about 800–900 ppm
 - Source: [SPRUCE experimental design](https://mnspruce.ornl.gov/content/experimental-design)
 
 The next slide is that page.
 
 ::: {.notes}
-All treatment numbers on the following slides are taken from that page, which cites Hanson et al. (2017) for the temperature differential and Cottingham et al. (2005) for regression designs. Do not expand those citations beyond what the page states. About two minutes. If the frame is blank, use the link.
+All treatment numbers on the following slides are taken from that page, which cites Hanson et al. (2017) for the temperature differential and Cottingham et al. (2005) for regression designs. Do not expand those citations beyond what the page states. Two minutes. If the frame is blank, use the link.
 :::
 
 ## {background-iframe="https://mnspruce.ornl.gov/content/experimental-design" background-interactive="true"}
 
-## Ten enclosures, not a two-group test
+## Ten enclosures, not a two-group test {#sec-spruce-grid}
 
-Ambient and elevated $\mathrm{CO}_2$, each at $+0$, $+2.25$, $+4.5$, $+6.75$, and $+9^\circ\mathrm{C}$. The figure on the next slide is a schematic of that grid, not a map.
+Ambient and elevated $\mathrm{CO}_2$, each at $+0$, $+2.25$, $+4.5$, $+6.75$, and $+9^\circ\mathrm{C}$.
 
 ```{r}
 #| echo: true
 #| eval: false
-design <- expand.grid(
-  warming_c = c(0, 2.25, 4.5, 6.75, 9),
-  co2 = c("Ambient CO2", "Elevated CO2")
-)
+spruce |>
+  distinct(plot, warming_c, co2, chambered) |>
+  arrange(plot)
+#> plots 4, 10, 11, 16, 19 are the elevated-CO2 enclosures
+#> plots 7 and 21 are unchambered ambient plots, with no assigned warming
 ```
 
-## Ten enclosures, not a two-group test
-
-![Schematic of ten SPRUCE enclosures: five warming levels crossed with ambient and elevated CO2. Each tile is one experimental unit.](figures/generated/spruce-allocation.png){fig-alt="Grid of ten SPRUCE treatment combinations: five warming levels crossed with two CO2 levels." width="92%"}
-
-Plots 4, 10, 11, 16, and 19 receive elevated $\mathrm{CO}_2$. Chamberless areas were also monitored.
-
-## What is measured, and what is independent {#sec-spruce-unit}
-
-The response we will keep in view is a **flux**: soil $\mathrm{CO}_2$ or $\mathrm{CH}_4$.
-
-- the treatment is applied to the **enclosure**
-- collars and dates sit inside the enclosure
-- a weekly series is a repeated measure, not a new experimental unit
-- there are **10** enclosures in the warmed regression design
-
-Which of those rows is a replicate depends on the question: [where the replicate is](#sec-replicate).
-
-## The model the design is asking for
-
-For enclosure $j$ and repeated measure $i$,
-
-$$
-g(\mu_{ij}) = \beta_0 + \beta_1 x_{1j} + \beta_2 x_{2j} + \beta_3 x_{1j} x_{2j} + \beta_4 \mathrm{season}_{ij} + u_j
-$$
-
-- $x_{1j}$: warming assigned to the enclosure
-- $x_{2j}$: elevated $\mathrm{CO}_2$ versus ambient
-- $u_j$: enclosure-level departure, $u_j \sim \mathcal{N}(0, \sigma_u^2)$ under a random-intercept model
-
-A $t$-test of "warm versus cool" is a different estimand, and a poorer one.
+Twelve plots: ten chambered enclosures on the warming grid, and two ambient plots that were never assigned a level.
 
 ::: {.notes}
-Point at the indices. j is the enclosure, i is the repeated observation. We return to u_j in the design block. About two minutes.
+Run the distinct() call in front of the room if the laptop allows. The point is that the design is recoverable from the data, and that the two ambient plots are a different kind of row: they have no warming level, so they cannot enter a regression on warming without a decision about what to do with them. That decision is a modelling choice, and it belongs in the analysis plan.
+:::
+
+## What is measured here {#sec-spruce-y}
+
+The response in this dataset is a **gene copy number** per gram of dry peat, from quantitative PCR [@rothSPRUCEQuantitativePCR2024].
+
+- 12 plots $\times$ 9 depth increments $\times$ 2 sampling months in 2021: 216 rows
+- Bacterial, archaeal, and fungal copies, each with a log column
+- Missing numeric values are coded $-9999$ in the published file
+
+A qPCR copy number is an estimated abundance, not a counted integer. It is a positive, strongly skewed continuous response, so it belongs with the [transformation](#sec-vst) discussion and not with the Poisson.
+
+::: {.notes}
+Be explicit that this is not a count, even though it looks like one. Treating a qPCR abundance as Poisson would be a category error, and it is a mistake the room will have seen. The sentinel value is the other teaching point: 15 values in this file are -9999, and a script that reads the column as a number without that rule will report a mean of about -9999 times the missing fraction. The rule lives in scripts/prepare-teaching-data.R and nowhere else.
+:::
+
+## The sentinel is a documented rule {#sec-spruce-missing}
+
+```{r}
+#| echo: true
+#| eval: false
+# "Missing numeric data are indicated by -9999" (dataset documentation)
+numeric_cols <- c("Bacteria_copy_dry", "Archaea_copy_dry", "Fungal_copy_dry")
+for (nm in numeric_cols) {
+  spruce_raw[[nm]][spruce_raw[[nm]] == -9999] <- NA_real_
+}
+```
+
+Fifteen values across the nine numeric columns are sentinels. One of the 216 bacterial measurements is missing.
+
+::: {.notes}
+Short slide. The message is that the rule came from the dataset documentation, not from a guess, and that it is written once in a script rather than repeated in every analysis. Link it forward to the missing-data pitfall: this is missingness you can describe, which is the easy case.
+:::
+
+## The scale of the response {#sec-spruce-scale}
+
+![Left, raw bacterial copies against depth: a few surface values dominate. Right, the same data on a log10 scale with a fitted straight line.](figures/generated/spruce-depth-scale.png){fig-alt="Two panels. Left, raw copy numbers against depth, with most points squeezed near zero. Right, log10 copies against depth, falling roughly linearly." width="96%"}
+
+On the log scale the fall with depth is about $-0.079$ in $\log_{10}$ copies per 10 cm, and depth alone accounts for $R^2 = 0.23$.
+
+::: {.notes}
+The left panel is why the dataset ships a log column. The right panel is the transformation argument in its legitimate form: the transform is chosen because the mechanism is multiplicative, not because a normality test failed. Flag that this slope is a description of 12 plots at one site in one year, not a global law, and that the interval for it needs the plot structure on the next slide.
+:::
+
+## One line per plot {#sec-spruce-profiles}
+
+![Depth profiles of log10 bacterial copies, one line per plot, split by sampling month.](figures/generated/spruce-plot-profiles.png){fig-alt="Depth profiles for twelve plots in June and August 2021. Chambered enclosures and the two ambient plots are distinguished by colour." width="96%"}
+
+Nine depths inside one plot are not nine independent plots. Where the replicate is depends on the question: [where the replicate is](#sec-replicate).
+
+::: {.notes}
+This figure is the hierarchy made visible. Each line is a plot; the points on it are depths. A regression on 215 rows that ignores the plot has about 12 units of real information about warming, not 215. That is the same arithmetic as the CA-SYS subplots. Both datasets make the same point, which is why the design block can treat them together.
+:::
+
+## The model the design is asking for {#sec-spruce-model}
+
+For plot $j$, depth $i$:
+
+::: model
+$$
+\log_{10} Y_{ij} = \beta_0 + \beta_1 \mathrm{depth}_{ij} + \beta_2 x_{1j} + \beta_3 x_{2j} + \beta_4 x_{1j} x_{2j} + u_j + \varepsilon_{ij}
+$$
+:::
+
+- $x_{1j}$: warming assigned to the enclosure
+- $x_{2j}$: elevated $\mathrm{CO}_2$ against ambient
+- $u_j$: plot-level departure, $u_j \sim \mathcal{N}(0, \sigma_u^2)$
+
+A $t$-test of "warm against cool" is a different estimand, and a poorer one.
+
+::: {.notes}
+Point at the indices: j is the plot, i is the depth increment. The interaction is the scientific question the design was built for, which is why binning the five warming levels into two groups throws the design away. Two minutes, then move on: the fitting details are in the design block.
+:::
+
+## Two datasets, one syllabus {#sec-datasets-map}
+
+| Response | Dataset | Family |
+| --- | --- | --- |
+| $\log_{10}$ gene copies | SPRUCE | Gaussian, identity link |
+| Taxon reads, per read | CA-SYS | Poisson, then negative binomial |
+| Taxon presence | CA-SYS | Bernoulli, logit link |
+| Richness | CA-SYS | A count that is not Poisson |
+
+Same ecological story throughout: carbon and nitrogen cycling in soil. The statistics change because the response changes.
+
+::: {.notes}
+This table is the map for the next two hours, and it is worth leaving up for a moment. The last row is deliberately awkward: richness is an integer, so the reflex is Poisson, and the data say otherwise by a factor of 28. We come back to it.
 :::

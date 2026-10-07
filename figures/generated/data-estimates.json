@@ -1,0 +1,68 @@
+{
+  "casys_zero_fraction": 0.7462,
+  "casys_library_min": 11123,
+  "casys_library_max": 85010,
+  "casys_library_median": 22258,
+  "casys_otus_above_poisson_line": 9924,
+  "casys_otus_with_variance": 10603,
+  "casys_richness_dispersion": 27.8,
+  "casys_richness_min": 1431,
+  "casys_richness_max": 3528,
+  "casys_nitrospira_dispersion": 10.6,
+  "casys_nitrospira_nb_theta": 29.3,
+  "casys_nitrospira_se_ratio": 3.1,
+  "casys_nitrospira_rr_pois": 0.972,
+  "casys_nitrospira_rr_pois_lo": 0.962,
+  "casys_nitrospira_rr_pois_hi": 0.982,
+  "casys_nitrospira_rr_nb": 0.971,
+  "casys_nitrospira_rr_nb_lo": 0.941,
+  "casys_nitrospira_rr_nb_hi": 1.002,
+  "casys_nitrospira_total": 153771,
+  "casys_methylobacter_prevalence": 0.353,
+  "casys_methylobacter_or_lib": 1.74,
+  "casys_methylobacter_or_tillage": 1.34,
+  "casys_methylobacter_or_tillage_lo": 0.95,
+  "casys_methylobacter_or_tillage_hi": 1.91,
+  "casys_tillage_crude": 47.5,
+  "casys_tillage_crude_lo": -7.5,
+  "casys_tillage_crude_hi": 102.6,
+  "casys_tillage_mix": 80.3,
+  "casys_tillage_mix_lo": -6,
+  "casys_tillage_mix_hi": 166.7,
+  "casys_zone_table": [
+    {
+      "zone": "MIX",
+      "tillage": "No-till",
+      "n": 114,
+      "mean_richness": 2763
+    },
+    {
+      "zone": "MIX",
+      "tillage": "Tilled",
+      "n": 112,
+      "mean_richness": 2682
+    },
+    {
+      "zone": "SD",
+      "tillage": "No-till",
+      "n": 171,
+      "mean_richness": 2697
+    },
+    {
+      "zone": "TS",
+      "tillage": "Tilled",
+      "n": 198,
+      "mean_richness": 2672
+    }
+  ],
+  "spruce_rows": 216,
+  "spruce_rows_measured": 215,
+  "spruce_plots": 12,
+  "spruce_depths": 9,
+  "spruce_depth_slope_per_10cm": -0.079,
+  "spruce_depth_r2": 0.227,
+  "casys_dich_cut": -0.26,
+  "casys_dich_slope_per_unit": -11,
+  "casys_dich_r2_continuous": 0.0029,
+  "casys_dich_r2_split": 0.0002
+}

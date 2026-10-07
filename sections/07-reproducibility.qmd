@@ -1,36 +1,53 @@
 ## Copying the result is the slow path {#sec-repro-manual}
 
-[Jadey Ryan](https://jadeyryan.quarto.pub/slc-rug-quarto/), Salt Lake City R Users Group, 1 July 2024. Data and style updates are inevitable. Doing them by hand is slow, and it is where the numbers drift.
+Data and style updates are inevitable. Doing them by hand is slow, and it is where the numbers drift.
 
-![A hand-made report: analysis, then a copy into Word and into PowerPoint, and a loop back when the data or the style changes. Jadey Ryan, 2024.](figures/sources/ryan-manual-update.svg){width="78%" fig-alt="A flowchart. Analyse in R or Excel, format tables and plots, copy them into Word and into PowerPoint, then write the content. A data update, a data error, or a style update sends the work back to the start."}
+![A hand-made report: analysis, then a copy into Word and into PowerPoint, and a loop back when the data or the style changes.](figures/sources/ryan-manual-update.svg){width="86%" fig-alt="A flowchart. Analyse in R or Excel, format tables and plots, copy them into Word and into PowerPoint, then write the content. A data update, a data error, or a style update sends the work back to the start."}
+
+The diagrams in this block are from [Jadey Ryan](https://jadeyryan.quarto.pub/slc-rug-quarto/), Salt Lake City R Users Group, 1 July 2024.
+
+::: {.notes}
+Start by asking how many people have copied a number from a console into a manuscript. Everyone has. The loop at the bottom of the figure is the cost: a data correction arriving after the copy means every downstream number has to be found again by hand, and the one you miss is the one that reaches the reader. This is the same argument as the derived-data script in the datasets block, applied to the report.
+:::
 
 ## Quarto renders the report and the slides {#sec-repro-quarto-path}
 
-The same talk, the slide that replaces the copy. A data update or a data error changes the data source. A style update changes the tables, the plots, or the markdown. One render writes the report and the presentation.
+A data update or a data error changes the data source. A style update changes the tables, the plots, or the markdown. One render then writes the report and the presentation.
 
-![A Quarto workflow. A data update or a data error updates the data source, then the Quarto document, the R tables and plots, and the markdown style, and one render produces the report and the presentation. Jadey Ryan, 2024.](figures/sources/ryan-quarto-update.svg){width="96%" fig-alt="A flowchart. Data update and data error feed an updated data source, then a Quarto document, tables and plots made in R, styling in markdown and Quarto, and a render of the report and the presentation. A style update feeds the tables and the styling. The data source also connects straight to the render."}
+![A Quarto workflow in which one render produces both the report and the presentation.](figures/sources/ryan-quarto-update.svg){width="96%" fig-alt="A flowchart. Data update and data error feed an updated data source, then a Quarto document, tables and plots made in R, styling in markdown and Quarto, and a render of the report and the presentation. A style update feeds the tables and the styling. The data source also connects straight to the render."}
+
+::: {.notes}
+Compare the two diagrams side by side if you can. The number of arrows is similar; what changed is that no arrow crosses an application boundary by hand. This deck is an instance: the CA-SYS dispersion statistic on the GLM slides comes from a script, so it cannot disagree with the figure beside it.
+:::
 
 ## Quarto is the publishing step {#sec-repro-what}
 
-Ryan's definition: a publishing system for more than one language and more than one output. The path she draws, from the [Hello, Quarto](https://quarto.org/docs/get-started/) keynote, is:
+A publishing system for more than one language and more than one output. The path, from the [Hello, Quarto](https://quarto.org/docs/get-started/) keynote:
 
-[]{.fragment fragment-index="1"} a `.qmd` file
+- []{.fragment fragment-index="1"} a `.qmd` file
+- []{.fragment fragment-index="2"} knitr, or Jupyter
+- []{.fragment fragment-index="3"} markdown, then Pandoc, then HTML, PDF, Word, or slides
 
-[]{.fragment fragment-index="2"} knitr, or Jupyter
+The artwork on the original slide is Allison Horst's, for Julia Lowndes and Mine Çetinkaya-Rundel, rstudio::conf 2022.
 
-[]{.fragment fragment-index="3"} markdown, then Pandoc, then HTML, PDF, Word, or slides
-
-The artwork on her slide is Allison Horst's, for Julia Lowndes and Mine Çetinkaya-Rundel, rstudio::conf 2022.
+::: {.notes}
+The middle step is the one people miss: the engine runs the code and produces plain markdown, and Pandoc then handles every output format. That separation is why the same source can become a paper and a deck, and why a format-specific problem is usually a Pandoc or template problem rather than an R problem.
+:::
 
 ## One source, several outputs {#sec-repro-outputs}
 
-From the same talk. A `.qmd` can be an article or a report, a manuscript, a presentation, a dashboard, a website, a book, or an interactive document.
+A `.qmd` can be:
 
-The lists live in the [format guide](https://quarto.org/docs/output-formats/all-formats.html). The [gallery](https://quarto.org/docs/gallery/) is the set of finished examples. This deck is the presentation case.
+- an article, a report, or a manuscript
+- a presentation, like this one
+- a dashboard, a website, or a book
+- an interactive document
+
+The full lists are in the [format guide](https://quarto.org/docs/output-formats/all-formats.html), and the [gallery](https://quarto.org/docs/gallery/) holds the finished examples.
 
 ## Three parts, in this order {#sec-repro-anatomy}
 
-Ryan's anatomy of a `.qmd`:
+The anatomy of a `.qmd`:
 
 1. a YAML header, for the metadata and the options
 2. the narrative, in markdown
@@ -40,7 +57,7 @@ The header does not compute. The chunks do. The narrative is what a reader sees 
 
 ## YAML is fussy about spaces {#sec-repro-yaml}
 
-The header sits between two lines of three dashes. Each option is `key: value`. Each nested level is two spaces. Ryan's reminder: YAML is fussy.
+The header sits between two lines of three dashes. Each option is `key: value`, and each nested level is two spaces.
 
 ```yaml
 ---
@@ -51,52 +68,74 @@ format:
 ---
 ```
 
-The option lists for [HTML](https://quarto.org/docs/reference/formats/html.html), [PDF](https://quarto.org/docs/reference/formats/pdf.html), [Word](https://quarto.org/docs/reference/formats/docx.html), and [reveal.js](https://quarto.org/docs/reference/formats/presentations/revealjs.html) are the reference. This deck's header is `index.qmd`.
+Option lists for [HTML](https://quarto.org/docs/reference/formats/html.html), [PDF](https://quarto.org/docs/reference/formats/pdf.html), [Word](https://quarto.org/docs/reference/formats/docx.html), and [reveal.js](https://quarto.org/docs/reference/formats/presentations/revealjs.html) are the reference. This deck's header is `index.qmd`.
+
+::: {.notes}
+Tabs instead of spaces is the single most common first error, and the message it produces is unhelpful. Mention that the header is also where the bibliography and the execution options live, both of which this deck relies on.
+:::
 
 ## Markdown is the narrative {#sec-repro-markdown}
 
-Ryan's short list. `**bold**` is bold. `#` and `##` are the headings: in this deck, a level-1 heading is a section and a level-2 heading is a slide. `[label](https://example.com)` is a link. `![](image.png)` is a figure. Inline code and inline maths use backticks.
+| Syntax | Result |
+| --- | --- |
+| `**bold**` | bold text |
+| `#`, `##` | a section, then a slide in this deck |
+| `[label](https://example.com)` | a link |
+| `![](image.png)` | a figure |
+| `` `code` `` | inline code |
+| `$\mu$` | inline maths |
 
 The [markdown guide](https://quarto.org/docs/authoring/markdown-basics.html) is the rest of the syntax.
 
 ## A chunk is the analysis, not a paste {#sec-repro-chunks}
 
-A chunk opens with ` ```{r} ` and closes with ` ``` `. In RStudio, insert one with the toolbar button, or with Ctrl+Alt+I. Run the current chunk with Ctrl+Shift+Enter.
+- A chunk opens with ` ```{r} ` and closes with ` ``` `
+- In RStudio, insert one with the toolbar button, or Ctrl+Alt+I
+- Run the current chunk with Ctrl+Shift+Enter
 
-In this deck a chunk that would refit a model is marked `eval: false`, and the figure is a file written by `scripts/generate-slide-figures.R`. The number on the slide and the number in the file are then the same number.
+In this deck a chunk that would refit a model is marked `eval: false`, and the figure beside it is a file written by `scripts/generate-data-figures.R`. The number on the slide and the number in the file are then the same number.
+
+::: {.notes}
+This is the house rule for the deck and the reason the GLM slides can show a call and a fitted figure without refitting anything during the render. The trade is explicit: the script is the source of truth, and the slide quotes it.
+:::
 
 ## A parameter is an input of the document {#sec-repro-params}
 
-Ryan treats a parameterised report as a function. One `.qmd`, several reports, and the thing that changes is a value in `params`.
+A parameterised report is a function: one `.qmd`, several reports, and the thing that changes is a value in `params`.
 
-[]{.fragment fragment-index="1"} A parameter is a string, a number, or a Boolean.
+- []{.fragment fragment-index="1"} A parameter is a string, a number, or a Boolean
+- []{.fragment fragment-index="2"} A data frame has to be serialised to travel in, then rebuilt inside the document. The pointers are [Dervieux](https://community.rstudio.com/t/param-converted-from-data-frame-to-list/155556/9) and [Helveston](https://www.jhelvy.com/blog/2023-02-28-parameterized-pdfs-with-quarto/)
 
-[]{.fragment fragment-index="2"} A data frame has to be serialised to travel in as a parameter, then rebuilt inside the document. Her pointers are [Dervieux](https://community.rstudio.com/t/param-converted-from-data-frame-to-list/155556/9) and [Helveston](https://www.jhelvy.com/blog/2023-02-28-parameterized-pdfs-with-quarto/).
+::: {.notes}
+For this room the natural parameters are a site, a year, or a warming level: one report per SPRUCE plot, or one per cropping system, from a single source file. Say that a parameter is not a substitute for a function; the computation should still live in a script that the document calls.
+:::
 
 ## The default has to exist in the data {#sec-repro-params-yaml}
 
 ```yaml
 params:
-  fave_breed: "Snowshoe"
+  system: "SD1"
 ```
 
-Her name for the parameter is a column she will filter on. Any name is legal. If `Snowshoe` is not in the data, the code errors or the output is blank.
+The parameter name is a column you will filter on. Any name is legal. If `SD1` is not a level in the data, the code errors or the output is blank.
 
-The same key is how you would swap a site, a year, or a warming level without a second copy of the file.
+The same key swaps a site, a year, or a warming level without a second copy of the file.
 
 ## Read it with `params$` {#sec-repro-params-access}
 
-`params` is a list. `params$fave_breed` is the string. In a sentence, the same call is inline R, written as a backtick, the letter r, and `params$fave_breed`.
+`params` is a list, so `params$system` is the string.
 
-In a plot title she uses `paste(params$fave_breed, "population")`, or `glue::glue("{params$fave_breed} population")`. Search the file for the hard-coded string and replace it with `params$`.
+- In a sentence, use inline R: a backtick, the letter `r`, then `params$system`
+- In a plot title, `paste(params$system, "richness")` or `glue::glue("{params$system} richness")`
+- Search the file for the hard-coded string and replace it with `params$`
 
 ## Three ways to render a variant {#sec-repro-render}
 
-1. The Render button, or Ctrl+Shift+K, uses the defaults in the header.
-2. From R, `quarto::quarto_render()` takes `execute_params = list(fave_breed = "Snowshoe")`.
-3. From the terminal, `quarto render template.qmd -P fave_breed:'Snowshoe'`.
+1. The Render button, or Ctrl+Shift+K, uses the defaults in the header
+2. From R, `quarto::quarto_render()` takes `execute_params = list(system = "SD1")`
+3. From the terminal, `quarto render template.qmd -P system:'SD1'`
 
-Her [parameterised-reporting workshops](https://github.com/jadeynryan/parameterized-quarto-workshop) are the step that renders every variant in one go. The source of this talk is [jadeynryan/slc-rug-quarto](https://github.com/jadeynryan/slc-rug-quarto).
+The [parameterised-reporting workshops](https://github.com/jadeynryan/parameterized-quarto-workshop) cover rendering every variant in one go. The source of the talk is [jadeynryan/slc-rug-quarto](https://github.com/jadeynryan/slc-rug-quarto).
 
 ## Several formats, still one file {#sec-repro-formats}
 
@@ -109,75 +148,88 @@ format:
 format-links: [pdf, docx]
 ```
 
-`embed-resources: true` puts the HTML in one file. `format-links` chooses which other formats the HTML page offers for download. `format-links: false` offers none. Give HTML and reveal.js different `output-file` names, or the second render overwrites the first.
+- `embed-resources: true` puts the HTML in one file
+- `format-links` chooses which formats the HTML page offers for download
+- `format-links: false` offers none
+- Give HTML and reveal.js different `output-file` names, or the second render overwrites the first
 
 ## Use a tool, or write one {#sec-repro-two-projects}
 
-Nathalie Lehmann and Quentin Blampey, *Good practices* (2024). Two kinds of bioinformatics project: start from tools that already exist, or write a new tool.
+![Two project shapes: one built from existing tools, one that creates a new tool and needs the practices that follow.](figures/sources/repro-project-types.png){fig-alt="Two columns. On the left, a project built from existing tools leads from a database to a discovery or publication. On the right, creating a new tool is marked as requiring good practices." width="86%"}
 
-The second kind is the one that needs the practices below. Either kind ends in a result you have to be able to rerun.
+The practices in the rest of this block are from Nathalie Lehmann and Quentin Blampey, *Good practices* (2024). The second project shape is the one that needs them.
+
+::: {.notes}
+Both shapes end in a result somebody has to be able to rerun. The difference is who carries the maintenance: in the left-hand shape it is somebody else's package, and in the right-hand one it is you. Most people in this room are in the left-hand column and still need the Git and dependency slides.
+:::
 
 ## `final_final` is not a history {#sec-repro-filenames}
 
-Their picture of a project without Git: `my_script.R`, then `my_script2.R` because the first broke, then `my_script_version_martin.R` because a package and a function changed, then `my_script_final.R`, then `my_script_final_final.R` because everything broke.
+![A project without version control: my_script.R, my_script2.R, my_script_version_martin.R, my_script_final.R, and my_script_final_final2.R, with the word PANIC across the middle and four unanswerable questions.](figures/sources/repro-filenames-panic.png){fig-alt="Flowchart of script filenames branching and converging, with the word PANIC in red, and questions about which file made a figure, what was deleted, which package versions were used, and why results changed." width="96%"}
 
 The name records a mood. It does not record which lines changed.
 
+::: {.notes}
+Read the four red questions aloud; they are the real content of this figure. Each one is a question a reviewer or a future you will ask, and none of them can be answered from a filename. Note that this is not a joke slide: the deck's own history is a sequence of commits, which is how the figure numbers and the slide text stayed consistent.
+:::
+
 ## Git answers the revision questions {#sec-repro-git-why}
 
-The questions on their next slide:
-
-[]{.fragment fragment-index="1"} which file made the figure in the article
-
-[]{.fragment fragment-index="2"} what was deleted in the last version
-
-[]{.fragment fragment-index="3"} which package versions the code used
-
-[]{.fragment fragment-index="4"} why a small update for a revision changed the results
+- []{.fragment fragment-index="1"} which file made the figure in the article
+- []{.fragment fragment-index="2"} what was deleted in the last version
+- []{.fragment fragment-index="3"} which package versions the code used
+- []{.fragment fragment-index="4"} why a small update for a revision changed the results
 
 A commit is the answer to those four. A filename is not.
 
 ## The hub is the shared copy {#sec-repro-hub}
 
-Their third Git slide is the local history plus a source-code hub. The hub is where a second person, or you on another machine, gets the same commits.
+![A local Git history plus a source-code hub, which is where a second person obtains the same commits.](figures/sources/repro-git-hub.png){fig-alt="A local commit history on the left, a plus sign, and a source code hub on the right." width="78%"}
 
 This deck's hub is the GitHub repository named in the footer. The history of a slide is the history of the `.qmd`, not a second exported HTML.
 
 ## Names, inputs, and the output {#sec-repro-readable}
 
-Lehmann and Blampey, on a function nobody else can read. Three obligations:
+A function nobody else can read has three obligations:
 
-[]{.fragment fragment-index="1"} a function name and argument names that say what they are
-
-[]{.fragment fragment-index="2"} the input types, and the values that are allowed
-
-[]{.fragment fragment-index="3"} a precise description of what comes back
+- []{.fragment fragment-index="1"} a function name and argument names that say what they are
+- []{.fragment fragment-index="2"} the input types, and the values that are allowed
+- []{.fragment fragment-index="3"} a precise description of what comes back
 
 `data` and `x` fail the first test. So does a function whose only documentation is its body.
 
+::: {.notes}
+The example in the source deck is a function called with an argument named "data", which could be anything. Connect this to the codebook idea from the datasets block: a column name and a variable name carry the same obligation, which is to make the units and the allowed values visible without reading the implementation.
+:::
+
 ## Put the documentation on a site {#sec-repro-docs}
 
-If you can, write the documentation as a site. Their example is [gustaveroussy.github.io/sopa](https://gustaveroussy.github.io/sopa/), a GitHub Pages site for the package.
+If you can, write the documentation as a site. The worked example is [gustaveroussy.github.io/sopa](https://gustaveroussy.github.io/sopa/), a GitHub Pages site for a package.
 
 For an R package, [pkgdown](https://pkgdown.r-lib.org/) builds that site from the roxygen comments and the vignettes. GitHub Pages, or the `gh-pages` branch this deck already uses, is a place to put it.
 
 ## Dependencies move after you publish {#sec-repro-deps}
 
-Their timeline. You publish `my_package` 1.0.0 against one column of numpy, pandas, and PyTorch versions. Later columns are later releases of those libraries. Some of the earlier versions are already deprecated.
+![A timeline of numpy, pandas and PyTorch versions, with a package published against the first column and the earlier columns marked deprecated.](figures/sources/repro-dependency-timeline.png){fig-alt="A timeline with five columns of library versions. A package is published against the first column, and the earliest versions are labelled deprecated." width="96%"}
 
 The package did not change. The ground under it did. A rerun on "whatever is current" is a different computation.
 
+::: {.notes}
+This is the slide that explains why a five-year-old analysis script fails today even though nobody touched it. The version you published against is a column in this picture, and the column moves. The practical consequence is on the lockfile slide: record the column, or the rerun is not the same computation.
+:::
+
 ## An unkept package goes stale {#sec-repro-deprecate}
 
-Their sentence: if you do not maintain the code, it becomes deprecated.
+If you do not maintain the code, it becomes deprecated.
 
-Maintenance here is a decision about each new column of dependency versions. Either you test `my_package` 1.0.0 against them, or you say which column it still supports.
+Maintenance here is a decision about each new column of dependency versions:
+
+- test the release against them, or
+- state which column it still supports
 
 ## Keep the old name until a stated date {#sec-repro-compat}
 
-A new version that renames `annotate_cell_types()` to `get_cell_types()` breaks every caller. They name Seurat as a package where that kind of change hurt.
-
-Their first remedy keeps the old name, warns, and forwards. The warning in the slide says the function is deprecated and will be removed in January 2025.
+![A version bump that renames a function, with a first remedy that keeps the old name and warns.](figures/sources/repro-backward-compat.png){fig-alt="A diagram of my_package 1.0.0 becoming 1.1.0, annotated that the change will break everything, with Seurat named as an example, and a first solution." width="86%"}
 
 ```python
 def annotate_cell_types(X, d):
@@ -185,56 +237,97 @@ def annotate_cell_types(X, d):
     return get_cell_types(X, markers=d)
 ```
 
+The old name stays, warns, and forwards. The warning names the removal date.
+
+::: {.notes}
+The named example is Seurat, where renames across major versions broke a lot of downstream code. The remedy costs almost nothing: a shim, a warning, and a date. Note that the date is the part people omit, and it is the part that lets a user plan.
+:::
+
 ## Release notes name the version {#sec-repro-notes}
 
-Their second remedy is a release note tied to a version and a date. The example is `v0.2.2`, marked `[0.2.2] - 2024-08-07`, sorted into major, minor, and fixed.
+:::: {.columns}
+::: {.column width="58%"}
+![A release-note page for version 0.2.2, dated, and sorted into major, minor and fixed entries.](figures/sources/repro-release-notes.png){fig-alt="A changelog page headed 0.2.2 with a date, divided into major, minor and fixed sections." width="100%"}
+:::
 
-A major line on that note says the new disk format is backward compatible. A minor line adds an argument. A fixed line names a bug. The version number is the contract. The note is what the contract changed.
+::: {.column width="42%"}
+The example is `v0.2.2`, marked `[0.2.2] - 2024-08-07`:
+
+- a major line says the new disk format is backward compatible
+- a minor line adds an argument
+- a fixed line names a bug
+
+The version number is the contract. The note is what the contract changed.
+:::
+::::
 
 ## Record the column you tested {#sec-repro-pin}
 
-The version number is not enough if the dependency column is unnamed. Write down the versions that belonged to that release: the numpy, pandas, and PyTorch numbers in their sketch, or the lockfile in an R project.
+A version number is not enough if the dependency column is unnamed. Write down the versions that belonged to that release:
 
-[The Posit::conf 2024 dev-ops materials](https://github.com/posit-conf-2024/dev-ops/tree/main/slides) keep that column in `renv.lock`. A later rerun uses the lockfile, not today's default install.
+- the numpy, pandas, and PyTorch numbers in the timeline
+- or `renv.lock` in an R project
+
+[The Posit::conf 2024 dev-ops materials](https://github.com/posit-conf-2024/dev-ops/tree/main/slides) keep that column in `renv.lock`. A later rerun then uses the lockfile, not today's default install.
 
 ## A test is code that checks a use {#sec-repro-test}
 
-Lehmann and Blampey: testing means writing code that checks whether the package still does what it did.
+Testing means writing code that checks whether the package still does what it did.
 
 A passing run is evidence about the cases you wrote down. It is the moment you can say the code is stable for those cases. A case you did not write is still unchecked.
 
 ## The matrix shows which change broke {#sec-repro-ci}
 
-Their grid has package versions across the top and use cases down the side. A tick becomes a cross in one cell. The question the grid is for: which change broke what, when, on which operating system, and for which use.
+![A grid of package versions across the top and use cases down the side, with ticks turning into crosses as the version advances.](figures/sources/repro-ci-matrix.png){fig-alt="Four columns labelled code 0.1.0 to 1.0.0, four rows of use cases, and a mix of green ticks and red crosses, with the question which change broke what, when, on which OS, and on which use case." width="96%"}
 
 That grid, run on every change, is continuous integration.
 
+::: {.notes}
+The grid is the argument for automation in one picture. One row is a use case, one column is a version, and the cell is a pass or a fail. Nobody fills that grid in by hand across operating systems and language versions, which is why the next slide is a workflow file. The question printed under the grid is the one CI exists to answer.
+:::
+
 ## Actions runs the tests for you {#sec-repro-actions}
 
-The file that runs the grid is a workflow YAML. Their example is a run of the sopa package: [the Actions log](https://github.com/gustaveroussy/sopa/actions/runs/11442161900).
+![A workflow YAML file feeding a GitHub Actions run, with the log for a package build.](figures/sources/repro-actions-yaml.png){fig-alt="A YAML file icon beside a link to a GitHub Actions run for the sopa package." width="86%"}
 
-You open the log to see the failing case. You do not rerun the matrix by hand on a laptop and then forget which laptop.
+Open the log to see the failing case. Do not rerun the matrix by hand on a laptop and then forget which laptop. The example run is [this Actions log](https://github.com/gustaveroussy/sopa/actions/runs/11442161900).
 
 ## A push to `main` can also publish {#sec-repro-cd}
 
-Continuous delivery is the same kind of file, with a deploy step at the end. This deck's `.github/workflows/publish.yml` runs on a push to `main`: it checks out the repository, installs Quarto and R, renders, and publishes to `gh-pages`.
+Continuous delivery is the same kind of file, with a deploy step at the end.
 
-The [getting-to-production](https://github.com/posit-conf-2024/dev-ops/blob/main/slides/03_getting_to_prod.qmd) workflow is the container version of that pattern. On a push to `main` it builds an image and pushes the image. The trigger is the same. The last step is a deploy instead of a test report.
+This deck's `.github/workflows/publish.yml` runs on a push to `main`: it checks out the repository, installs Quarto, renders from the committed freeze, and publishes to `gh-pages`.
+
+The [getting-to-production](https://github.com/posit-conf-2024/dev-ops/blob/main/slides/03_getting_to_prod.qmd) workflow is the container version of the same pattern: on a push to `main` it builds an image and pushes it. The trigger is the same; the last step is a deploy instead of a test report.
+
+::: {.notes}
+Worth being concrete about this deck, because it is the live example in the room. The R code runs on a laptop, the results are committed under _freeze, and the Action installs Quarto only. That keeps the build fast and means a missing R package on the runner cannot break a published deck. The trade is that a changed chunk has to be re-rendered locally before the push.
+:::
 
 ## Say which layer you are shipping {#sec-repro-layers}
 
-Before that deploy, the same session asks you to separate three layers.
+Before that deploy, separate three layers:
 
-[]{.fragment fragment-index="1"} The presentation layer is what a person clicks.
-
-[]{.fragment fragment-index="2"} The processing layer is the work those clicks cause.
-
-[]{.fragment fragment-index="3"} The data layer is where the values are stored and read.
+- []{.fragment fragment-index="1"} the **presentation** layer is what a person clicks
+- []{.fragment fragment-index="2"} the **processing** layer is the work those clicks cause
+- []{.fragment fragment-index="3"} the **data** layer is where the values are stored and read
 
 A data update then changes the data layer. It does not require a new copy of the report, which is the Quarto path from the first slides.
 
 ## The short list to take back {#sec-repro-close}
 
-Lehmann and Blampey, the practices around the ones above: an `assert` that refuses a bad input, a style guide, a formatter and a linter, and a pre-commit hook so the check runs before the commit.
+For any analysis:
 
-A package you want other people to use also needs a dependency manager, tests on more than one operating system and more than one language version, a documentation site, a release on CRAN, Bioconductor, or PyPI, and a version number you keep maintaining.
+- an `assert` that refuses a bad input
+- a style guide, a formatter, and a linter
+- a pre-commit hook, so the check runs before the commit
+
+For a package other people will use:
+
+- a dependency manager and a lockfile
+- tests on more than one operating system and language version
+- a documentation site, a release, and a version number you keep maintaining
+
+::: {.notes}
+Close the block by mapping it back to the workshop: the derived-data script, the figure script, the estimates JSON, and the link checker are the first list applied to a slide deck. If the room takes one thing, it is that the number in the text and the number in the figure should come from the same run.
+:::

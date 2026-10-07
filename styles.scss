@@ -123,18 +123,12 @@ $presentation-h3-font-size: 1.02em;
   color: #5c6b63;
 }
 
-.reveal .slides section.algebra-wide img {
-  width: 96% !important;
-  max-width: 96% !important;
-  height: auto !important;
-  max-height: 250px !important;
-}
-
+.reveal .slides section.algebra-wide img,
 .reveal .slides section.algebra-panel img {
   width: auto !important;
-  max-width: 70% !important;
-  height: 390px !important;
-  max-height: 390px !important;
+  max-width: 96% !important;
+  height: auto !important;
+  max-height: 430px !important;
 }
 
 .reveal .slides section.math-strip img {

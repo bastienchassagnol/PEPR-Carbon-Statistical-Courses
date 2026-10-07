@@ -8,22 +8,24 @@ Use the notation from the first hour: $Y$ is the response, $x$ is the covariate,
 About twelve minutes. Ask the room before anyone checks. The check key is x. f still flips a flashcard, earlier in the deck.
 :::
 
-## A NEON taxon abundance {.quiz-question}
+## Sample A has twice the reads of sample B {.quiz-question}
 
-- [Unrestricted and continuous, so a Gaussian linear model is the first tool.]{data-explanation="A count cannot be negative, and a Gaussian mean can predict a negative abundance."}
-- [A count, or a share of a count. The variance is not a free $\sigma$.]{.correct data-explanation="The teaching table is integers, or parts of a whole. Zeros and a mean-linked variance are part of that table."}
-- [A presence or absence, so start with a logit and ignore the counts.]{data-explanation="Detection is a different response. The product named on the dataset slide is an abundance."}
+Both are CA-SYS soil samples. You want the rate of one taxon.
 
-## Ten SPRUCE enclosures {.quiz-question}
+- [Compare the raw counts. They are both counts.]{data-explanation="Twice the reads is about twice the chance of seeing any taxon, with no biology involved."}
+- [Put $\log(\text{library size})$ in as an offset.]{.correct data-explanation="The offset fixes that coefficient at 1, so the model is about a rate per read. Library size runs from 11,123 to 85,010 reads in this table."}
+- [Rarefy both samples to the smallest library, then use a Gaussian model.]{data-explanation="Discarding reads loses information, and the Gaussian family still does not match a count."}
 
-- [Each weekly flux is a new replicate of warming.]{data-explanation="Warming is applied to the enclosure. Weeks sit inside $j$."}
-- [Ten enclosures. Warming and $\mathrm{CO}_2$ sit on the enclosure.]{.correct data-explanation="The regression design has ten experimental units. Collars and dates are repeated measures."}
-- [Two groups: ambient versus elevated $\mathrm{CO}_2$. The five temperatures are replicates.]{data-explanation="The five temperatures are assigned levels, not replicates of a two-group contrast."}
+## SPRUCE qPCR copy numbers {.quiz-question}
 
-## A flux ratio of 0.97 (0.95 to 0.99), with $p < 0.05$ {.quiz-question}
+- [An integer count, so start with a Poisson.]{data-explanation="A qPCR copy number is an estimated abundance from a standard curve, not a counted integer."}
+- [A positive, skewed continuous response. Model it on a log scale.]{.correct data-explanation="The dataset ships log columns for that reason. The depth profile is roughly linear in $\log_{10}$ copies."}
+- [A proportion, because it is relative to the standard.]{data-explanation="It is copies per gram of dry peat, not a share of a whole."}
+
+## A ratio of 0.97 (0.95 to 0.99), with $p < 0.05$ {.quiz-question}
 
 - [A large effect, because the test rejects.]{data-explanation="The ratio is 0.97. Rejection is not the size of the effect."}
-- [Detected, and small. Ask whether 3% matters.]{.correct data-explanation="The interval sits below 1, so the contrast is detected, and it is a 3% change. The p-value does not say whether that change matters for the carbon budget."}
+- [Detected, and small. Ask whether 3% matters.]{.correct data-explanation="The interval sits below 1, so the contrast is detected, and it is a 3% change. The p-value does not say whether that change matters."}
 - [Too uncertain to quote, because the interval is narrow.]{data-explanation="A narrow interval is a precise estimate. Here it is a precise estimate of a small effect."}
 
 ## Sequencing failed for every core with pH below 4 {.quiz-question}
@@ -34,13 +36,13 @@ pH is recorded for every core, including the cores with no sequences.
 - [Missing at random given pH. pH has to enter the model.]{.correct data-explanation="Missingness depends on observed pH. That is not a licence to fit a complete-case model and forget the low-pH cores."}
 - [Missing not at random, so no model can use these rows.]{data-explanation="The driver here is observed. A missing-not-at-random story would need a variable you did not record."}
 
-## Colony counts spread far above the fitted mean {.quiz-question}
+## Pearson $\chi^2/\mathrm{df} = 10.6$ after a Poisson fit {.quiz-question}
 
-The log-link slope is the quantity you care about.
+The log-link rate ratio is the quantity you care about.
 
-- [Take $\log(Y+1)$ and fit a Gaussian linear model.]{data-explanation="That targets a different estimand. It is not a rate ratio for the mean count."}
-- [Keep the log link. Replace the Poisson variance.]{.correct data-explanation="If the mean model is still right, a negative binomial adds $\mu^2/\theta$ and widens the interval for the rate ratio."}
-- [Trust the Poisson interval: the mean model is right.]{data-explanation="A right mean with the wrong variance makes the interval too narrow."}
+- [Take $\log(Y+1)$ and fit a Gaussian linear model.]{data-explanation="That targets a different estimand. It is not a rate ratio for the mean count, and the offset no longer enters."}
+- [Keep the log link. Replace the Poisson variance.]{.correct data-explanation="On the CA-SYS reads the negative binomial adds $\mu^2/\theta$ with $\hat\theta = 29.3$, and the interval widens by a factor of 3.1, from 0.962-0.982 to 0.941-1.002."}
+- [Trust the Poisson interval: the mean model is right.]{data-explanation="A right mean with the wrong variance makes the interval too narrow. That is exactly what happened here."}
 
 ## $\exp(\hat\beta_1) = 4$ in a logit model of detection {.quiz-question}
 
@@ -56,11 +58,13 @@ One-unit increase in centred pH, other covariates held fixed.
 - [Keep the regression across the five levels.]{.correct data-explanation="The design is a regression. Report a slope per degree, and show the mean. Binning is the loss the design page already described."}
 - [Either, if the $p$-value agrees.]{data-explanation="Agreement of a test does not repair a cut that changes the estimand."}
 
-## A collar in each enclosure, measured every week {.quiz-question}
+## Nine depth increments in each SPRUCE plot {.quiz-question}
 
-- [Each week is a new replicate of warming.]{data-explanation="Warming is applied to the enclosure. Weeks are repeats inside that enclosure."}
-- [Ten enclosures. Weeks are repeats inside $j$.]{.correct data-explanation="The weekly collar rows are not $10 \times$ weeks independent replicates of the warming effect."}
-- [The replicate is the collar, because that is the sensor.]{data-explanation="The sensor is not the unit that received the treatment."}
+215 measured rows, 12 plots, two sampling months.
+
+- [215 replicates of the warming contrast.]{data-explanation="Warming is applied to the plot. Depths and months are repeats inside that plot."}
+- [Twelve plots. Depths and months are repeats inside $j$.]{.correct data-explanation="Ten chambered enclosures carry a warming level, plus two ambient plots. The 215 rows are not 215 independent trials of warming."}
+- [Nine replicates, because the depth profile is the measurement.]{data-explanation="Depth is a covariate measured inside each plot, not the unit that received the treatment."}
 
 ## Hospital B is worse overall, and better inside each severity {.quiz-question}
 

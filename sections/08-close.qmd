@@ -1,4 +1,4 @@
-## What to open next · the response
+## What to open next · the response {#sec-next-response}
 
 - zero-inflated and hurdle models, when zeros are a second process
 - compositions: log-ratios, and a deliberate rule for zeros, before any CLR
@@ -54,16 +54,16 @@ Introductory catalogue. If the frame is blank, the host refused to be embedded. 
 Advanced catalogue. Same fallback: use the link on the books slide.
 :::
 
-## Thank you :wave:
+## Thank you :wave: {.smaller}
 
 :::: {.columns}
 ::: {.column width="62%"}
 - The room, for a PICO specific enough to argue with
 - [Riley and colleagues](https://doi.org/10.1136/bmj-2022-072883), for the twelve pitfalls
-- [SPRUCE](https://mnspruce.ornl.gov/content/experimental-design) and [NEON soil microbes](https://data.neonscience.org/data-products/DP1.10081.001)
+- The [CA-SYS](https://doi.org/10.57745/LO2KIF) and [SPRUCE](https://doi.org/10.25581/spruce.110/1998878) teams, for depositing data anyone can download
 - Paolo Angelino and Rachel Marcone, for the SIB sequence
 
-Simulated figures use seed `20261005`. They are not fits to either dataset.
+Figures fitted to those two datasets come from `scripts/generate-data-figures.R`. Figures marked as illustrative are simulated with seed `20261005`.
 
 Slides: [PEPR Carbon statistical workshop](https://bastienchassagnol.github.io/PEPR-Carbon-Statistical-Courses/)
 
@@ -105,5 +105,5 @@ Portrait cards, including Benjamin Loire and Anaïs Baudot. Courtesy of Célia B
 :::
 
 ::: {.notes}
-Every other claim on a slide is linked where it is used: NEON, SPRUCE, SAMPL, SIB, O'Hara and Kotze (2010), Altman and Royston (2006), and Halsey and colleagues (2015).
+Every other claim on a slide is linked where it is used: CA-SYS, SPRUCE, SAMPL, SIB, O'Hara and Kotze (2010), Altman and Royston (2006), and Halsey and colleagues (2015).
 :::
