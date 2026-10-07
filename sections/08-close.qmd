@@ -1,0 +1,109 @@
+## What to open next · the response
+
+- zero-inflated and hurdle models, when zeros are a second process
+- compositions: log-ratios, and a deliberate rule for zeros, before any CLR
+- splines and GAMs, when the warming or moisture curve is the result
+- quantile residuals and calibration, once the family is in place
+
+The longer GLM development is the SIB day already cited, and Agresti [@agrestiFoundationsLinearGeneralized2015].
+
+## What to open next · design, cause, and reuse
+
+- a full mixed model for the SPRUCE indices $i$ and $j$, on a defensible scale for flux
+- spatial and temporal correlation, when the random intercept is not enough
+- a Bayesian hierarchical fit, with two priors and a comparison of the slope
+- a mechanistic model, when $\mu$ is the solution of a process rather than a linear predictor
+- a reproducible script, and a report that meets SAMPL
+
+FAIR habits matter here because the next person will need your unit, your missingness rule, and your seed.
+
+## Books to open next
+
+:::: {.columns}
+::: {.column width="50%"}
+**A first shelf**
+
+- @spiegelhalterArtStatisticsHow2021
+
+[Introductory lists](https://www.biostatistics.ca/best-introduction-to-statistics-and-data-analysis-books-the-full-list/)
+:::
+
+::: {.column width="50%"}
+**The theory shelf**
+
+- @hoggIntroductionMathematicalStatistics2019
+- @millerJohnFreundsMathematical2019
+- @riceMathematicalStatisticsData
+- @agrestiFoundationsLinearGeneralized2015
+
+[Advanced lists](https://www.biostatistics.ca/best-advanced-statistics-books-the-full-list/)
+:::
+::::
+
+The two biostatistics.ca pages are longer catalogues. This slide cites only the books already in the workshop bibliography. The next two slides are those pages.
+
+## {background-iframe="https://www.biostatistics.ca/best-introduction-to-statistics-and-data-analysis-books-the-full-list/" background-interactive="true"}
+
+::: {.notes}
+Introductory catalogue. If the frame is blank, the host refused to be embedded. The link on the previous slide still opens in the preview overlay.
+:::
+
+## {background-iframe="https://www.biostatistics.ca/best-advanced-statistics-books-the-full-list/" background-interactive="true"}
+
+::: {.notes}
+Advanced catalogue. Same fallback: use the link on the books slide.
+:::
+
+## Thank you :wave:
+
+:::: {.columns}
+::: {.column width="62%"}
+- The room, for a PICO specific enough to argue with
+- [Riley and colleagues](https://doi.org/10.1136/bmj-2022-072883), for the twelve pitfalls
+- [SPRUCE](https://mnspruce.ornl.gov/content/experimental-design) and [NEON soil microbes](https://data.neonscience.org/data-products/DP1.10081.001)
+- Paolo Angelino and Rachel Marcone, for the SIB sequence
+
+Simulated figures use seed `20261005`. They are not fits to either dataset.
+
+Slides: [PEPR Carbon statistical workshop](https://bastienchassagnol.github.io/PEPR-Carbon-Statistical-Courses/)
+
+Source: [github.com/bastienchassagnol/PEPR-Carbon-Statistical-Courses](https://github.com/bastienchassagnol/PEPR-Carbon-Statistical-Courses)
+:::
+
+::: {.column width="38%"}
+**Keep in touch**
+
+{{< fa brands linkedin >}} [bastien-chassagnol](https://www.linkedin.com/in/bastien-chassagnol-677b67140/)
+
+{{< fa brands github >}} [bastienchassagnol](https://github.com/bastienchassagnol)
+
+[MMG, A. Baudot](https://www.marseille-medical-genetics.org/a-baudot/)
+:::
+::::
+
+## {background-image="figures/sources/acknowledgements-roles.png" background-size="contain" background-color="#111111"}
+
+::: {.notes}
+Roles slide: Grégory Nuel, Anaïs Baudot, Etienne Becht, and Marielle Péré. Numerical optimisation, gene-regulatory networks, deconvolution, gastruloids.
+:::
+
+## {background-image="figures/sources/acknowledgements-sysbiomed.png" background-size="contain" background-color="#111111"}
+
+::: {.notes}
+SysBioMed, Aix-Marseille Université, and Marseille Medical Genetics.
+:::
+
+## {background-image="figures/sources/acknowledgements-portraits.png" background-size="contain" background-color="#111111"}
+
+::: {.notes}
+Portrait cards, including Benjamin Loire and Anaïs Baudot. Courtesy of Célia Brahimi.
+:::
+
+## Sources for the cited works {#references}
+
+::: {#refs}
+:::
+
+::: {.notes}
+Every other claim on a slide is linked where it is used: NEON, SPRUCE, SAMPL, SIB, O'Hara and Kotze (2010), Altman and Royston (2006), and Halsey and colleagues (2015).
+:::

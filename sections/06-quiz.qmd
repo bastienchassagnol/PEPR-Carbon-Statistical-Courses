@@ -1,0 +1,134 @@
+## Before the quiz :question:
+
+Ten questions, two from each block: the datasets, the pitfalls, non-Gaussian responses, the design, and the causal reading. Pick an option, then press `x` to check. Press `q` to reset that question.
+
+Use the notation from the first hour: $Y$ is the response, $x$ is the covariate, $\mu = \mathbb{E}(Y \mid x)$, and $j$ is the unit that received the treatment.
+
+::: {.notes}
+About twelve minutes. Ask the room before anyone checks. The check key is x. f still flips a flashcard, earlier in the deck.
+:::
+
+## A NEON taxon abundance {.quiz-question}
+
+- [Unrestricted and continuous, so a Gaussian linear model is the first tool.]{data-explanation="A count cannot be negative, and a Gaussian mean can predict a negative abundance."}
+- [A count, or a share of a count. The variance is not a free $\sigma$.]{.correct data-explanation="The teaching table is integers, or parts of a whole. Zeros and a mean-linked variance are part of that table."}
+- [A presence or absence, so start with a logit and ignore the counts.]{data-explanation="Detection is a different response. The product named on the dataset slide is an abundance."}
+
+## Ten SPRUCE enclosures {.quiz-question}
+
+- [Each weekly flux is a new replicate of warming.]{data-explanation="Warming is applied to the enclosure. Weeks sit inside $j$."}
+- [Ten enclosures. Warming and $\mathrm{CO}_2$ sit on the enclosure.]{.correct data-explanation="The regression design has ten experimental units. Collars and dates are repeated measures."}
+- [Two groups: ambient versus elevated $\mathrm{CO}_2$. The five temperatures are replicates.]{data-explanation="The five temperatures are assigned levels, not replicates of a two-group contrast."}
+
+## A flux ratio of 0.97 (0.95 to 0.99), with $p < 0.05$ {.quiz-question}
+
+- [A large effect, because the test rejects.]{data-explanation="The ratio is 0.97. Rejection is not the size of the effect."}
+- [Detected, and small. Ask whether 3% matters.]{.correct data-explanation="The interval sits below 1, so the contrast is detected, and it is a 3% change. The p-value does not say whether that change matters for the carbon budget."}
+- [Too uncertain to quote, because the interval is narrow.]{data-explanation="A narrow interval is a precise estimate. Here it is a precise estimate of a small effect."}
+
+## Sequencing failed for every core with pH below 4 {.quiz-question}
+
+pH is recorded for every core, including the cores with no sequences.
+
+- [Missing completely at random: drop the cores.]{data-explanation="The failures track observed pH, so this is not a pattern with no systematic structure."}
+- [Missing at random given pH. pH has to enter the model.]{.correct data-explanation="Missingness depends on observed pH. That is not a licence to fit a complete-case model and forget the low-pH cores."}
+- [Missing not at random, so no model can use these rows.]{data-explanation="The driver here is observed. A missing-not-at-random story would need a variable you did not record."}
+
+## Colony counts spread far above the fitted mean {.quiz-question}
+
+The log-link slope is the quantity you care about.
+
+- [Take $\log(Y+1)$ and fit a Gaussian linear model.]{data-explanation="That targets a different estimand. It is not a rate ratio for the mean count."}
+- [Keep the log link. Replace the Poisson variance.]{.correct data-explanation="If the mean model is still right, a negative binomial adds $\mu^2/\theta$ and widens the interval for the rate ratio."}
+- [Trust the Poisson interval: the mean model is right.]{data-explanation="A right mean with the wrong variance makes the interval too narrow."}
+
+## $\exp(\hat\beta_1) = 4$ in a logit model of detection {.quiz-question}
+
+One-unit increase in centred pH, other covariates held fixed.
+
+- [The detection probability is multiplied by 4.]{data-explanation="The probability change depends on where you start on the curve. It is not a constant factor."}
+- [The odds of detection are multiplied by 4.]{.correct data-explanation="The odds move by $\exp(\hat\beta_1)$. The change in $\pi$ does not."}
+- [The log-odds increase by 4.]{data-explanation="The log-odds increase by $\hat\beta_1$, which is $\log 4$, not 4."}
+
+## Analyse SPRUCE warming as low versus high, split at $+4.5^\circ\mathrm{C}$ {.quiz-question}
+
+- [Reasonable: two groups are easier to explain.]{data-explanation="The cut treats +4.5 and +9 as the same regime, and +4.5 and +2.25 as unrelated."}
+- [Keep the regression across the five levels.]{.correct data-explanation="The design is a regression. Report a slope per degree, and show the mean. Binning is the loss the design page already described."}
+- [Either, if the $p$-value agrees.]{data-explanation="Agreement of a test does not repair a cut that changes the estimand."}
+
+## A collar in each enclosure, measured every week {.quiz-question}
+
+- [Each week is a new replicate of warming.]{data-explanation="Warming is applied to the enclosure. Weeks are repeats inside that enclosure."}
+- [Ten enclosures. Weeks are repeats inside $j$.]{.correct data-explanation="The weekly collar rows are not $10 \times$ weeks independent replicates of the warming effect."}
+- [The replicate is the collar, because that is the sensor.]{data-explanation="The sensor is not the unit that received the treatment."}
+
+## Hospital B is worse overall, and better inside each severity {.quiz-question}
+
+A publishes 86% survival, B publishes 79%. Inside light cases, and again inside severe cases, B is higher.
+
+- [Book A. The overall rate is the only estimand.]{data-explanation="The overall rate weights the two severities differently in the two hospitals. The within-severity ranking goes the other way."}
+- [The pooled ranking can reverse because the case-mix differs. Severity belongs in the contrast.]{.correct data-explanation="Giltaire's table: B is higher in both strata. A's overall rate is higher because A treated mostly light cases."}
+- [The reversal means one of the two tables is a calculation error.]{data-explanation="The arithmetic is the paradox. The weights, not a mistaken cell, reverse the ranking."}
+
+## Inflammation $Z$ is caused by both $X$ and $Y$ {.quiz-question}
+
+- [Put $Z$ in the regression. It is associated with both.]{data-explanation="That is a collider. Conditioning on it opens a path between $X$ and $Y$."}
+- [Do not control $Z$. Conditioning on a common effect creates a correlation.]{.correct data-explanation="Hertel's rule for a collider: leave it out. Controlling it is the overmatching he warns against."}
+- [Control $Z$ only when the sample is large.]{data-explanation="Sample size does not change the arrow. A common effect is still a collider."}
+
+## SAMPL, in workshop language :memo: {#sec-sampl}
+
+[Lang and Altman, SAMPL](https://www.equator-network.org/reporting-guidelines/sampl/) ask for the analysis to be explicit enough to audit. For this room, four lines are the minimum:
+
+1. []{.fragment fragment-index="1"} Purpose: describe, compare, explain, predict, explore, or confirm
+2. []{.fragment fragment-index="2"} Estimand, with the unit and the contrast
+3. []{.fragment fragment-index="3"} Family, link, and what you did about missing rows
+4. []{.fragment fragment-index="4"} The estimate, the interval, and the assumption you checked
+
+"We used a mixed model" is not one of the four lines. The pitfalls card is [write so the analysis can be rerun](#sec-reporting).
+
+## Rewrite the model you arrived with :pencil:
+
+Take the analysis you named at the start. Replace one paragraph so that a colleague could say what $\mu$ is.
+
+- What is $Y$, and what is $j$?
+- Which of the twelve pitfalls is the one you are currently violating?
+- Does the family match the support of $Y$?
+- What would you refit tomorrow morning as a sensitivity analysis?
+
+::: {.notes}
+Ten minutes if the clock allows, otherwise five, and one example aloud. This is the second protected exercise.
+:::
+
+## The SAMPL guideline {#sec-sampl-pdf}
+
+{{< pdf references/sampl-guidelines.pdf width="100%" height="500px" >}}
+
+::: {.notes}
+Leave this slide up while the room starts reading. The writing clock is the next slide: twenty minutes.
+:::
+
+## Twenty minutes: draft the plan :pencil: {#sec-sap-write}
+
+The PDF on the previous slide is [Lang and Altman, SAMPL](https://www.equator-network.org/reporting-guidelines/sampl/). Write a plan a colleague could rerun. Use the [checklist](#sec-sap-checklist) as the headings.
+
+- What is $Y$, and what is one replicate?
+- What is $\mu$, and which contrast?
+- Which family, and what did you assume about missing rows?
+
+::: {.notes}
+Twenty minutes, protected. If the clock is short, ten minutes and one volunteer reads the first three lines.
+:::
+
+## A checklist you can paste above a script {#sec-sap-checklist}
+
+1. Question and purpose, in one sentence
+2. Estimand, including the population and the unit
+3. Experimental or observational, and where the treatment was applied
+4. Support of $Y$: continuous, count, binary, composition, censored
+5. Dependence: site, enclosure, date, space
+6. Missingness: how much, and a mechanism you are willing to defend
+7. Linearity of the linear predictor, checked, not assumed
+8. Family check: a QQ plot of the right residual
+9. Sensitivity: one alternative that could move the claim
+10. A report that separates association from an assigned effect

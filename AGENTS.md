@@ -38,6 +38,10 @@ Reveal.js does not collapse callouts. Keep each one to a few lines. The callout 
   - `reveal-header` for the running header and the PEPR mark
   - `tabset` when one slide compares implementations of the same model
   - `custom-callout` for an assumption, a model equation, or a theorem
+  - `code-fullscreen` for a fullscreen control on code blocks
+  - `flashcards` for a definition card (flip with `f`; do not reuse `q`, which resets a quiz item)
+  - `fontawesome` for the social icons on the opening and closing slides
+  - `embedpdf` for the SAMPL guideline
 - Partner marks from `logos.svg` sit in the reveal.js footer via `logo: figures/footer-logos.svg`. Do not put that strip back into the header.
 - Lightbox is on for every figure (`lightbox.match: auto`). A single image can still set `width` and the `lightbox` class, for example `{width="80%" .lightbox}`. Add `.nolightbox` only when a click must not enlarge the image.
 

@@ -85,10 +85,23 @@ $u_j$ is a property of the cluster. It is not a covariate you forgot to measure,
 
 ## Fixed and random name the target {#sec-fixed-random-target}
 
-- **Fixed:** a contrast you want to report, such as the warming slope
-- **Random:** a level you want to generalise over, such as enclosures drawn from a bog
-- If you have the whole population of levels, a fixed indicator set is coherent
-- Ten enclosures is a small sample of a variance. $\hat\sigma_u$ will be noisy
+:::: {.columns}
+::: {.column width="50%"}
+**Fixed**
+
+A contrast you want to report, such as the warming slope.
+
+If you already have every level in the population, a fixed indicator for each level is coherent.
+:::
+
+::: {.column width="50%"}
+**Random**
+
+A level you want to generalise over, such as enclosures drawn from a bog.
+
+Ten enclosures is a small sample of a variance. $\hat\sigma_u$ will be noisy.
+:::
+::::
 
 Partial pooling is the practical reason to bother: an enclosure with two bad weeks borrows strength from the others. The meta-analysis version, one estimate per site, is [fixed effect or random effects](#sec-fixed-random-meta).
 

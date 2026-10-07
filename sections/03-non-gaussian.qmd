@@ -575,16 +575,31 @@ Leverage \(h_{ii}\) is the diagonal of the hat matrix. Angelino and Marcone quot
 
 Agresti writes a generalised linear model as one object: a distribution for $Y$, a linear predictor, and a link on the conditional mean [@agrestiFoundationsLinearGeneralized2015].
 
+:::: {.columns}
+::: {.column width="50%"}
+**Link on the mean**
+
 ::: model
 $$
-g(\mu_i) = \eta_i = \mathbf{x}_i^{\top}\boldsymbol{\beta},
-\qquad \mu_i = \mathbb{E}(Y_i \mid \mathbf{x}_i).
+g(\mu_i) = \mathbf{x}_i^{\top}\boldsymbol{\beta}
 $$
 :::
 
-A transformation route instead fits $g(Y_i) = \mathbf{x}_i^{\top}\boldsymbol{\beta} + \varepsilon_i$. The first line keeps the estimand on $\mu$. The second rewrites each observation before the fit.
+After the fit, $\mathbb{E}(Y \mid \mathbf{x}) = g^{-1}(\mathbf{x}^{\top}\boldsymbol{\beta})$ is a probability, an expected count, or a positive rate.
+:::
 
-After the fit, $\mathbb{E}(Y \mid \mathbf{x}) = g^{-1}(\mathbf{x}^{\top}\boldsymbol{\beta})$ is a mean on the scale you measured: a probability, an expected count, a positive rate. You do not model $g(Y)$ and then argue backwards to $\mathbb{E}(Y)$. The [estimand slides](#sec-log-estimand) are what that argument costs.
+::: {.column width="50%"}
+**Transform of $Y$**
+
+$$
+g(Y_i) = \mathbf{x}_i^{\top}\boldsymbol{\beta} + \varepsilon_i
+$$
+
+That sentence rewrites each observation before the fit. It targets $\mathbb{E}\{g(Y)\}$, which is not $g(\mu)$ when $g$ is nonlinear.
+:::
+::::
+
+The [estimand slides](#sec-log-estimand) are what the second column costs.
 
 ## $E\{g(Y)\}$ is not $g\{E(Y)\}$ {#sec-glm-jensen}
 
@@ -610,19 +625,27 @@ The [family table](#sec-family-table) is the first menu. The point here is that 
 
 ## Variance travels with $\mu$ {#sec-glm-variance-mu}
 
-Classical linear regression often assumes
+:::: {.columns}
+::: {.column width="50%"}
+**Constant variance**
 
 $$
-\operatorname{Var}(Y \mid \mathbf{x}) = \sigma^2.
+\operatorname{Var}(Y \mid \mathbf{x}) = \sigma^2
 $$
 
-In a GLM the variance is tied to the mean through the family:
+This is the classical linear-model assumption. A fan on [scale against location](#sec-lm-scale-location) is the picture that it has failed.
+:::
+
+::: {.column width="50%"}
+**Variance tied to the mean**
 
 $$
-\operatorname{Var}(Y_i \mid \mathbf{x}_i) = \phi\, V(\mu_i).
+\operatorname{Var}(Y_i \mid \mathbf{x}_i) = \phi\, V(\mu_i)
 $$
 
-Poisson: $V(\mu) = \mu$. Binomial with mean $\pi$: variance $\pi(1-\pi)$. That mean–variance link is part of the model, not a post hoc fix on the residuals. When the variance rises with the mean, [scale against location](#sec-lm-scale-location) was already warning you.
+Poisson: $V(\mu) = \mu$. Binomial mean $\pi$: variance $\pi(1-\pi)$. The link is part of the family, not a fix applied to the residuals afterwards.
+:::
+::::
 
 ## The link keeps $\mu$ in range {#sec-glm-link-range}
 

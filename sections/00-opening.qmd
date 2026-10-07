@@ -5,7 +5,7 @@
 - []{.fragment fragment-index="3"} **70 min.** Non-Gaussian responses: QQ plots, then Poisson, negative binomial, and logit
 - []{.fragment fragment-index="4"} **20 min.** Experimental design and hierarchical models
 - []{.fragment fragment-index="5"} **20 min.** Bayesian regression and causal estimands
-- []{.fragment fragment-index="6"} **30 min.** Quiz, SAMPL, and what to open next
+- []{.fragment fragment-index="6"} **50 min.** Quiz and the SAMPL draft, then reproducibility and the close
 
 ::: {.notes}
 Down walks this section. Right jumps to the next section. The PICO writing block and the closing SAMPL block are protected. If a GLM slide runs long, shorten the tour of pitfalls 6 to 8 rather than the exercises. Speaker view: press S. A chalkboard is available if you want to annotate a PICO live.
@@ -13,24 +13,78 @@ Down walks this section. Right jumps to the next section. The PICO writing block
 
 ## Who is speaking :wave:
 
-- Bastien Chassagnol
-- I work on statistical models for structured biological data
-- Today the job is practical: match the question, the estimand, and the distribution of $Y$
-- Interrupt when your own unit of replication does not match the slide
+:::: {.columns}
+::: {.column width="62%"}
+**Bastien Chassagnol**
+
+Postdoctoral researcher, supervised by Pr. Anaïs Baudot
+
+Marseille Medical Genetics (MMG), U 1251  
+Faculté de Médecine de La Timone  
+27 Bd Jean Moulin  
+13005 Marseille, France
+
+[MMG, A. Baudot](https://www.marseille-medical-genetics.org/a-baudot/)
+
+{{< fa brands linkedin >}} [bastien-chassagnol](https://www.linkedin.com/in/bastien-chassagnol-677b67140/)
+
+{{< fa brands github >}} [bastienchassagnol](https://github.com/bastienchassagnol)
+:::
+
+::: {.column width="38%"}
+Today the job is practical: match the question, the estimand, and the distribution of $Y$.
+
+Interrupt when your own unit of replication does not match the slide.
+:::
+::::
 
 ::: {.notes}
-Do not invent a CV. If asked for a longer biography, point to the DeCovarT work and then return to the participants. One minute.
+One minute. The three repositories are on the next slide. Do not expand into a CV.
+:::
+
+## Three projects beside this workshop
+
+:::: {.columns}
+::: {.column width="33%"}
+**Deconvolution**
+
+[DeCovarT](https://github.com/bastienchassagnol/DeCovarT)
+
+Separate a mixed measurement into the cell types that produced it.
+:::
+
+::: {.column width="33%"}
+**Gastruloid fate**
+
+[GastroDeconv2FateMap](https://github.com/bastienchassagnol/GastroDeconv2FateMap)
+
+Several omic layers, used to predict morphotype lineage.
+:::
+
+::: {.column width="34%"}
+**A reproduced circuit**
+
+[COPASI, Lo 2016](https://github.com/bastienchassagnol/COPASI_Team216_Lo2016)
+
+Hackathon: replay an ODE analysis of inflammatory circuits in inflammatory bowel disease.
+:::
+::::
+
+::: {.notes}
+Name the project only if someone asks what sits next to the carbon workshop. Half a minute.
 :::
 
 ## FairCarboN, and why the carbon budget needs it
 
 The [Paris Agreement](https://www.pepr-faircarbon.fr/objectifs-organisation/contexte) asks to hold warming well below $2^\circ\mathrm{C}$, and to reach climate neutrality in the second half of this century. Continental ecosystems have to cut emissions and absorb those that remain: forests, grassland, cropland, fresh water, peatland, coasts, and cities. That has to happen without giving up the other services those ecosystems provide.
 
-[FairCarboN](https://www.pepr-faircarbon.fr/) is the French programme for that science. CNRS and INRAE co-lead it, with €40 million over 2023–2029.
+[FairCarboN](https://www.pepr-faircarbon.fr/) is the French programme for that science. CNRS and INRAE co-lead it, with €40 million over 2023–2029. The next slide is that page.
 
 ::: {.notes}
-One minute. The point is the contribution the ecosystems are being asked to make, not a tour of the governance chart.
+One minute. The point is the contribution the ecosystems are being asked to make, not a tour of the governance chart. If the following frame is blank, open the link: some hosts refuse to be embedded. Preview links are on, so the click opens an overlay.
 :::
+
+## {background-iframe="https://www.pepr-faircarbon.fr/" background-interactive="true"}
 
 ## Three scientific objectives
 
@@ -40,9 +94,13 @@ From the [programme objectives](https://www.pepr-faircarbon.fr/objectifs-organis
 2. Open data, and a new generation of models of carbon stocks and fluxes in soils and vegetation
 3. Land-use and management pathways, built with stakeholders and tested from the territory to the national scale
 
+The next slide is the [objectives page](https://www.pepr-faircarbon.fr/objectifs-organisation/objectifs-scientifiques).
+
 ::: {.notes}
 Read the three lines. Do not open the project list yet.
 :::
+
+## {background-iframe="https://www.pepr-faircarbon.fr/objectifs-organisation/objectifs-scientifiques" background-interactive="true"}
 
 ## Four scientific axes
 
@@ -53,9 +111,13 @@ The same questions are grouped on the [axes page](https://www.pepr-faircarbon.fr
 3. **Biomass.** What sets plant traits and production, and whether a new use is viable and acceptable
 4. **Economy and society.** Behaviour, public policy, and the environmental and economic consequences
 
+The next slide is the [axes page](https://www.pepr-faircarbon.fr/objectifs-organisation/axes-scientifiques).
+
 ::: {.notes}
 Name one axis that matches a person in the room if you already know the group. Otherwise leave it as a map.
 :::
+
+## {background-iframe="https://www.pepr-faircarbon.fr/objectifs-organisation/axes-scientifiques" background-interactive="true"}
 
 ## Who is in the room? :speech_balloon:
 

@@ -11,8 +11,11 @@ bibliography:
   - "Statistical classes.bib"
   - "references/p-value-fallacy.bib"
   - "references/multiple-tests.bib"
+  - "Introductory books.bib"
+  - "Theory books.bib"
 resources:
   - references/burakov-logistic-regression.pdf
+  - references/sampl-guidelines.pdf
 citeproc: true
 link-citations: true
 slide-level: 2
@@ -20,6 +23,7 @@ filters:
   - fragmention
   - reveal-header
   - custom-callout
+  - code-fullscreen
 custom-callout:
   assumption:
     title: "Assumption"
@@ -88,9 +92,15 @@ format:
       shuffleOptions: false
       defaultCorrect: "Yes. That is the claim."
       defaultIncorrect: "Not this one."
+    flashcards:
+      flipKey: "f"
+      shuffleKey: "t"
+      showFlipButton: true
+      resetOnSlideChange: true
     revealjs-plugins:
       - quiz
       - tabset
+      - flashcards
 ---
 
 {{< include sections/00-opening.qmd >}}
@@ -127,6 +137,12 @@ format:
 
 {{< include sections/05-bayesian-causal.qmd >}}
 
+# Quiz {.center}
+
+:question: Ten questions, two from each block, then the SAMPL draft.
+
+{{< include sections/06-quiz.qmd >}}
+
 # Reproducibility {.center}
 
 :repeat: A reference stack. One source file, then the practices that keep a rerun honest.
@@ -135,6 +151,6 @@ format:
 
 # Close {.center}
 
-:white_check_mark: About thirty minutes. A short quiz, then your own write-up.
+:white_check_mark: What to open next, then the room.
 
-{{< include sections/06-close.qmd >}}
+{{< include sections/08-close.qmd >}}

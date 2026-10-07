@@ -637,6 +637,42 @@ SAMPL, on the [EQUATOR Network](https://www.equator-network.org/reporting-guidel
 
 The multivariable row is drawn on [multivariable is not multivariate](#sec-multivariable).
 
+## What is an estimand? :black_joker:
+
+Press `f` to turn the card.
+
+::: {.flashcard-front}
+In one sentence: what is an estimand?
+:::
+
+::: {.flashcard-back}
+The quantity the analysis is trying to learn: $\mu$, the unit it belongs to, and the contrast. The software is not the estimand.
+:::
+
+::: {.notes}
+`f` flips. Later, `q` resets a quiz question and `x` checks it. Do not use `q` here.
+:::
+
+## Where does the link act?
+
+::: {.flashcard-front}
+In a generalised linear model, what does $g$ transform?
+:::
+
+::: {.flashcard-back}
+The conditional mean: $g(\mu) = \mathbf{x}^{\top}\boldsymbol{\beta}$. It does not rewrite the raw response $Y$.
+:::
+
+## What is the index $j$?
+
+::: {.flashcard-front}
+In this deck, what does $j$ index?
+:::
+
+::: {.flashcard-back}
+The cluster or experimental unit, when the treatment sits on that unit. $i$ indexes the observation inside it.
+:::
+
 ## Where we go deeper {#sec-deeper}
 
 Of these twelve, the next hour stays with a problem the poster assumes you have already solved: **the distribution of $Y$**.

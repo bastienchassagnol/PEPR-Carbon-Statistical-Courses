@@ -7,9 +7,13 @@ The teaching table is the soil microbe community product.
 - From the 2025 release, NEON supersedes it with taxonomy product [DP1.10081.002](https://data.neonscience.org/data-products/DP1.10081.002)
 - We use the scientific structure, not a fitted NEON model
 
+The next slide is the teaching product, [DP1.10081.001](https://data.neonscience.org/data-products/DP1.10081.001).
+
 ::: {.notes}
-Source: NEON product API text retrieved for this deck. Do not present any later slide's simulation as a NEON result. About two minutes.
+Source: NEON product API text retrieved for this deck. Do not present any later slide's simulation as a NEON result. About two minutes. If the frame is blank, NEON has refused the embed; the link still opens in the preview overlay.
 :::
+
+## {background-iframe="https://data.neonscience.org/data-products/DP1.10081.001" background-interactive="true"}
 
 ## What $Y$ is in that table {#sec-neon-y}
 
@@ -55,9 +59,13 @@ A whole-ecosystem warming experiment on the S1 bog, Marcell Experimental Forest.
 - Elevated $\mathrm{CO}_2$ atmospheres of about 800–900 ppm
 - Source: [SPRUCE experimental design](https://mnspruce.ornl.gov/content/experimental-design)
 
+The next slide is that page.
+
 ::: {.notes}
-All treatment numbers on the next slides are taken from that page, which cites Hanson et al. (2017) for the temperature differential and Cottingham et al. (2005) for regression designs. Do not expand those citations beyond what the page states. About two minutes.
+All treatment numbers on the following slides are taken from that page, which cites Hanson et al. (2017) for the temperature differential and Cottingham et al. (2005) for regression designs. Do not expand those citations beyond what the page states. About two minutes. If the frame is blank, use the link.
 :::
+
+## {background-iframe="https://mnspruce.ornl.gov/content/experimental-design" background-interactive="true"}
 
 ## Ten enclosures, not a two-group test
 
