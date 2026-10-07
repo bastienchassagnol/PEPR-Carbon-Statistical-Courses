@@ -93,7 +93,7 @@ The [markdown guide](https://quarto.org/docs/authoring/markdown-basics.html) is 
 - In RStudio, insert one with the toolbar button, or Ctrl+Alt+I
 - Run the current chunk with Ctrl+Shift+Enter
 
-In this deck a chunk that would refit a model is marked `eval: false`, and the figure beside it is a file written by `scripts/generate-data-figures.R`. The number on the slide and the number in the file are then the same number.
+In this deck a chunk that would refit a model is marked `eval: false`, and the figure beside it is a file written by [generate-data-figures.R](scripts/generate-data-figures.R). The number on the slide and the number in the file are then the same number.
 
 ::: {.notes}
 This is the house rule for the deck and the reason the GLM slides can show a call and a fitted figure without refitting anything during the render. The trade is explicit: the script is the source of truth, and the slide quotes it.

@@ -63,7 +63,7 @@ Advanced catalogue. Same fallback: use the link on the books slide.
 - The [CA-SYS](https://doi.org/10.57745/LO2KIF) and [SPRUCE](https://doi.org/10.25581/spruce.110/1998878) teams, for depositing data anyone can download
 - Paolo Angelino and Rachel Marcone, for the SIB sequence
 
-Figures fitted to those two datasets come from `scripts/generate-data-figures.R`. Figures marked as illustrative are simulated with seed `20261005`.
+Figures fitted to those two datasets come from [generate-data-figures.R](scripts/generate-data-figures.R). Figures marked as illustrative are simulated with seed `20261005`.
 
 Slides: [PEPR Carbon statistical workshop](https://bastienchassagnol.github.io/PEPR-Carbon-Statistical-Courses/)
 

@@ -180,6 +180,8 @@ Points outside that band are the departure. A $p$-value from a normality test is
 ::: {.notes}
 Highlight `bandType = "ts"` in the code chunk—normal QQ only. Contrast simultaneous tail-sensitive band with a pointwise ribbon. Tie back to the generated Gaussian-versus-count residuals once students see points outside the band.
 :::
+
+
 ## Three means, three questions {#sec-three-means}
 
 ![Table of the arithmetic, geometric, and harmonic means, with formulas and the inequality A at least G at least H.](figures/sources/arithmetic-geometric-harmonic.jpeg){fig-alt="Three columns. Arithmetic mean is a sum divided by n. Geometric mean is the n-th root of a product. Harmonic mean is the reciprocal of the mean of reciprocals. For positive numbers, A is at least G, which is at least H." width="78%"}
@@ -1217,7 +1219,7 @@ That coefficient is not a rate ratio for $\mu$, and the library size no longer e
 
 :::
 
-Arrow keys step the tabs. All three are fits to the CA-SYS reads, from `scripts/generate-data-figures.R`.
+Arrow keys step the tabs. All three are fits to the CA-SYS reads, from [generate-data-figures.R](scripts/generate-data-figures.R), using [casys_teaching.csv](data/derived/casys_teaching.csv).
 
 ::: {.notes}
 Tab through Poisson, NB, $\log(Y+1)$ Gaussian—arrow keys on slide. Rate ratio 0.972 vs 0.971, Pearson 10.6, $\hat\theta=29.3$, log-plus-one loses offset interpretation. Script path `generate-data-figures.R` if asked.

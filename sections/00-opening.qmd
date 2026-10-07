@@ -108,12 +108,6 @@ The next slide is the [objectives page](https://www.pepr-faircarbon.fr/objectifs
 Read the three lines. Do not open the project list yet.
 :::
 
-## {background-iframe="https://www.pepr-faircarbon.fr/objectifs-organisation/objectifs-scientifiques" background-interactive="true"}
-
-::: {.notes}
-Same rule as the home page: a glance, not a scroll. The numbered list on the previous slide is what you wanted them to hear.
-:::
-
 ## Four scientific axes
 
 The same questions are grouped on the [axes page](https://www.pepr-faircarbon.fr/objectifs-organisation/axes-scientifiques):
@@ -141,9 +135,9 @@ Write one line for each. We will use the answers this afternoon.
 
 1. Name and research group
 2. The carbon question, in one sentence
-3. What is the response $Y$?
-4. What is one independent replicate?
-5. What should be true by the end of these four hours?
+3. What is your current objective? and modelling framework?
+4. Which software do you use to implement your statistical analyses?
+5. How do you enforce reproducibility in your research?
 
 ::: {.notes}
 Two or three people answer aloud. Listen for Gaussian assumptions, compositional data, and repeated measures. Do not solve their analysis yet. About four minutes.
@@ -219,7 +213,78 @@ Thirty seconds. The grouped rows are the only new layout; do not re-teach matrix
 When $Y$ is binary, $\mu = \pi = \Pr(Y = 1 \mid \mathbf{x})$.
 
 ::: {.notes}
-Say the table aloud once. Later slides reuse these symbols and do not switch to other letters for the response. The three GLMs share [one skeleton](#sec-skeleton). Twelve panels from the algebra poster come next, then the spread of $Y$ versus the spread of $\bar Y$.
+Say the table aloud once. Later slides reuse these symbols and do not switch to other letters for the response. The three GLMs share [one skeleton](#sec-skeleton). Five sketches come next, then the algebra panels, then the spread of $Y$ versus the spread of $\bar Y$.
+:::
+
+## $Y$ is the response, $x$ is the covariate {#sec-yx}
+
+![One observational row: a covariate cell marked x beside a response cell marked Y.](figures/generated/notation-yx.jpg){fig-alt="Two boxes on one row. The left box is the covariate x. The right box is the response Y." width="78%"}
+
+One row of the data holds both. $Y$ is what the model describes. $x$ is what it conditions on.
+
+::: {.notes}
+Point at the two cells, not at a dataset yet. Ask which column in their own table is $Y$. The answer should be the measurement, not the treatment or the depth.
+:::
+
+## $\mu$ is the conditional mean {.smaller #sec-cond-mean}
+
+![At one value of x, several responses Y scatter around a mark labelled mu.](figures/generated/notation-mean.jpg){fig-alt="A vertical slice labelled x, with several Y marks scattered around a central tick labelled mu." width="52%"}
+
+::: model
+$\mu = \mathbb{E}(Y \mid x)$
+:::
+
+The dots are possible values of $Y$ at that $x$. $\mu$ is their mean, not one of the dots.
+
+::: {.notes}
+The slice is one $x$. $\mu$ sits in the middle of the $Y$s. The usual misreading is to treat $\mu$ as a fitted line already; the line comes on the next slide.
+:::
+
+## The identity link leaves $\mu$ on its own scale {.smaller #sec-identity-link}
+
+![A straight line of mu against x.](figures/generated/notation-identity.jpg){fig-alt="A rising straight line with mu on the vertical axis and x on the horizontal axis." width="58%"}
+
+::: model
+$g(\mu) = \mu = \beta_0 + \beta_1 x$
+:::
+
+A Gaussian linear model is this case. $\beta_1$ is a change in the mean of $Y$, in the units of $Y$.
+
+::: {.notes}
+The line is $\mu$, not a cloud of observations. Identity means $g$ does nothing. $\beta_1$ keeps the units of $Y$.
+:::
+
+## Log and logit move $\mu$ first {.smaller #sec-log-logit}
+
+![A log-mean curve of mu against x, and a logit curve of pi against x.](figures/generated/notation-links.jpg){fig-alt="Left, a curve rising from near zero, labelled log, with mu on the vertical axis. Right, a sigmoid labelled logit, with pi on the vertical axis." width="72%"}
+
+:::: {.columns}
+::: {.column width="50%"}
+::: model
+$\log \mu = \beta_0 + \beta_1 x$
+:::
+:::
+::: {.column width="50%"}
+::: model
+$\mathrm{logit}(\pi) = \beta_0 + \beta_1 x$
+:::
+:::
+::::
+
+On the log link, a step of 1 in $x$ multiplies $\mu$ by $\exp(\beta_1)$. On the logit, $Y$ is binary, so $\mu = \pi$, and the same step multiplies the odds by $\exp(\beta_1)$.
+
+::: {.notes}
+Left curve is a count mean, right curve is a probability. Both still have the same linear predictor. Ask which of their responses is a count and which is a detection.
+:::
+
+## $i$ sits inside $j$ {#sec-index-j}
+
+![Three observations labelled i inside one cluster labelled j.](figures/generated/notation-cluster.jpg){fig-alt="A rectangle marked j containing three circles, each marked i." width="78%"}
+
+$j$ is the cluster the treatment sits on: a site, an enclosure, a batch. $i$ is one row inside it: a core, a date, a collar. Rows that share a $j$ are not independent replicates.
+
+::: {.notes}
+Point at $j$ first, then the three $i$s. Ask which index received the treatment in their design. If they say the core, the enclosure is the $j$ they have skipped.
 :::
 
 ## Inner product and norm {.algebra-panel}
@@ -228,7 +293,7 @@ Say the table aloud once. Later slides reuse these symbols and do not switch to 
 An inner product measures alignment. The norm is a length. The sketches follow the twelve panels [StatHarbor Analytics](https://www.linkedin.com/posts/statistics-linearalgebra-biostatistics-share-7484322853023154176-qHXd/) published; the originals stay in `figures/sources/`.
 
 ::: {.notes}
-Twelve quick panels: name the object, not the proof. Ask who still uses cross products outside three dimensions. Pace at roughly one panel every twenty seconds if you show them all.
+Five panels are live. Name the object, not the proof. Panels from the spectral decomposition onward are in the file but hidden.
 :::
 
 ## Matrix multiplication {.algebra-panel}
@@ -264,10 +329,10 @@ The hat matrix name is deliberate: $\hat y$ is a linear function of $y$. Mention
 $x^{\mathsf T}Ax$ is a squared length that depends on $A$. A variance, and a Mahalanobis distance, are this shape.
 
 ::: {.notes}
-Ellipses on the panel are the picture to remember. Skip eigenvalues here; the next slide names them.
+Ellipses on the panel are the picture to remember. The eigenvalue slide that used to follow is hidden; do not open it unless someone asks.
 :::
 
-## Spectral decomposition {.algebra-panel}
+## Spectral decomposition {.algebra-panel visibility="hidden"}
 ![Panel 6: the eigenvalue decomposition of a symmetric matrix.](figures/generated/algebra-sketch-06.jpg){fig-alt="A equals Q Lambda Q transpose, with a note that the columns of Q are orthonormal eigenvectors."}
 
 A symmetric matrix rotates to principal axes and then scales by its eigenvalues. Principal components are this decomposition of a covariance.
@@ -276,7 +341,7 @@ A symmetric matrix rotates to principal axes and then scales by its eigenvalues.
 One sentence on PCA if the room is mixed: rotation then stretch. Do not open a PCA example.
 :::
 
-## Singular values {.algebra-panel}
+## Singular values {.algebra-panel visibility="hidden"}
 ![Panel 7: the singular value decomposition of a rectangular matrix.](figures/generated/algebra-sketch-07.jpg){fig-alt="A equals U Sigma V transpose, with a note that this is the decomposition behind principal components for a rectangular matrix."}
 
 A singular value decomposition does not need $A$ to be square. It is the same geometry for a rectangular design matrix.
@@ -285,7 +350,7 @@ A singular value decomposition does not need $A$ to be square. It is the same ge
 Rectangular $X$ is the link to regression. SVD is optional detail unless someone works on high-dimensional data.
 :::
 
-## Positive semidefinite {.algebra-panel}
+## Positive semidefinite {.algebra-panel visibility="hidden"}
 ![Panel 8: a positive semidefinite matrix and its Cholesky factor.](figures/generated/algebra-sketch-08.jpg){fig-alt="The definition that x transpose Sigma x is at least zero, and Sigma equals L L transpose."}
 
 A covariance is positive semidefinite: $x^{\mathsf T}\Sigma x \ge 0$. Cholesky writes $\Sigma = LL^{\mathsf T}$, which is how a simulation draws a correlated vector.
@@ -294,7 +359,7 @@ A covariance is positive semidefinite: $x^{\mathsf T}\Sigma x \ge 0$. Cholesky w
 PSD is the guardrail for valid covariances. Cholesky is a one-line simulation trick, not a full lecture.
 :::
 
-## Score and information {.algebra-panel}
+## Score and information {.algebra-panel visibility="hidden"}
 ![Panel 9: the score as the gradient of the log-likelihood, and the Fisher information as its curvature.](figures/generated/algebra-sketch-09.jpg){fig-alt="The score U of theta and the Hessian, with a sketch of a curved log-likelihood."}
 
 The score is the gradient of the log-likelihood. Observed information is the curvature. More curvature means a more precise estimate.
@@ -303,7 +368,7 @@ The score is the gradient of the log-likelihood. Observed information is the cur
 Bridge to MLE: score zero at the optimum. Fisher information reappears on Wald asymptotics later in the deck.
 :::
 
-## A conditional covariance {.algebra-panel}
+## A conditional covariance {.algebra-panel visibility="hidden"}
 ![Panel 10: the Schur complement as a conditional covariance.](figures/generated/algebra-sketch-10.jpg){fig-alt="A two-by-two block covariance and the Schur complement for the covariance of one block given the other."}
 
 The Schur complement is the covariance of one block after conditioning on the other. Conditioning on a covariate is this reduction.
@@ -312,7 +377,7 @@ The Schur complement is the covariance of one block after conditioning on the ot
 Only for audiences comfortable with partitions. Otherwise say “partial out a block” and move on.
 :::
 
-## The identities the other panels use {.algebra-wide}
+## The identities the other panels use {.algebra-wide visibility="hidden"}
 ![Panel 11: transpose, inverse, vectorisation, trace, and the derivative of a residual sum of squares.](figures/generated/algebra-sketch-11.jpg){fig-alt="A list of matrix identities: transpose of a product, inverse of a product, the trace cyclic property, and the derivative of the residual sum of squares."}
 
 Transpose, inverse, trace, and $\partial \|y-X\beta\|^2 / \partial \beta = -2X^{\mathsf T}(y-X\beta)$ are the working rules behind the estimator and the score.
@@ -321,7 +386,7 @@ Transpose, inverse, trace, and $\partial \|y-X\beta\|^2 / \partial \beta = -2X^{
 Reference slide: people photograph this one. Read the derivative line only if someone asks where the normal equations come from.
 :::
 
-## Mahalanobis distance {.algebra-wide}
+## Mahalanobis distance {.algebra-wide visibility="hidden"}
 ![Panel 12: Mahalanobis distance as a quadratic form in the inverse covariance, with elliptical contours.](figures/generated/algebra-sketch-12.jpg){fig-alt="The Mahalanobis distance formula and concentric ellipses around a mean."}
 
 $d_M(x,\mu)^2 = (x-\mu)^{\mathsf T}\Sigma^{-1}(x-\mu)$ measures distance after scale and correlation. The level sets are ellipses. Outlier rules that ignore $\Sigma$ treat those ellipses as circles.
@@ -332,13 +397,33 @@ Mahalanobis is the multivariate cousin of a $z$-score. Ellipses versus circles i
 
 ## Two spreads, not one {#sec-sd-se}
 
+:::: {.columns}
+::: {.column width="50%"}
+**Empirical**
+
 $$
 s = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n}(Y_i - \bar Y)^2}
-\qquad
-\mathrm{SE}(\bar Y) = \frac{s}{\sqrt{n}}
 $$
 
-$s$ describes how far the observations sit from their mean. The standard error describes how far that mean would move if the sample were drawn again. Dividing by $\sqrt{n}$ is the whole difference. In the draw on the next slides, the standard deviation of the 1,000 means is 2.11, against $15/\sqrt{50} = 2.12$.
+$s$ is the spread of the observations around $\bar Y$. The empirical standard error of the mean replaces the unknown scale with that $s$:
+
+$$
+\frac{s}{\sqrt{n}}
+$$
+:::
+
+::: {.column width="50%"}
+**Theoretical**
+
+The estimand here is the mean. Its sampling variance is $\sigma^2/n$, so
+
+$$
+\mathrm{SE}(\bar Y) = \frac{\sigma}{\sqrt{n}}.
+$$
+
+In the draw on the next slides, $\sigma = 15$ and $n = 50$, so $15/\sqrt{50} = 2.12$. The standard deviation of the 1,000 means is 2.11.
+:::
+::::
 
 ::: {.notes}
 Read both formulas once. The common mistake is reporting $s$ where the reader expects an uncertainty for $\bar Y$. Ask the room which number would go in an error bar for the mean.
@@ -536,7 +621,67 @@ Statistics targets functionals of distributions, not raw data.
 In this workshop that functional is usually $\mu = \mathbb{E}(Y \mid \mathbf{x})$, [the conditional mean](#sec-notation), not the raw rows.
 
 ::: {.notes}
-Stress estimand language: $\psi(P)$ is the object inference targets. Point to $\mu$ on the notation slide if anyone looks lost.
+Stress estimand language: $\psi(P)$ is the object inference targets. Point to $\mu$ on the notation slide if anyone looks lost. The next card asks them to say that quantity; do not re-derive the expectation.
+:::
+
+## Say the precise word {#sec-words}
+
+| Prefer | Avoid, unless you mean it |
+| --- | --- |
+| Median and quartiles, when $Y$ is skewed | Mean and SD as the only summary |
+| [Multivariable]{.mark}: several covariates | [Multivariate]{.mark}: several responses |
+| [Association]{.mark}, for an observational coefficient | [Effect]{.mark}, when nobody assigned $x$ |
+| The estimate and the interval | "Significant" as the whole result |
+| [Quantile]{.mark}: the cut point | Quantile: the group the cut creates |
+
+The multivariable row is the figure already on [multivariable is not multivariate](#sec-multivariable). This table is the short list, not a second explanation.
+
+::: {.notes}
+Do not redraw the multivariable figure. Read the association row. Ask for one sentence from the room that uses effect when nobody assigned $x$.
+:::
+
+## What is an estimand? :black_joker:
+
+Press `f` to turn the card.
+
+::: {.flashcard-front}
+In one sentence: what is an estimand?
+:::
+
+::: {.flashcard-back}
+The quantity the analysis is trying to learn: $\mu$, the unit it belongs to, and the contrast. The software is not the estimand.
+:::
+
+::: {.notes}
+`f` flips. Later, `q` resets a quiz question and `x` checks it. Do not use `q` here. The expectation slide already named $\mu$; this card only asks them to say it.
+:::
+
+## Where does the link act?
+
+::: {.flashcard-front}
+In a generalised linear model, what does $g$ transform?
+:::
+
+::: {.flashcard-back}
+The conditional mean: $g(\mu) = \mathbf{x}^{\top}\boldsymbol{\beta}$. It does not rewrite the raw response $Y$.
+:::
+
+::: {.notes}
+`f` to flip. The identity, log, and logit sketches already showed where $g$ acts. This catches people who still write $g(Y)$.
+:::
+
+## What is the index $j$?
+
+::: {.flashcard-front}
+In this deck, what does $j$ index?
+:::
+
+::: {.flashcard-back}
+The cluster or experimental unit, when the treatment sits on that unit. $i$ indexes the observation inside it.
+:::
+
+::: {.notes}
+The cluster sketch already drew $i$ inside $j$. If they answer "the observation", send them back to that picture.
 :::
 
 ## Variance and uncertainty {#sec-math-variance}
@@ -630,7 +775,7 @@ The [symbols for that projection](#sec-algebra) are on the earlier algebra panel
 Tie back to the hat-matrix slide. Orthogonality of residuals is the picture worth repeating.
 :::
 
-## Tangent space and local models {.smaller}
+## Tangent space and local models {.smaller visibility="hidden"}
 
 :::: {.columns}
 ::: {.column width="50%"}

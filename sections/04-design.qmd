@@ -565,7 +565,7 @@ Read the three rows: `nlme::lme` exposes `correlation =`, including `corAR1()`; 
 
 ## The call, then the picture {#sec-lmer-code}
 
-Warming sits on the enclosure. Time sits on the wave. The excerpt is from `scripts/generate-slide-figures.R`. The second call is the `nlme` version of the same mean, with an AR(1) residual. It is not the fit drawn on the next slide.
+Warming sits on the enclosure. Time sits on the wave. The excerpt is from [generate-slide-figures.R](scripts/generate-slide-figures.R). The second call is the `nlme` version of the same mean, with an AR(1) residual. It is not the fit drawn on the next slide.
 
 ```{r}
 #| eval: false

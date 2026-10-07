@@ -34,6 +34,16 @@ The systems sit in three zones: a no-till zone, a tilled zone, and a mixed zone 
 The zone structure is the key design fact to plant now. It pays off twice: in the design block, where it is a blocking question, and in the causal block, where it is confounding by construction. Do not yet give the numbers.
 :::
 
+## The zones are the design {#sec-casys-zones}
+
+![Three zones: no-till with SD1 and SD2, mixed with both practices, and tilled with TS1 plus nitrogen and TS2 without it.](figures/generated/casys-design-sketch.jpg){fig-alt="Three sketched zones. The no-till zone holds SD1 and SD2. The mixed zone holds a no-till field and a tilled field. The tilled zone holds TS1 with nitrogen and TS2 without it." width="92%"}
+
+SD1 and SD2 are the no-till systems. TS1 and TS2 are tilled, and only TS1 adds exogenous nitrogen. The mixed zone is where both practices occur.
+
+::: {.notes}
+Use the picture to fix the two contrasts: tillage runs left to right, nitrogen is only the TS1 label. The mixed panel is why a tillage coefficient is not a clean comparison. One minute, then the code.
+:::
+
 ## Reading the published object {#sec-casys-code}
 
 ```{r}
@@ -56,10 +66,97 @@ casys <- tibble(
 )
 ```
 
-`scripts/prepare-teaching-data.R` is this code, with the checks. It writes `data/derived/casys_teaching.csv`.
+The deposit is a phyloseq object, built to be read with Bioconductor. This excerpt reads the same slots. [prepare-teaching-data.R](scripts/prepare-teaching-data.R) writes [casys_teaching.csv](data/derived/casys_teaching.csv) and leaves [the raw object](data/16s_RNA_sequencing/casys_phyloseq_clean.rds) untouched. Column meanings are in [the dataset README](data/16s_RNA_sequencing/README.txt).
 
 ::: {.notes}
-Two points. First, the published object is a phyloseq object, and reading its slots directly avoids a Bioconductor dependency the deck does not otherwise need. Second, the derived table is written by a script, so the raw deposit stays untouched. That is the reproducibility rule from the last block, applied here.
+Bioconductor's phyloseq is the reader the object was made for: `otu_table()`, `tax_table()`, `sample_data()`. The excerpt reaches those slots without loading the package, so the deck still renders where Bioconductor is not installed. The script is the only place the teaching table is built. Offer the three download links if someone wants the files.
+:::
+
+## The teaching columns {#sec-casys-codebook}
+
+```{r}
+#| echo: false
+#| message: false
+codebook <- data.frame(
+  Column = c(
+    "sample_id", "year", "plot", "point", "system", "zone",
+    "tillage", "plowing", "ferti_n", "baseline_year",
+    "sequencing_depth", "total_reads",
+    "richness", "nitrospira_reads", "methylobacter_reads",
+    "methylobacter_present", "nitrospira_rel"
+  ),
+  Unit = c(
+    "identifier", "calendar year", "plot id", "point in the plot",
+    "SD1, SD2, TS1, TS2", "SD, TS, or MIX",
+    "No-till or Tilled", "Yes or No", "Yes or No", "true in 2018",
+    "reads, before filtering", "reads, in the filtered table",
+    "OTUs with a read", "reads", "reads",
+    "0 or 1", "share of total_reads"
+  ),
+  Records = c(
+    "One sample",
+    "Sampling year. 2018 is before the treatments",
+    "The plot the system sits on",
+    "The subplot, ID_Point in the deposit",
+    "The cropping system",
+    "Where the system sits: the zone",
+    "SD against TS, built from system",
+    "Whether the plot was ploughed",
+    "Nitrogen fertilisation recorded on the sample",
+    "Baseline year, from the dataset notes",
+    "Published sequencing depth",
+    "Library size recomputed from the filtered counts",
+    "How many OTUs were seen",
+    "Nitrospira, a nitrifier used later as a count",
+    "Methylobacter, used later as a detection",
+    "Whether Methylobacter was seen at all",
+    "Nitrospira reads divided by the library size"
+  ),
+  Role = c(
+    "Design", "Design", "Design", "Design", "Design", "Design",
+    "Design", "Design", "Design", "Design",
+    "Effort", "Effort",
+    "Response", "Response", "Response", "Response", "Response"
+  ),
+  stringsAsFactors = FALSE
+)
+
+reactable::reactable(
+  codebook,
+  defaultPageSize = 5,
+  highlight = TRUE,
+  compact = TRUE,
+  wrap = TRUE,
+  bordered = TRUE,
+  columns = list(
+    Role = reactable::colDef(
+      maxWidth = 110,
+      style = function(value) {
+        list(
+          background = switch(
+            value,
+            Design = "#e4efe9",
+            Effort = "#f3ecdc",
+            Response = "#f6e6df",
+            "#ffffff"
+          ),
+          fontWeight = 600
+        )
+      }
+    )
+  ),
+  theme = reactable::reactableTheme(
+    cellPadding = "4px 8px",
+    headerStyle = list(background = "#e7f0ec", fontWeight = 600),
+    style = list(fontSize = "15px")
+  )
+)
+```
+
+Five rows at a time. Design, effort, and response are the three roles. The file behind the table is [casys_teaching.csv](data/derived/casys_teaching.csv).
+
+::: {.notes}
+Do not read every row. Show Design, then Effort, then Response, and say the colour is the role. Sequencing depth and total reads are both library sizes, and they are not the same number: one is the published depth, the other is recomputed after filtering. Richness, a taxon count, and a presence are the three responses on the next slide.
 :::
 
 ## What $Y$ is in that table {#sec-casys-y}
@@ -80,7 +177,7 @@ Ask which of the three the room would have analysed with a t-test. The honest an
 
 ![Left, a histogram of OTU prevalence: most OTUs appear in a small fraction of samples. Right, a histogram of library size per sample.](figures/generated/casys-sparsity.png){fig-alt="Two panels. Left, OTU prevalence is concentrated near zero and 74.6 per cent of table entries are zero. Right, reads per sample range from about 11,000 to 85,000." width="96%"}
 
-74.6% of entries are zero, and the library size runs from 11,123 to 85,010 reads. Both numbers come from `scripts/generate-data-figures.R`.
+74.6% of entries are zero, and the library size runs from 11,123 to 85,010 reads. Both numbers come from [generate-data-figures.R](scripts/generate-data-figures.R).
 
 ::: {.notes}
 These two panels do most of the work for the GLM block. The zeros kill the Gaussian story. The unequal library sizes are why a raw taxon count cannot be compared across samples, and they are the reason the offset appears later. The 74.6% figure matches the published data descriptor, which is a useful check that the object was read correctly.
@@ -139,12 +236,21 @@ This is the pedagogical contract. Do not start a CLR derivation. If pressed, say
 ## The hierarchy in the sampling {#sec-casys-hierarchy}
 
 ```{mermaid}
-%%| fig-width: 10
-%%| fig-height: 2.6
-flowchart LR
-  year["Year, 2018 to 2021"] --> plot["Plot, 42 of them"]
-  plot --> sub["Subplot, four per plot"]
-  sub --> otu["OTU counts"]
+%%| fig-width: 8
+%%| fig-height: 4.2
+flowchart TD
+  y0["2018, baseline"] --> p0["Plot"]
+  y1["2021"] --> p1["Plot"]
+  p0 --> u0["OTU counts"]
+  p0 --> u1["OTU counts"]
+  p1 --> u2["OTU counts"]
+  p1 --> u3["OTU counts"]
+  classDef year fill:#0e4d3a,color:#f7f4ef,stroke:#0e4d3a
+  classDef plot fill:#c4a35a,color:#1c2b24,stroke:#8a7040
+  classDef otu fill:#9a3412,color:#f7f4ef,stroke:#9a3412
+  class y0,y1 year
+  class p0,p1 plot
+  class u0,u1,u2,u3 otu
 ```
 
 The cropping system is a property of the plot. Four subplots in one plot are not four independent trials of that system. 2018 was sampled before the treatments were applied, so it is a baseline rather than a treated year.
@@ -184,10 +290,20 @@ spruce |>
 #> plots 7 and 21 are unchambered ambient plots, with no assigned warming
 ```
 
-Twelve plots: ten chambered enclosures on the warming grid, and two ambient plots that were never assigned a level.
+Twelve plots: ten chambered enclosures on the warming grid, and two ambient plots that were never assigned a level. The teaching table is [spruce_teaching.csv](data/derived/spruce_teaching.csv), built by [prepare-teaching-data.R](scripts/prepare-teaching-data.R) from [the published copy-number file](data/SPRUCE/SPRUCE_qPCR_copy_numbers_2021.csv).
 
 ::: {.notes}
 Run the distinct() call in front of the room if the laptop allows. The point is that the design is recoverable from the data, and that the two ambient plots are a different kind of row: they have no warming level, so they cannot enter a regression on warming without a decision about what to do with them. That decision is a modelling choice, and it belongs in the analysis plan.
+:::
+
+## The grid, drawn {#sec-spruce-sketch}
+
+![Ten chambered enclosures, five warming steps at ambient CO2 and the same five at elevated CO2, plus two unchambered ambient plots.](figures/generated/spruce-design-sketch.jpg){fig-alt="Two rows of five enclosures labelled plus 0 through plus 9 degrees. The top row is ambient CO2 and has two unchambered ambient plots beside it. The bottom row is elevated CO2." width="88%"}
+
+Each circle is one enclosure, and it receives one warming step and one CO₂ atmosphere. The two open squares were never assigned a warming level.
+
+::: {.notes}
+Count to ten circles, then point at the two open squares. Those two cannot sit on a warming slope until the analysis plan says what their warming value is. Do not invent plot numbers: the sketch is the grid, not a map of which plot is which step.
 :::
 
 ## What is measured here {#sec-spruce-y}
@@ -201,7 +317,7 @@ The response in this dataset is a **gene copy number** per gram of dry peat, fro
 A qPCR copy number is an estimated abundance, not a counted integer. It is a positive, strongly skewed continuous response, so it belongs with the [transformation](#sec-vst) discussion and not with the Poisson.
 
 ::: {.notes}
-Be explicit that this is not a count, even though it looks like one. Treating a qPCR abundance as Poisson would be a category error, and it is a mistake the room will have seen. The sentinel value is the other teaching point: 15 values in this file are -9999, and a script that reads the column as a number without that rule will report a mean of about -9999 times the missing fraction. The rule lives in scripts/prepare-teaching-data.R and nowhere else.
+Be explicit that this is not a count, even though it looks like one. Treating a qPCR abundance as Poisson would be a category error, and it is a mistake the room will have seen. The sentinel value is the other teaching point: 15 values in this file are -9999, and a script that reads the column as a number without that rule will report a mean of about -9999 times the missing fraction. The rule lives in [prepare-teaching-data.R](scripts/prepare-teaching-data.R) and nowhere else.
 :::
 
 ## The sentinel is a documented rule {#sec-spruce-missing}

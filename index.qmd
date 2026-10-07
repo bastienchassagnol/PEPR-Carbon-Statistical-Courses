@@ -16,6 +16,14 @@ bibliography:
 resources:
   - references/burakov-logistic-regression.pdf
   - references/sampl-guidelines.pdf
+  - scripts/prepare-teaching-data.R
+  - scripts/generate-data-figures.R
+  - scripts/generate-slide-figures.R
+  - data/derived/casys_teaching.csv
+  - data/derived/spruce_teaching.csv
+  - data/16s_RNA_sequencing/casys_phyloseq_clean.rds
+  - data/16s_RNA_sequencing/README.txt
+  - data/SPRUCE/SPRUCE_qPCR_copy_numbers_2021.csv
 citeproc: true
 link-citations: true
 slide-level: 2

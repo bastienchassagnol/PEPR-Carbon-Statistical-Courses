@@ -6,6 +6,7 @@ This repository is the reveal.js deck for the PEPR Carbon statistical workshop. 
 
 - British English in slide text, speaker notes, captions, and this file.
 - One claim per slide. At most two figures. If a slide needs a scrollbar, split it.
+- When a slide states two or more parallel notions, use a bullet list. Mark a term the room must keep with `[term]{.mark}` ([span syntax](https://quarto.org/docs/authoring/markdown-basics.html#other-spans)). Do not mark a whole sentence.
 - Keep one notation throughout:
   - \(Y\): response
   - \(x\) or \(\mathbf{x}\): covariate or covariate row
@@ -27,7 +28,8 @@ Reveal.js does not collapse callouts. Keep each one to a few lines. The callout 
 
 ## Diagrams and motion
 
-- Describe a statistical model with a Mermaid flowchart whose nodes hold the equations, using [Mermaid's maths support](https://mermaid.ai/open-source/config/math.html). Keep `securityLevel: loose` in the reveal.js `mermaid` options so KaTeX in a node is rendered. One diagram per slide. A display equation on its own is enough when a graph would only repeat it.
+- Describe a statistical model with a Mermaid flowchart whose nodes hold the equations, using [Mermaid's maths support](https://mermaid.ai/open-source/config/math.html). Node labels are maths, not a sentence written out in words. Keep `securityLevel: loose` in the reveal.js `mermaid` options so KaTeX in a node is rendered. One diagram per slide. A display equation on its own is enough when a graph would only repeat it.
+- A generative diagram uses [plate notation](https://en.wikipedia.org/wiki/Plate_notation). A rectangle is a fixed quantity. A circle is random. An observed node is green (`#1b7a4e`); a latent node is red (`#9a3412`). The plate is a subgraph labelled with the index.
 - Fragments use [fragmention](https://m.canouil.dev/quarto-revealjs-fragmention/examples.html): an empty marker `[]{.fragment fragment-index="1"}` at the start of the item, so Reveal.js steps the whole item. Use fragments when several related points belong on one slide. Leave a writing prompt or a checklist fully visible.
 - Auto-animate only adjacent slides that share a claim. Give the persistent piece an explicit `data-id`. Do not mark the whole deck.
 - Vertical stacks are the navigation. Level-1 headings are the sections; level-2 headings are the slides inside them. `navigation-mode` stays `vertical`: Down walks the section, Right moves to the next section.
@@ -61,6 +63,7 @@ Reveal.js does not collapse callouts. Keep each one to a few lines. The callout 
 ## Tables
 
 - A plain two-column slide stays Markdown.
+- A real dataset with more than five rows is a [`reactable`](https://glin.github.io/reactable/) table: pagination, and a cell colour when a column encodes a role. A grouped or merged table stays `gt`.
 - A table with merged rows, merged columns, or row and column groups is a [`gt`](https://gt.rstudio.com/) table. `gt` 1.3.0 is the version to use. Group columns with `tab_spanner()`, group rows with `tab_row_group()`, and merge cells with `cols_merge()` or `cols_merge_range()`. Do not draw that table as an image, and do not fake a span with empty Markdown cells.
 - Install it when it is missing: `install.packages("gt")`. The publish workflow installs `gt` with knitr, because the linear-algebra slide renders a grouped table.
 

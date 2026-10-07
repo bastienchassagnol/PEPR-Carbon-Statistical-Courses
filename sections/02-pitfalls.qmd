@@ -58,7 +58,9 @@ A significant coefficient does not say which of these you did. The three we will
 Riley and colleagues ask authors to say whether the work is descriptive or causal, prognostic or predictive, exploratory or confirmatory. One minute.
 :::
 
-## From a slogan to a statistical question
+## 1 · Start from the question {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d6e2f5 100%)"}
+
+## 1 · From a slogan to a statistical question
 
 Vague: "What is the effect of drought on forest carbon?"
 
@@ -73,7 +75,7 @@ Sharper, still one estimand:
 Work one participant's slogan into this shape if time allows. Two minutes.
 :::
 
-## The estimand is the target, not the software
+## 1 · The estimand is the target, not the software
 
 The estimand is the quantity you claim to estimate.
 
@@ -89,7 +91,7 @@ Changing the unit, the contrast, or the set of covariates changes the estimand. 
 Ask someone to name their estimand in one clause before you show PICO. If they say "the regression output", push back: the software fits a quantity; you have to name it. One minute.
 :::
 
-## PICO, when the question is a comparison {#sec-pico}
+## 1 · PICO, when the question is a comparison {#sec-pico}
 
 ![PICO diagram: Patient or population, Intervention or exposure, Comparison, and Outcome, each with a prompt.](figures/sources/pico.jpg){fig-alt="Four-row PICO diagram defining population, intervention or exposure, comparison, and outcome." width="78%"}
 
@@ -99,7 +101,7 @@ For a designed contrast or a systematic comparison, name population, interventio
 Walk through one row of the figure aloud: population is not "the dataset", it is the system and the unit that carries the contrast. Do not linger; the exercise slide is next.
 :::
 
-## Ten minutes: write your PICO :pencil:
+## 1 · Ten minutes: write your PICO :pencil:
 
 Four lines, for **your** dataset.
 
@@ -112,7 +114,7 @@ Four lines, for **your** dataset.
 Protect ten minutes. Walk the room. Collect two examples on the board. Do not advance until most people have four lines. The next slide is one possible answer, not the answer.
 :::
 
-## One possible answer, after you have written
+## 1 · One possible answer, after you have written
 
 For the SPRUCE enclosures:
 
@@ -144,7 +146,7 @@ Write down which row you are answering. The comparison form is [PICO](#sec-pico)
 Point at the first two rows. Ask the room which branch their PICO belongs to. Many carbon papers mix explanation and prediction in one sentence; naming the branch is the fix. Ninety seconds.
 :::
 
-## Explain, predict, or confirm {#sec-explain}
+## 1 · Explain, predict, or confirm {#sec-explain}
 
 - []{.fragment fragment-index="1"} **Explain.** Which covariates, and how large is $\beta$? The coefficient and its interval are the result.
 - []{.fragment fragment-index="2"} **Predict.** How close is $\hat{Y}$ on a unit the fit did not see? The score is a prediction error, not a $p$-value.
@@ -156,7 +158,7 @@ Point at the first two rows. Ask the room which branch their PICO belongs to. Ma
 Step the fragments slowly. The common mistake is to treat a small $p$ on $\hat\beta_j$ as proof of good prediction. Ask which metric they would put in the abstract for each purpose. Two minutes.
 :::
 
-## Two different scores
+## 1 · Two different scores
 
 Prediction, on new units:
 
@@ -172,41 +174,63 @@ A small RMSE does not say that $\hat\beta_j$ is the effect of changing $x_j$.
 You do not need to derive the normal equations. The takeaway is two symbols on the slide: RMSE for prediction, $t$ for one coefficient. If someone asks about causality, park it until the covariate slide.
 :::
 
-## The simulation that makes the contrast
+## 1 · The simulation that makes the contrast
 
 Truth uses only $X_1$ and $X_2$. Three further covariates are noise. $n = 200$. Seeds 123 for the draw and 42 for the split. The excerpt is [MetricGate's script](https://metricgate.com/blogs/prediction-vs-explanation-models/). It is not refit here.
+
+:::: {.columns}
+::: {.column width="50%"}
+**Random forest**
+
+The flexible predictor. Held-out RMSE **2.40**.
+
+```{r}
+#| echo: true
+#| eval: false
+rf_fit <- randomForest(Y ~ ., data = train)
+```
+
+The trees chased the noise covariates. A more flexible fit predicted worse.
+:::
+
+::: {.column width="50%"}
+**Linear model**
+
+The explanatory fit. Held-out RMSE **1.01**.
 
 ```{r}
 #| echo: true
 #| eval: false
 Y <- 3 * X1 - 2 * X2 + rnorm(n)
 lm_fit <- lm(Y ~ ., data = train)
-rf_fit <- randomForest(Y ~ ., data = train)
 ```
 
-::: {.notes}
-Say the seed numbers once so sceptics know it is reproducible. The forest is not "wrong software"; it is the wrong target when the mean is linear and noise covariates exist.
+The coefficients are the explanatory object, and here they also predicted better.
 :::
-
-## A more flexible fit can predict worse
-
-On their held-out rows, the linear model had RMSE 1.01 and the random forest 2.40.
-
-The forest lost because the mean really was linear, and the noise covariates gave the trees something to chase. Complexity is not a better prediction. Interpretability is not a worse one either: the linear coefficients are the explanatory object, and here they also predicted better.
+::::
 
 ::: {.notes}
-Pause on 2.40 versus 1.01. Someone will say "but forests are always better"; this is the counter-example with a clear mechanism. Link forward to lasso and ridge later: penalisation serves prediction, not causal adjustment.
+Say the seeds once. Pause on 2.40 versus 1.01. Someone will say forests always predict better; this draw is the counter-example, because the mean really is linear. The forest is not bad software. It is the wrong tool for an explanatory coefficient.
 :::
 
-## A hold-out score does not certify the coefficient {#sec-holdout}
+## 1 · A hold-out score does not certify the coefficient {#sec-holdout}
 
-Cross-validation answers "how close is $\hat{Y}$ on new rows?". It does not say that $\hat\beta$ is unbiased, or that the path from $x$ to $Y$ is the one you would intervene on.
+- A [hold-out]{.mark} score answers how close $\hat{Y}$ is on new rows
+- It does not say that $\hat\beta$ is unbiased
+- It does not say the path from $x$ to $Y$ is the one you would intervene on
 
-Check the linear assumptions, and refit after removing influential rows, when the claim is about $\beta$. Keep the hold-out for a prediction. Ranking, calibration, and the decision are [three further checks](#sec-predict-checks).
+When the claim is about $\beta$:
+
+- Check the linear assumptions
+- Refit after removing influential rows
+
+Keep the hold-out for a [prediction]{.mark}. Ranking, calibration, and the decision are [three further checks](#sec-predict-checks).
 
 ::: {.notes}
 Cross-validation is not a substitute for a causal estimand or for checking influence on $\hat\beta$. If the room is quiet, ask: "Your AUC is 0.9 — can you still intervene on $x_j$?" That usually opens the right debate.
 :::
+
+## 2 · Report the effect, not only $p$ {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #f6e2c4 100%)"}
 
 ## 2 · An effect, an interval, and a reason it matters {#sec-effect}
 
@@ -218,7 +242,7 @@ The two intervals are the published example in Riley and colleagues [@riley12thD
 Two intervals, two different failures. The narrow one is precise and small: detected, and possibly irrelevant. The wide one is large and uncertain: absence of evidence, not evidence of absence. The CA-SYS rate ratio later today is the first kind, and the tillage richness contrast is the second. Neither is read off a p-value.
 :::
 
-## Detection is not importance {#sec-detection}
+## 2 · Detection is not importance {#sec-detection}
 
 :::: {.columns}
 ::: {.column width="38%"}
@@ -226,9 +250,11 @@ Two intervals, two different failures. The narrow one is precise and small: dete
 :::
 
 ::: {.column width="62%"}
-Statistical evidence asks whether the data could have come from a world with no effect. Practical evidence is a threshold the investigators set in advance: a minimal important difference. It is not a formula, and $p$ does not supply it ([Olszewski](https://medium.com/@r.clin.res/the-role-of-the-frequentist-framework-p-values-statistical-nhst-and-practical-significance-e95934160878)).
+- [Statistical evidence]{.mark}: could the data have come from a world with no effect?
+- [Practical evidence]{.mark}: a [minimal important difference]{.mark}, set before the fit. It is not a formula, and $p$ does not supply it ([Olszewski](https://medium.com/@r.clin.res/the-role-of-the-frequentist-framework-p-values-statistical-nhst-and-practical-significance-e95934160878))
 
-Replace the clinical threshold with a flux, a stock, or a decision that would change. The estimate and the interval stay in the sentence [@halseyFickleValueGenerates2015].
+- Replace the clinical threshold with a flux, a stock, or a decision that would change
+- Keep the [estimate]{.mark} and the [interval]{.mark} in the sentence [@halseyFickleValueGenerates2015]
 :::
 ::::
 
@@ -236,7 +262,7 @@ Replace the clinical threshold with a flux, a stock, or a decision that would ch
 This slide used to be two, which said the same thing twice. The one idea is that significance and importance are separate judgements and only one of them comes from the data. Ask the room what change in soil carbon would alter a management decision. Most groups have never written that number down, which is the point. In a confirmatory analysis it is written before the fit.
 :::
 
-## A yes-or-no decision has two errors {#sec-type-i}
+## 2 · A yes-or-no decision has two errors {#sec-type-i}
 
 ![Two-by-two table of a hypothesis test: Type I error when a true null is rejected, Type II error when a false null is not rejected.](figures/sources/type-i-versus-type-ii.png){fig-alt="Table with four cells. Rejecting a true null is a Type I error. Failing to reject a false null is a Type II error. The other two cells are correct decisions." width="70%"}
 
@@ -246,7 +272,7 @@ A Type I error rejects the null when it is true; its long-run rate, when the tes
 The table is a decision table, and it only makes sense once you have agreed to make a yes-or-no decision. That is a choice, not an obligation. The two rates are properties of the procedure across many replicates, not statements about the study in front of you. Keep that distinction, because the next slide needs it.
 :::
 
-## $p$ is not that rate {#sec-p-not-alpha}
+## 2 · $p$ is not that rate {#sec-p-not-alpha}
 
 If the treatment has no effect, a $p$ of 0.03 means that 3% of replicate studies would obtain an effect this large or larger.
 
@@ -260,7 +286,7 @@ The careful statement is [the replicate definition](#sec-pvalue), and the rate o
 The commonest error in the room will be to read p as the probability that the null is true. Say the two conditional probabilities out loud: P(data this extreme given no effect) against P(no effect given the data). Only the first is available from a frequentist test, and only the second is what most readers want.
 :::
 
-## A p-value is about the data {#sec-pvalue}
+## 2 · A p-value is about the data {#sec-pvalue}
 
 Under identical replicates of this experiment, with the effect set to zero, $p$ is the probability of a result more extreme than the one in hand ([Harrell, ch. 22](https://hbiostat.org/bbr/alpha)).
 
@@ -270,7 +296,7 @@ A $p$ of 0.06 says that, under the model and the null, a replicate would be more
 Write "given $H_0$" on the board if you have one. The 0.06 example is deliberately awkward — neither side of 0.05 — to keep the focus on the conditional, not on the threshold ritual.
 :::
 
-## α is a rate of false assertions {#sec-alpha}
+## 2 · α is a rate of false assertions {#sec-alpha}
 
 $\alpha$ is the long-run probability of asserting an effect when the effect is exactly zero. It is not the probability that a positive result is false, and it is not "the probability of an error".
 
@@ -280,7 +306,7 @@ A procedure that assumes the null cannot report the probability that the null is
 $\alpha$ is chosen before data; $p$ is computed after. The Fisher quote is the Bayesian confusion in one line — read it slowly.
 :::
 
-## The tail belongs to a model {#sec-pwrong}
+## 2 · The tail belongs to a model {#sec-pwrong}
 
 [Guillaume Rousselet](https://garstats.wordpress.com/2026/02/27/pwrong/) takes a one-sample, one-sided $t$ test: $n = 50$, $t = 1.52$, $p = 0.0670$ when the imaginary experiments are normal, independent, of fixed size, and always analysed with that $t$ test.
 
@@ -290,7 +316,7 @@ Sampling the same tail from the beta distribution the scores actually follow mov
 This is the "same $t$, different likelihood" slide. You are not asking them to abandon $t$ tests; you are showing that $p$ is computed under a story. If they only remember one line: the tail belongs to the model.
 :::
 
-## Surprise, on a bit scale
+## 2 · Surprise, on a bit scale
 
 $-\log_2(0.05) = 4.32$. A $p$ of 0.05 is the surprise of four heads in a row ([Greenland, 2019](https://doi.org/10.1080/00031305.2018.1529625)).
 
@@ -300,7 +326,7 @@ Read $p$ as compatibility between the model and the data, from 0 to 1, not as a 
 The coin analogy lands with non-statisticians. Follow with: compatibility is not "probability the null is true". Keep it short — the Halsey exchange is next.
 :::
 
-## One P, or a screen of them
+## 2 · One P, or a screen of them
 
 []{.fragment fragment-index="1"} Halsey and colleagues simulated a small normal experiment and showed a single $P$ jumping across 0.05 from sample to sample. They called that fickleness a source of irreproducible decisions [@halseyFickleValueGenerates2015].
 
@@ -312,7 +338,7 @@ The coin analogy lands with non-statisticians. Follow with: compatibility is not
 Step all three fragments. The van Helden point matters for methodologists; for this room, fragment three is the punchline. Do not re-litigate NHST — point back to [the effect slide](#sec-effect).
 :::
 
-## A planned question is not a screen
+## 2 · A planned question is not a screen
 
 Huber called the exchange a clash of cultures [@huberClashCulturesDiscussions2016].
 
@@ -325,7 +351,7 @@ Huber called the exchange a clash of cultures [@huberClashCulturesDiscussions201
 Genomics and high-throughput ecology are the industrialist case. Ask whether anyone has seen a "significant" result from a fishing expedition without multiplicity control. One minute.
 :::
 
-## The same p, a shrinking effect {#sec-large-n}
+## 2 · The same p, a shrinking effect {#sec-large-n}
 
 [Lantz](https://doi.org/10.1111/j.1471-6712.2012.01052.x) keeps $p = 0.0253$ while a preference for treatment X shrinks toward a coin toss. These are the two ends of his table.
 
@@ -340,7 +366,7 @@ The first would change a choice. The second would not. The interval is what a la
 Same $p$, opposite practical meaning. Ask what proportion "prefer X" would need to change a management rule in their project. The table is Lantz's arithmetic, not your data.
 :::
 
-## Five readings to retire
+## 2 · Five readings to retire
 
 Lantz lists five things a $p$-value is not:
 
@@ -356,7 +382,7 @@ The first three confuse a probability about the data with a probability about th
 Read two items, ask the room to finish the list from memory, then show the rest. This slide is a vocabulary purge before Type M. Forty seconds.
 :::
 
-## A small study can detect the wrong size {#sec-type-m}
+## 2 · A small study can detect the wrong size {#sec-type-m}
 
 ![Ten thousand simulated mean differences. Significant results lie far above the true difference of 1, or below zero with the sign reversed.](figures/sources/type-m-versus-type-s.png){fig-alt="Scatter of 10,000 estimated mean differences. The true difference is 1. Statistically significant estimates cluster near 10 to 20, or near −10 to −20." width="72%"}
 
@@ -366,7 +392,7 @@ Read two items, ask the room to finish the list from memory, then show the rest.
 Type M and Type S only apply when someone filters on "significant". The scatter is the visual; the definitions are the labels. Link to low power in the next slide.
 :::
 
-## Those significant runs were about eleven times too big
+## 2 · Those significant runs were about eleven times too big
 
 [Olszewski](https://medium.com/@r.clin.res/type-m-and-type-s-errors-in-underpowered-studies-175291966f3b) drew the previous figure from two normal samples, $n = 10$ each, standard deviation 10, true difference 1, seed 1000, 10,000 $t$ tests.
 
@@ -376,7 +402,7 @@ Power is about 5.5%. The significant estimates average about 11 times the true d
 The seed and sample sizes are on the slide so nobody thinks you made up the 11×. Emphasise conditional on significance — most runs are not significant and are not shown.
 :::
 
-## Power pulls the exaggeration down
+## 2 · Power pulls the exaggeration down
 
 ![Type M inflation factor against power, falling from several-fold at low power toward 1 as power approaches 1.](figures/sources/type-m-versus-power.png){fig-alt="Curve of the Type M inflation factor against power. The factor is several-fold below 20 percent power and close to 1 once power is near 80 percent." width="58%"}
 
@@ -385,6 +411,8 @@ On his curve the inflation is several-fold below about 10% power, and close to 1
 ::: {.notes}
 If time is short, skip the URL and point at the curve: design for power before you trust a significant estimate's magnitude. Bridge into missing data: bias that does not shrink with $n$ is a different slide in the heterogeneity block.
 :::
+
+## 3 · Handle missing data on purpose {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d5e4ea 100%)"}
 
 ## 3 · Missing data :question:
 
@@ -401,7 +429,7 @@ Write both answers before the next slide.
 Two minutes, aloud. Do not name MCAR, MAR, or MNAR until someone offers them. The card with the avoid and prefer lists is the last slide of this block.
 :::
 
-## Three mechanisms {#sec-mechanisms}
+## 3 · Three mechanisms {#sec-mechanisms}
 
 ![Three cards: MCAR as entirely random, MAR as influenced by an observed variable, MNAR as influenced by an unobserved variable.](figures/sources/missing-mechanisms.png){fig-alt="Diagram of MCAR, MAR, and MNAR. MCAR is entirely random. MAR depends on an observed variable. MNAR depends on an unobserved variable." width="78%"}
 
@@ -411,7 +439,7 @@ Two minutes, aloud. Do not name MCAR, MAR, or MNAR until someone offers them. Th
 Name the three letters only after the room has tried. MCAR is the idealisation; MNAR is where honest papers stop pretending listwise deletion is neutral.
 :::
 
-## The same idea as a graph
+## 3 · The same idea as a graph
 
 ![Three directed graphs for whether a dog eats homework, labelled missing completely at random, missing at random, and missing not at random.](figures/sources/missing-dags.png){fig-alt="Three DAGs relating an assignment A, homework H, a dog D, and observed homework H-star, for MCAR, MAR, and MNAR." width="92%"}
 
@@ -421,7 +449,7 @@ $R$, the missingness indicator, has to be in the story. If $R$ depends on the un
 The dog-and-homework DAG is memorable; tie $R$ to "was this row kept in the analysis?". MNAR is when the dog eats because the homework was bad, not because of assignment.
 :::
 
-## Missing data are part of the design {#sec-missing}
+## 3 · Missing data are part of the design {#sec-missing}
 
 | Avoid | Prefer |
 | --- | --- |
@@ -433,6 +461,8 @@ Report how much is missing, in $Y$ and in $x$, and what you did. Zero-fill, a me
 ::: {.notes}
 This is the answer to the opening question. Ask which row someone has used as a default. Complete case is fine only when you can defend MCAR or a clear MAR story.
 :::
+
+## 4 · Do not dichotomise {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d4efe8 100%)"}
 
 ## 4 · Do not dichotomise a continuous $x$ {#sec-dichotomise}
 
@@ -459,7 +489,7 @@ A threshold throws away order, spends power, and makes the result depend on the 
 The absurd pairing is the teaching point: 131 with 220, not with 129. Ask if anyone has binned soil moisture at a round number because the software defaulted to tertiles.
 :::
 
-## The same mistake in a carbon table
+## 4 · The same mistake in a carbon table
 
 "Dry" versus "wet", or soil temperature split at $10^\circ\mathrm{C}$.
 
@@ -472,6 +502,8 @@ Keep warming, moisture, and pH continuous unless the threshold is itself the sci
 ::: {.notes}
 Walk through the three bullets with a soil-temperature example. The third bullet is p-hacking by another name: a cut that worked once will not travel.
 :::
+
+## 5 · Allow a curve {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #e4d8f5 100%)"}
 
 ## 5 · A straight line is an assumption
 
@@ -495,7 +527,7 @@ A one-unit step in $x$ need not have the same effect at the bottom and the top o
 You are not selling GAMs today; you are refusing a default line. Ask where a linear warming term would misread the SPRUCE gradient. The simulated hump is next.
 :::
 
-## A line can miss the hump
+## 5 · A line can miss the hump
 
 Illustrative simulation, seed 20261005. Not a SPRUCE fit. The clay line on the next slide is $\mathbb{E}(Y \mid x)$ forced to be linear.
 
@@ -511,13 +543,15 @@ fit_line <- lm(y ~ temp)
 Point at `output-location: slide` if your build uses it — the figure is the next slide. Emphasise illustrative, not SPRUCE.
 :::
 
-## A line can miss the hump
+## 5 · A line can miss the hump
 
 ![Illustrative points along a hump-shaped mean, with a straight-line fit and the curve used to simulate the response.](figures/generated/linear-vs-curve.png){fig-alt="Scatter of an illustrative response against warming. A clay straight line misses the green hump used to simulate the points." width="82%"}
 
 ::: {.notes}
 Let the picture sit. The green curve is the generative $\mu$; the clay line is what a reviewer might accept without looking. Thirty seconds.
 :::
+
+## 6 · Quantify a subgroup difference {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #f6d6e0 100%)"}
 
 ## 6 · A subgroup claim needs its own contrast
 
@@ -534,6 +568,8 @@ $$Y = \beta_0 + \beta_1 T + \beta_2 S + \beta_3 (T \times S) + \epsilon, \quad \
 Use fens and bogs from the slide text. Ask what estimand the interaction coefficient answers. If someone says "test both subgroups separately", redirect to the product term.
 :::
 
+## 7 · Read heterogeneity carefully {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #e3efc8 100%)"}
+
 ## 7 · $I^2$ is not the size of the heterogeneity {#sec-i2}
 
 | Quantity | Read as |
@@ -548,7 +584,7 @@ $I^2$ is a **relative** share of variance. Small studies can show a small $I^2$ 
 This slide is the warning label; the next ten minutes are the arithmetic. If someone quotes $I^2 = 25\%$ as "low heterogeneity", ask for $\tau^2$ in the effect's units.
 :::
 
-## One site, one estimate {#sec-one-site}
+## 7 · One site, one estimate {#sec-one-site}
 
 In this block $i$ is a study or a site, and $y_i$ is that site's estimated effect. It is not the core-level response $Y$.
 
@@ -566,7 +602,7 @@ Two sites with the same $\theta$ can still disagree, because of $\varepsilon_i$.
 Say the change of index once. Here i is the site, which is the cluster. The core-level response is still Y, and it is not on this slide. About one minute. The next two slides separate that sampling noise from a bias that more rows will not remove.
 :::
 
-## Random error shrinks {#sec-random-error}
+## 7 · Random error shrinks {#sec-random-error}
 
 [Thiese, Ronna, and Ott](https://doi.org/10.21037/jtd.2016.08.16) define random error as noise around the true value, above and below it. It is not a bias. On the previous slide it is $\varepsilon_i$, with variance $s_i^2$. A larger sample at that site makes $s_i$ smaller, which is the same move as the [standard error](#sec-sd-se).
 
@@ -576,53 +612,77 @@ Selection, a misread instrument, and a confounder are not this noise. They shift
 Connect $\varepsilon_i$ to the standard error they already know. Random error is what replication within a site would average down; confounding is not that.
 :::
 
-## A larger sample does not shrink a bias
+## 7 · A larger sample does not shrink a bias
 
 ![Two curves against sample size. Random error of the estimate falls. Systematic error stays flat.](figures/generated/random-versus-systematic-error.png){fig-alt="Line chart. A green curve of random error falls as sample size grows. A clay line of systematic error stays flat." width="72%"}
 
-Their example is a scale that adds the same offset to every person. More people do not remove it. Figure 1 in that paper, adapted from Rothman, is this shape. The curves are illustrative, from `scripts/generate-slide-figures.R`.
+Their example is a scale that adds the same offset to every person. More people do not remove it. Figure 1 in that paper, adapted from Rothman, is this shape. The curves are illustrative, from [generate-slide-figures.R](scripts/generate-slide-figures.R).
 
 ::: {.notes}
 The flat line is the punchline for observational carbon work too: more cores do not fix a wrong unit or a confounder. Pair with the missing-data MNAR message later if needed.
 :::
 
-## Fixed effect, or random effects {#sec-fixed-random-meta}
+## 7 · Fixed effect, or random effects {.smaller #sec-fixed-random-meta}
 
-::: {.panel-tabset}
-
-### Fixed effect
+:::: {.columns}
+::: {.column width="50%"}
+**Fixed effect.** One $\mu$. The $y_i$ differ only by sampling.
 
 ```{mermaid}
-%%| fig-height: 2.4
+%%| fig-height: 2.3
 flowchart TD
-  mu["One true effect, mu"] --> th["theta sub i equals mu"]
-  th --> y["y sub i is normal with variance s sub i squared"]
+  mu["$$\mu$$"]
+  subgraph platef ["$$i = 1,\ldots,k$$"]
+    direction TB
+    th["$$\theta_i = \mu$$"]
+    y[("$$y_i$$")]
+    th --> y
+  end
+  mu --> th
+  classDef fixed fill:#f7f4ef,stroke:#1c2b24,color:#1c2b24
+  classDef observed fill:#1b7a4e,stroke:#0e4d3a,color:#f7f4ef
+  class mu,th fixed
+  class y observed
 ```
 
 $$\theta_i = \mu, \qquad w_i^{\mathrm{FE}} = 1/s_i^2, \qquad \tau^2 = 0$$
+:::
 
-The $y_i$ differ only by sampling. The pooled mean weights each site by $w_i^{\mathrm{FE}}$.
-
-### Random effects
+::: {.column width="50%"}
+**Random effects.** Each $\theta_i$ is a draw. $\mu$ and $\tau^2$ stay fixed.
 
 ```{mermaid}
-%%| fig-height: 2.6
+%%| fig-height: 2.3
 flowchart TD
-  pop["mu and tau squared"] --> th["theta sub i"]
-  th --> y["y sub i given theta sub i"]
+  mu["$$\mu$$"]
+  tau["$$\tau^{2}$$"]
+  subgraph plater ["$$i = 1,\ldots,k$$"]
+    direction TB
+    th(("$$\theta_i$$"))
+    y[("$$y_i$$")]
+    th --> y
+  end
+  mu --> th
+  tau --> th
+  classDef fixed fill:#f7f4ef,stroke:#1c2b24,color:#1c2b24
+  classDef latent fill:#9a3412,stroke:#7a2910,color:#f7f4ef
+  classDef observed fill:#1b7a4e,stroke:#0e4d3a,color:#f7f4ef
+  class mu,tau fixed
+  class th latent
+  class y observed
 ```
 
-$$\theta_i = \mu + u_i, \quad u_i \sim N(0, \tau^2), \qquad y_i \sim N(\mu,\, s_i^2 + \tau^2)$$
-
-The same two lines are a hierarchical model. In the design block: [fixed and random name the target](#sec-fixed-random-target).
-
+$$\theta_i = \mu + u_i, \quad u_i \sim N(0, \tau^2)$$
 :::
+::::
+
+Green is observed. Red is latent. A rectangle is fixed. The plate is the index $i$. The same two lines are a hierarchical model: [fixed and random name the target](#sec-fixed-random-target).
 
 ::: {.notes}
-Arrow keys move between the tabs. Fixed effect: one theta. Random effects: the thetas are draws. Do not say the random-effects mean is automatically the causal effect. One minute on each tab. The design-block version is the slide "fixed and random name the target".
+Left plate: $\theta_i$ is fixed at $\mu$, and only $y_i$ is random. Right plate: $\theta_i$ is red because it is not seen. Do not say the random-effects mean is automatically the causal effect. One minute on each column.
 :::
 
-## $\tau^2$ is how far the true effects spread
+## 7 · $\tau^2$ is how far the true effects spread
 
 $$
 \theta_i \sim N(\mu, \tau^2)
@@ -638,7 +698,7 @@ A precise site with $s_i^2 = 0.01$ has fixed-effect weight $100$. With $\tau^2 =
 Stress the units. Then the weight: heterogeneity stops the most precise site from deciding the mean alone.
 :::
 
-## $I^2$ compares that spread with the noise
+## 7 · $I^2$ compares that spread with the noise
 
 If the sampling variances are similar,
 
@@ -658,7 +718,7 @@ Arithmetic: $Q = 40$ and $k = 11$ studies give $I^2 = (40-10)/40 = 75\%$. $Q$ as
 Write Q, then I-squared, on the board if someone treats 75 percent as a large tau. Under no heterogeneity, Q is about k minus 1.
 :::
 
-## The same $\tau^2$ can produce either $I^2$
+## 7 · The same $\tau^2$ can produce either $I^2$
 
 Keep $\tau^2 = 0.04$.
 
@@ -671,7 +731,7 @@ The true effects did not move. The measurements got sharper, so heterogeneity is
 Work the arithmetic aloud with a calculator if needed. Same $\tau^2$, different $I^2$ — that sentence is worth repeating.
 :::
 
-## The soils did not move
+## 7 · The soils did not move
 
 ![Sketch of three soil cores at 40, 55, and 70 grams per kilogram. Wide red error bars give a small I-squared. Narrow green error bars give a large I-squared. The true stocks do not change.](figures/generated/heterogeneity-soil-analogy.jpg){fig-alt="Teaching sketch. The same three soil-carbon stocks appear twice. Noisy cores, drawn in red, are labelled about 20 percent I-squared. Precise cores, drawn in green, are labelled about 94 percent. The caption says the soils did not become more different." width="88%"}
 
@@ -681,7 +741,7 @@ The cylinders are a drawing of the arithmetic above. Sharper cores raise $I^2$ b
 The drawing is the exam analogy rewritten for cores. Point at the error bars, not at the cylinders. The 20 and 94 percent are the arithmetic on the previous lines.
 :::
 
-## Random effects are already hierarchical
+## 7 · Random effects are already hierarchical
 
 ```{mermaid}
 %%| fig-height: 3.2
@@ -700,7 +760,7 @@ $\mu, \tau^2 \rightarrow \theta_i \rightarrow y_i$. The $\theta_i$ are the site-
 This diagram is the same hierarchy as the tabset, drawn for the whole room at once. $j$ is the site here; $y_i$ is the published site estimate, not a core.
 :::
 
-## A moderator leaves a residual $\tau^2$
+## 7 · A moderator leaves a residual $\tau^2$
 
 A moderator $x_i$, such as mean stand age, moves into the site effect:
 
@@ -714,9 +774,9 @@ $\tau^2$ is then what is left between sites. Arithmetic: $0.20$ before age and $
 This is the card's ecological-bias warning in an equation. The 60 percent is arithmetic on two tau-squared values, not a published meta-regression.
 :::
 
-## One level deeper: a hierarchical error
+## 7 · One level deeper: a hierarchical error
 
-![Nested samples and cell types, with a hierarchical model for a true proportion and its replicates, and three sketches of residual error.](figures/sources/hierarchical_rmse.svg){fig-alt="Two panels. Left: three replicate samples, each with cell types, and a table of true proportions beside estimates. Right: a hierarchical mean plus sample and residual terms, and three plots in which the gap between true proportions and replicates grows." width="96%"}
+![Nested samples and cell types, with a hierarchical model for a true proportion and its replicates, and three sketches of residual error.](figures/generated/hierarchical-rmse.png){fig-alt="Two panels. Left: three replicate samples, each with cell types, and a table of true proportions beside estimates. Right: a hierarchical mean plus sample and residual terms, and three plots in which the gap between true proportions and replicates grows." width="100%"}
 
 A deconvolution sketch, not a soil survey. Hierarchical RMSE grows when the residual variance is large beside the biological signal. Click it to read the indices.
 
@@ -724,7 +784,7 @@ A deconvolution sketch, not a soil survey. Hierarchical RMSE grows when the resi
 Do not reassign the workshop's i and j to this figure. Say the picture is the speaker's deconvolution layout: samples, then cell types, then a true proportion and an estimate. The right-hand plots are the teaching point: hrRMSE tracks the residual gap. Twenty seconds, then back to sites.
 :::
 
-## Report $\tau^2$, and say what $I^2$ is relative to
+## 7 · Report $\tau^2$, and say what $I^2$ is relative to
 
 | Quantity | Question |
 | --- | --- |
@@ -738,6 +798,8 @@ Do not use 25%, 50%, and 75% as cut-offs. The same $\tau^2$ produced both 20% an
 ::: {.notes}
 Close the block on the table. If asked for a prediction interval, say the band on the last row is not yet a full interval: it treats mu and tau as known.
 :::
+
+## 8 · Check a prediction in three ways {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d4f0f6 100%)"}
 
 ## 8 · A prediction needs three checks {.smaller #sec-predict-checks}
 
@@ -755,7 +817,7 @@ We will not fit a prediction model today. The three sketches that follow are dra
 Say explicitly that you will not teach ROC construction today. The table is the map; the drawings are teaching arithmetic. Two minutes for this slide, then one minute per dimension.
 :::
 
-## Discrimination is the ranking {#sec-discrimination}
+## 8 · Discrimination is the ranking {#sec-discrimination}
 
 $$\mathrm{AUC} = \Pr(\hat\pi_{\mathrm{event}} > \hat\pi_{\mathrm{none}})$$
 
@@ -767,7 +829,7 @@ Teaching arithmetic, not a fitted model: 8 of 10 pairs ordered correctly is an A
 The 8-of-10 pairs line is the only number to remember. Red is chance ranking; green is usable separation. Do not conflate with calibration.
 :::
 
-## Calibration is the stated probability
+## 8 · Calibration is the stated probability
 
 In a bin of sites given the same $\hat\pi$, the event should occur about that often:
 
@@ -779,7 +841,7 @@ Teaching arithmetic: $\hat\pi = 0.80$ on 10 sites, and the event on only 3 of th
 Give the 3-of-10 example verbally. Ask when a carbon team would care about calibration versus ranking (reporting stock change vs prioritising sites).
 :::
 
-## Calibration, drawn
+## 8 · Calibration, drawn
 
 ![Two calibration sketches. Red points leave the diagonal. Green points stay near it.](figures/generated/calibration-bad-vs-good.jpg){fig-alt="Side-by-side calibration plots of predicted probability against observed frequency. Left, in red: points leave the diagonal. Right, in green: points track the diagonal." width="86%"}
 
@@ -787,7 +849,7 @@ Give the 3-of-10 example verbally. Ask when a carbon team would care about calib
 Quick visual; the equation slide carries the definition. Red is the dangerous case: confident probabilities that are wrong.
 :::
 
-## Utility is whether the score changes the action
+## 8 · Utility is whether the score changes the action
 
 At a threshold $t$, net benefit charges each false action at the odds $t/(1-t)$:
 
@@ -799,13 +861,15 @@ $t$ need not be clinical. It is the chance of a peat source, or of a stock chang
 Net benefit is the hardest of the three for this audience; lean on the peat-source example. You do not need to derive the formula — point at TP and FP.
 :::
 
-## Utility, drawn
+## 8 · Utility, drawn
 
 ![Two decision-curve sketches. The red score falls below both reference lines. The green score rises above both on a middle band of thresholds.](figures/generated/utility-bad-vs-good.jpg){fig-alt="Two net-benefit sketches against a decision threshold. Left, in red: the score drops below acting on none. Right, in green: the score rises above both acting on all sites and acting on none for a middle band of thresholds." width="78%"}
 
 ::: {.notes}
 Green is "worth using"; red is "worse than ignoring the score". Threshold $t$ is a policy choice, not a property of the model.
 :::
+
+## 9 · Respect clusters and repeats {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #f0dcc8 100%)"}
 
 ## 9 · Repeated rows are not replicates {#sec-clusters}
 
@@ -827,7 +891,7 @@ Ignoring the cluster pretends that rows in the same enclosure are as different a
 Index $j$ is the unit that received the treatment; $i$ is the repeated measure or sub-sample. Ask them to name both indices for their dataset before you show the row count slide.
 :::
 
-## Count the unit before you count the rows
+## 9 · Count the unit before you count the rows
 
 Teaching arithmetic, not a published study:
 
@@ -841,6 +905,8 @@ $4 \times 3 \times 20 \times 3 = 720$ rows. If the treatment was applied to the 
 ::: {.notes}
 Multiply together on the board. The gasp at 720 versus 4 is the learning moment. Technical replicates are not biological replicates.
 :::
+
+## 10 · Select covariates from a causal sketch {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #ddd6f5 100%)"}
 
 ## 10 · Covariates are a scientific choice
 
@@ -861,7 +927,7 @@ For an explanatory model, screening on $p$-values is the wrong gate. Draw the pa
 The table is not exhaustive; the next slide is the picture. If someone asks "stepwise AIC?", answer: same problem — the gate is the DAG and the estimand, not the lowest AIC.
 :::
 
-## Three arrows, three estimands {#sec-arrows}
+## 10 · Three arrows, three estimands {#sec-arrows}
 
 ```{mermaid}
 %%| fig-width: 10
@@ -880,6 +946,8 @@ If the question is the effect of carbon on the taxon, moisture is a confounder: 
 ::: {.notes}
 Trace the three arrows with your cursor. The estimand question is: do you want total, direct, or predictive association? Ninety seconds.
 :::
+
+## 11 · Sensitivity is part of the result {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #f6d4ea 100%)"}
 
 ## 11 · Show that the conclusion can move {#sec-sensitivity}
 
@@ -904,6 +972,8 @@ A constant hazard ratio, a "vague" prior, or a complete-case fit can each carry 
 Sensitivity is not "try everything until it sticks". Name one alternative assumption per panel and report direction and size of change. Observational work gets the causal link at the end of the sentence.
 :::
 
+## 12 · Report so a reader can redo it {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d5eadf 100%)"}
+
 ## 12 · Write so the analysis can be rerun {.smaller #sec-reporting}
 
 | Guidelines (examples) | Essentials to report |
@@ -923,74 +993,34 @@ SAMPL, on the [EQUATOR Network](https://www.equator-network.org/reporting-guidel
 SAMPL is the one they will see again in the reproducibility block. Pick one "avoid" row and ask for a rewrite from the room. One minute.
 :::
 
-## Essentials of statistical literacy
+## Essentials of statistical literacy {.literacy-row}
 
-![Poster of fourteen statistical-literacy principles, from variability to critical thinking, with a map from uncertainty to a decision.](figures/sources/statistical-literacy.jpeg){fig-alt="Cheatsheet titled Essentials of Statistical Literacy, with fourteen numbered principles and a seven-step map ending in better decisions." width="42%"}
+[StatHarbor Analytics](https://www.linkedin.com/posts/statharbor-analytics_statistics-statisticalliteracy-datascience-activity-7461801635405627392-h4U1), 17 May 2026. Click a panel. The words we police are on the [opening cards](#sec-words).
 
-[StatHarbor Analytics](https://www.linkedin.com/posts/statharbor-analytics_statistics-statisticalliteracy-datascience-activity-7461801635405627392-h4U1), 17 May 2026. The poster is the map. Click it to read a cell. The next slide is the vocabulary we will actually police.
-
-::: {.notes}
-Treat this as optional colour if you are behind. The next slide is the enforceable list for manuscripts in the room.
-:::
-
-## Say the precise word {#sec-words}
-
-| Prefer | Avoid, unless you mean it |
-| --- | --- |
-| Median and quartiles, when $Y$ is skewed | Mean and SD as the only summary |
-| Multivariable: several covariates | Multivariate: several responses |
-| Association, for an observational coefficient | Effect, when nobody assigned $x$ |
-| The estimate and the interval | "Significant" as the whole result |
-| Quantile: the cut point | Quantile: the group the cut creates |
-
-The multivariable row is drawn on [multivariable is not multivariate](#sec-multivariable).
+![1 Variability is normal](figures/generated/literacy-01.png){fig-alt="Panel 1. Variability is normal: randomness creates patterns, small samples fluctuate, and not every pattern is a signal."}
+![2 Data are not reality](figures/generated/literacy-02.png){fig-alt="Panel 2. Data are not reality: measurements depend on how, who, what, and what was missed."}
+![3 Correlation is not causation](figures/generated/literacy-03.png){fig-alt="Panel 3. Correlation is not causation: a relationship can be confounding, reverse causality, or coincidence."}
+![4 Uncertainty must be quantified](figures/generated/literacy-04.png){fig-alt="Panel 4. Uncertainty must be quantified with intervals, and more data reduces it without eliminating it."}
+![5 Sample is not population](figures/generated/literacy-05.png){fig-alt="Panel 5. A sample is not the population: we observe a subset, and representativeness matters."}
+![6 Probability is about uncertainty](figures/generated/literacy-06.png){fig-alt="Panel 6. Probability quantifies uncertainty, not certainty, and rare events still happen."}
+![7 Averages can mislead](figures/generated/literacy-07.png){fig-alt="Panel 7. Averages can mislead: the same mean can hide different shapes, outliers, and skew."}
 
 ::: {.notes}
-Read the multivariable row slowly — it is the commonest journal comment in ecology. Ask for a sentence from the room that confuses association and effect.
+Optional if you are behind. Click one panel rather than reading all seven. The vocabulary card is now in the opening, after expectation.
 :::
 
-## What is an estimand? :black_joker:
+## Essentials of statistical literacy {.literacy-row}
 
-Press `f` to turn the card.
-
-::: {.flashcard-front}
-In one sentence: what is an estimand?
-:::
-
-::: {.flashcard-back}
-The quantity the analysis is trying to learn: $\mu$, the unit it belongs to, and the contrast. The software is not the estimand.
-:::
+![8 Models are simplifications](figures/generated/literacy-08.png){fig-alt="Panel 8. Models are simplifications, useful when the assumptions are reasonable, and no model is perfect."}
+![9 Significance is not importance](figures/generated/literacy-09.png){fig-alt="Panel 9. Statistical significance is not practical importance. A tiny effect can be significant in a large sample."}
+![10 Absence of evidence](figures/generated/literacy-10.png){fig-alt="Panel 10. Absence of evidence is not evidence of absence. A non-significant result can be low power or a poor design."}
+![11 Bias and complexity](figures/generated/literacy-11.png){fig-alt="Panel 11. Bias often matters more than complexity. A simple unbiased model can beat a complex biased one."}
+![12 Prediction and explanation](figures/generated/literacy-12.png){fig-alt="Panel 12. Prediction and explanation are different. A model can predict without explaining the mechanism."}
+![13 Decision under uncertainty](figures/generated/literacy-13.png){fig-alt="Panel 13. Statistics supports a decision under uncertainty: options, risk, and evidence."}
+![14 Critical thinking](figures/generated/literacy-14.png){fig-alt="Panel 14. Critical thinking matters more than computation: the question, the assumptions, and the biases."}
 
 ::: {.notes}
-`f` flips. Later, `q` resets a quiz question and `x` checks it. Do not use `q` here.
-:::
-
-## Where does the link act?
-
-::: {.flashcard-front}
-In a generalised linear model, what does $g$ transform?
-:::
-
-::: {.flashcard-back}
-The conditional mean: $g(\mu) = \mathbf{x}^{\top}\boldsymbol{\beta}$. It does not rewrite the raw response $Y$.
-:::
-
-::: {.notes}
-Flashcard — `f` to flip. This catches people who still write $g(Y)$. Ten seconds unless someone is confused.
-:::
-
-## What is the index $j$?
-
-::: {.flashcard-front}
-In this deck, what does $j$ index?
-:::
-
-::: {.flashcard-back}
-The cluster or experimental unit, when the treatment sits on that unit. $i$ indexes the observation inside it.
-:::
-
-::: {.notes}
-Tie back to the clustering slide and the 720-rows example. If $j$ is wrong, every standard error in the talk is wrong.
+Panel 9 and panel 12 are the two this hour has already argued. Do not re-teach them. Point and move to the close.
 :::
 
 ## Where we go deeper {#sec-deeper}
