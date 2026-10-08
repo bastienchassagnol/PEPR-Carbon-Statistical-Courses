@@ -5,7 +5,7 @@ The count table for this workshop is the CA-SYS 16S survey [@klockenbring16SRRNA
 - 120 ha of arable land at the Domaine d'Épiosses, near Dijon
 - Four pesticide-free cropping systems, sampled 2018–2021
 - 42 plots, four subplots each; 640 samples, 595 after quality control
-- 10,633 OTUs from 16S rRNA amplicon sequencing
+- 10,633 [OTUs]{.mark} from 16S rRNA amplicon sequencing
 
 Data and the analysis vignettes are public [@klockenbringCASYS16SData2026]. The next slide is that record.
 
@@ -28,7 +28,7 @@ Recherche Data Gouv record for the CA-SYS deposit. If the frame is blank, the li
 | TS1 | Tilled | Exogenous nitrogen |
 | TS2 | Tilled | None |
 
-The systems sit in three zones: a no-till zone, a tilled zone, and a mixed zone where both occur. That spatial arrangement is deliberate, and it is the reason the tillage contrast is not a clean comparison. The consequence is on [the practice contrast and where it sits](#sec-casys-confounding).
+The systems sit in three [zones]{.mark}: a no-till zone, a tilled zone, and a mixed zone where both occur. That spatial arrangement is deliberate, and it is the reason the tillage contrast is not a clean comparison. The consequence is on [the practice contrast and where it sits](#sec-casys-confounding).
 
 ::: {.notes}
 The zone structure is the key design fact to plant now. It pays off twice: in the design block, where it is a blocking question, and in the causal block, where it is confounding by construction. Do not yet give the numbers.
@@ -153,7 +153,7 @@ reactable::reactable(
 )
 ```
 
-Five rows at a time. Design, effort, and response are the three roles. The file behind the table is [casys_teaching.csv](data/derived/casys_teaching.csv).
+Five rows at a time. Design, effort, and response are the three [roles]{.mark}. The file behind the table is [casys_teaching.csv](data/derived/casys_teaching.csv).
 
 ::: {.notes}
 Do not read every row. Show Design, then Effort, then Response, and say the colour is the role. Sequencing depth and total reads are both library sizes, and they are not the same number: one is the published depth, the other is recomputed after filtering. Richness, a taxon count, and a presence are the three responses on the next slide.
@@ -161,23 +161,30 @@ Do not read every row. Show Design, then Effort, then Response, and say the colo
 
 ## What $Y$ is in that table {#sec-casys-y}
 
-Three responses, three supports:
+Three responses, three [supports]{.mark}:
 
-- []{.fragment fragment-index="1"} **Reads for one taxon.** A non-negative integer, with a sampling effort that differs between samples
-- []{.fragment fragment-index="2"} **Richness.** The number of OTUs observed in a sample, an integer bounded by 10,633
-- []{.fragment fragment-index="3"} **Presence.** Whether a taxon was seen at all, a 0/1 response
+::: {.incremental}
+- **Reads for one taxon.** A non-negative integer, with a sampling effort that differs between samples
+- **Richness.** The number of OTUs observed in a sample, an integer bounded by 10,633
+- **Presence.** Whether a taxon was seen at all, a 0/1 response
+:::
+
 
 None of the three is a free Gaussian. The family that matches each is the [family table](#sec-family-table).
 
+![](figures/generated/sketch-datasets-supports.png){.sketch-sm fig-alt="Three number lines. Reads: dots at every integer from zero, open to infinity. Richness: dots at every integer up to a red bar marked max. Presence: only two dots, at zero and one." fig-align="center"}
+
 ::: {.notes}
 Ask which of the three the room would have analysed with a t-test. The honest answer is usually a relative abundance, which is a fourth object again: a composition. Say that compositions are deliberately out of scope today and are on the what-next slides.
+
+**Going further.** The support fixes the candidate families: $\{0, 1, 2, \dots\}$ suggests Poisson or negative binomial, $\{0, \dots, N\}$ with a known $N$ suggests a binomial, and $\{0, 1\}$ forces a Bernoulli, whose variance $\pi(1 - \pi)$ is set by its mean. Richness is a count of a different kind: it depends on sequencing depth through the accumulation curve, and its expectation is not linear in depth, so an offset on log depth is only an approximation. Agresti's *Foundations of Linear and Generalized Linear Models* sets out the families by support [@agrestiFoundationsLinearGeneralized2015].
 :::
 
 ## Two facts about the count table {#sec-casys-sparsity}
 
 ![Left, a histogram of OTU prevalence: most OTUs appear in a small fraction of samples. Right, a histogram of library size per sample.](figures/generated/casys-sparsity.png){fig-alt="Two panels. Left, OTU prevalence is concentrated near zero and 74.6 per cent of table entries are zero. Right, reads per sample range from about 11,000 to 85,000." width="96%"}
 
-74.6% of entries are zero, and the library size runs from 11,123 to 85,010 reads. Both numbers come from [generate-data-figures.R](scripts/generate-data-figures.R).
+74.6% of entries are zero, and the [library size]{.mark} runs from 11,123 to 85,010 reads. Both numbers come from [generate-data-figures.R](scripts/generate-data-figures.R).
 
 ::: {.notes}
 These two panels do most of the work for the GLM block. The zeros kill the Gaussian story. The unequal library sizes are why a raw taxon count cannot be compared across samples, and they are the reason the offset appears later. The 74.6% figure matches the published data descriptor, which is a useful check that the object was read correctly.
@@ -185,6 +192,8 @@ These two panels do most of the work for the GLM block. The zeros kill the Gauss
 
 ## Sampling effort is a covariate {#sec-casys-offset}
 
+:::: {.columns}
+::: {.column width="62%"}
 If sample A has twice the reads of sample B, it has about twice the chance of showing any given taxon, with no biology involved.
 
 ::: model
@@ -193,29 +202,42 @@ $$
 $$
 :::
 
-The last term is an **offset**: a column with a coefficient fixed at 1. The model is then about a rate per read, not a raw count. The fitted version is [one mean, two variance assumptions](#sec-casys-nb).
+The last term is an **[offset]{.mark}**: a column with a coefficient fixed at 1. The model is then about a [rate per read]{.mark}, not a raw count. The fitted version is [one mean, two variance assumptions](#sec-casys-nb).
+:::
+::: {.column width="38%"}
+![](figures/generated/sketch-datasets-offset.png){.sketch fig-alt="Two tubes filled from the same soil. Tube A, labelled two times the reads, is twice as deep and holds more coloured dots, standing for taxa, than the shallower tube B."}
+:::
+::::
 
 ::: {.notes}
 This is the slide where a modelling idea comes from a property of the measurement rather than from a textbook. Note the offset is not a covariate whose coefficient is estimated. If someone asks about rarefying to a common depth instead: it throws away data and it does not remove the dependence, and the offset is the model-based alternative. Keep it short; the evidence is two slides later.
+
+**Going further.** With exposure $t_i$ (here the library size) and rate $\lambda_i$, the model is $Y_i \sim \mathrm{Poisson}(t_i \lambda_i)$ with $\log \lambda_i = \mathbf{x}_i^{\top}\boldsymbol\beta$, which gives the displayed equation; $\exp(\beta_k)$ is then a rate ratio per read. Replacing the offset by $\log t_i$ as a covariate with a free coefficient tests proportionality: a coefficient far from 1 says that effort and counts are not proportional. Dividing the count by $t_i$ and fitting a Gaussian model instead changes both the target and the variance structure. The same offset works unchanged in the negative binomial.
 :::
 
 ## Why a Gaussian `lm` is the wrong first tool {#sec-casys-why-not-lm}
 
 - A count cannot be negative, and a Gaussian mean can predict a negative count
 - The variance of these counts rises with the mean, so one $\sigma^2$ does not fit
-- A proportion is bounded, and a rise in one taxon is a fall in another's share
+- A proportion is [bounded]{.mark}, and a rise in one taxon is a fall in another's share
 - Zeros are a property of community tables, not rows to delete
 
 The evidence for the second line is on the [mean against variance](#sec-casys-mean-variance) slide. The deep dive is after the pitfalls.
+
+::: {.notes}
+**Going further.** Each line is a statement about the variance function $V(\mu)$: a Gaussian model fixes $V(\mu) = 1$, a Poisson $V(\mu) = \mu$, a binomial share $V(\mu) = \mu(1 - \mu)/N$. Wedderburn's quasi-likelihood (1974) shows that a mean model plus a correct $V(\mu)$ is enough for consistent estimates and valid standard errors, without the full distribution. Transforming first, as $\log(Y + 1)$, makes the result depend on the arbitrary constant and handles the zeros badly; O'Hara and Kotze compare the two approaches by simulation (📄 *Do not log-transform count data*, Methods in Ecology and Evolution, 2010).
+:::
 
 ## Mean against variance, for every OTU {#sec-casys-mean-variance}
 
 ![Log-log scatter of per-OTU variance against per-OTU mean, with the line variance equals mean.](figures/generated/casys-mean-variance-real.png){fig-alt="Scatter of variance against mean on log axes for 10,603 OTUs. The cloud lies above the diagonal line where variance equals mean." width="88%"}
 
-9,924 of 10,603 OTUs have a variance above their mean. A Poisson fixes those two quantities to be equal, which is the assumption the [negative binomial](#sec-nb-theta) relaxes.
+9,924 of 10,603 OTUs have a variance above their mean. A Poisson fixes those two quantities to be [equal]{.mark}, which is the assumption the [negative binomial](#sec-nb-theta) relaxes.
 
 ::: {.notes}
 This is the real version of the simulated mean-variance figure the deck used to show. Each point is one OTU: its mean across the 595 samples against its variance. The diagonal is the Poisson. Note honestly that a few hundred OTUs sit on or below the line, which is what you expect for the very rare ones where almost every count is zero.
+
+**Going further.** A Poisson has variance function $V(\mu) = \mu$. The negative binomial arises as a Poisson whose mean is itself gamma-distributed, giving $V(\mu) = \mu + \mu^2/\theta$; quasi-Poisson keeps $V(\mu) = \phi\mu$ and estimates $\phi$ from the Pearson statistic $\sum_i (y_i - \hat\mu_i)^2/\hat\mu_i$ divided by $n - p$. The two make different predictions on this plot: a quadratic rise for the negative binomial, a line parallel to the diagonal for quasi-Poisson. Here each OTU's variance also mixes samples of different depth and system, so part of the excess is unmodelled mean structure rather than biology.
 :::
 
 ## Four analyses, only one of them today {#sec-casys-four}
@@ -227,7 +249,7 @@ This is the real version of the simulated mean-variance figure the deck used to 
 | Log-ratio (CLR and its relatives) | A composition, after the zeros are handled |
 | Absolute against relative | Whether the taxon changed, or only its share |
 
-Today we fit the count models and the logit. Compositions return on the [what-next](#sec-next-response) slides.
+Today we fit the count models and the logit. [Compositions]{.mark} return on the [what-next](#sec-next-response) slides.
 
 ::: {.notes}
 This is the pedagogical contract. Do not start a CLR derivation. If pressed, say that a log-ratio needs a rule for the 74.6% zeros before any transformation, and that this rule is a scientific decision rather than a default.
@@ -253,15 +275,17 @@ flowchart TD
   class u0,u1,u2,u3 otu
 ```
 
-The cropping system is a property of the plot. Four subplots in one plot are not four independent trials of that system. 2018 was sampled before the treatments were applied, so it is a baseline rather than a treated year.
+The cropping system is a property of the plot. Four subplots in one plot are not four [independent trials]{.mark} of that system. 2018 was sampled before the treatments were applied, so it is a [baseline]{.mark} rather than a treated year.
 
 ::: {.notes}
 Two things to flag. The subplot point is the replication pitfall, three hours early; the design block returns to it as a random intercept on the plot. The baseline year matters because a naive model with year as a factor will happily report a 2018 "effect" of a treatment that did not exist yet. That is a design fact you can only get from the dataset documentation.
+
+**Going further.** Hurlbert (📄 *Pseudoreplication and the design of ecological field experiments*, Ecological Monographs, 1984) defines pseudoreplication as testing a treatment effect with an error term taken from a level below the experimental unit. Here the system is assigned to the plot, so the denominator for the system contrast must come from plot-to-plot variation; a random intercept $u_j$ on the plot does that. With a baseline, the usual efficient analysis adjusts the post-treatment response for the 2018 value (an ANCOVA-type model) rather than using change scores or a year factor.
 :::
 
 ## SPRUCE :evergreen_tree: {#sec-spruce}
 
-A whole-ecosystem warming experiment on the S1 bog, Marcell Experimental Forest, Minnesota.
+A [whole-ecosystem]{.mark} warming experiment on the S1 bog, Marcell Experimental Forest, Minnesota.
 
 - Question on the design page: how do plants, microbes, and ecosystem processes respond to warming, and how does elevated $\mathrm{CO}_2$ change that response?
 - Air and deep peat warmed from ambient to $+9^\circ\mathrm{C}$
@@ -290,7 +314,7 @@ spruce |>
 #> plots 7 and 21 are unchambered ambient plots, with no assigned warming
 ```
 
-Twelve plots: ten chambered enclosures on the warming grid, and two ambient plots that were never assigned a level. The teaching table is [spruce_teaching.csv](data/derived/spruce_teaching.csv), built by [prepare-teaching-data.R](scripts/prepare-teaching-data.R) from [the published copy-number file](data/SPRUCE/SPRUCE_qPCR_copy_numbers_2021.csv).
+Twelve plots: ten chambered [enclosures]{.mark} on the warming grid, and two ambient plots that were never assigned a level. The teaching table is [spruce_teaching.csv](data/derived/spruce_teaching.csv), built by [prepare-teaching-data.R](scripts/prepare-teaching-data.R) from [the published copy-number file](data/SPRUCE/SPRUCE_qPCR_copy_numbers_2021.csv).
 
 ::: {.notes}
 Run the distinct() call in front of the room if the laptop allows. The point is that the design is recoverable from the data, and that the two ambient plots are a different kind of row: they have no warming level, so they cannot enter a regression on warming without a decision about what to do with them. That decision is a modelling choice, and it belongs in the analysis plan.
@@ -314,7 +338,7 @@ The response in this dataset is a **gene copy number** per gram of dry peat, fro
 - Bacterial, archaeal, and fungal copies, each with a log column
 - Missing numeric values are coded $-9999$ in the published file
 
-A qPCR copy number is an estimated abundance, not a counted integer. It is a positive, strongly skewed continuous response, so it belongs with the [transformation](#sec-vst) discussion and not with the Poisson.
+A qPCR copy number is an [estimated abundance]{.mark}, not a counted integer. It is a positive, strongly skewed continuous response, so it belongs with the [transformation](#sec-vst) discussion and not with the Poisson.
 
 ::: {.notes}
 Be explicit that this is not a count, even though it looks like one. Treating a qPCR abundance as Poisson would be a category error, and it is a mistake the room will have seen. The sentinel value is the other teaching point: 15 values in this file are -9999, and a script that reads the column as a number without that rule will report a mean of about -9999 times the missing fraction. The rule lives in [prepare-teaching-data.R](scripts/prepare-teaching-data.R) and nowhere else.
@@ -332,7 +356,7 @@ for (nm in numeric_cols) {
 }
 ```
 
-Fifteen values across the nine numeric columns are sentinels. One of the 216 bacterial measurements is missing.
+Fifteen values across the nine numeric columns are [sentinels]{.mark}. One of the 216 bacterial measurements is missing.
 
 ::: {.notes}
 Short slide. The message is that the rule came from the dataset documentation, not from a guess, and that it is written once in a script rather than repeated in every analysis. Link it forward to the missing-data pitfall: this is missingness you can describe, which is the easy case.
@@ -346,6 +370,8 @@ On the log scale the fall with depth is about $-0.079$ in $\log_{10}$ copies per
 
 ::: {.notes}
 The left panel is why the dataset ships a log column. The right panel is the transformation argument in its legitimate form: the transform is chosen because the mechanism is multiplicative, not because a normality test failed. Flag that this slope is a description of 12 plots at one site in one year, not a global law, and that the interval for it needs the plot structure on the next slide.
+
+**Going further.** If $\log Y$ is normal with mean $m$ and variance $\sigma^2$, then $\mathbb{E}(Y) = \exp(m + \sigma^2/2)$, so back-transforming a fitted mean on the log scale gives the median, not the mean. Duan's smearing estimator (📄 *Smearing estimate: a nonparametric retransformation method*, Journal of the American Statistical Association, 1983) corrects this without assuming normality. A Gamma or log-normal GLM with a log link targets $\log \mathbb{E}(Y \mid \mathbf{x})$ directly. $R^2$ depends on the range of depth sampled, so it is a property of this design, not of the process.
 :::
 
 ## One line per plot {#sec-spruce-profiles}
@@ -356,6 +382,8 @@ Nine depths inside one plot are not nine independent plots. Where the replicate 
 
 ::: {.notes}
 This figure is the hierarchy made visible. Each line is a plot; the points on it are depths. A regression on 215 rows that ignores the plot has about 12 units of real information about warming, not 215. That is the same arithmetic as the CA-SYS subplots. Both datasets make the same point, which is why the design block can treat them together.
+
+**Going further.** With $m$ rows per plot and intraclass correlation $\rho$, the effective sample size for a plot-level contrast is $n/\{1 + (m - 1)\rho\}$. Here $m$ is about 18 (nine depths by two months), so even a modest $\rho = 0.3$ cuts 215 rows to about 35, and as $\rho \to 1$ it tends to the 12 plots. For a covariate that varies within plots, such as depth, the plot effect instead removes between-plot noise and can increase precision.
 :::
 
 ## The model the design is asking for {#sec-spruce-model}
@@ -370,12 +398,14 @@ $$
 
 - $x_{1j}$: warming assigned to the enclosure
 - $x_{2j}$: elevated $\mathrm{CO}_2$ against ambient
-- $u_j$: plot-level departure, $u_j \sim \mathcal{N}(0, \sigma_u^2)$
+- $u_j$: [plot-level departure]{.mark}, $u_j \sim \mathcal{N}(0, \sigma_u^2)$
 
-A $t$-test of "warm against cool" is a different estimand, and a poorer one.
+A $t$-test of "warm against cool" is a different [estimand]{.mark}, and a poorer one.
 
 ::: {.notes}
 Point at the indices: j is the plot, i is the depth increment. The interaction is the scientific question the design was built for, which is why binning the five warming levels into two groups throws the design away. Two minutes, then move on: the fitting details are in the design block.
+
+**Going further.** $\sigma_u^2$ is usually estimated by restricted maximum likelihood (Patterson and Thompson, 1971), which maximises the likelihood of error contrasts and removes the downward bias of the ML variance estimate, analogous to dividing by $n - p$. Because $x_{1j}$ and $x_{2j}$ vary only between plots, their standard errors are driven by about 12 plots minus the plot-level parameters, so small-sample corrections to the denominator degrees of freedom (Satterthwaite, Kenward–Roger) matter. The regression design across five warming levels uses the gradient to estimate a slope, which is more powerful than an ANOVA on binned levels when the response is close to linear (Cottingham et al., 2005).
 :::
 
 ## Two datasets, one syllabus {#sec-datasets-map}
@@ -387,8 +417,10 @@ Point at the indices: j is the plot, i is the depth increment. The interaction i
 | Taxon presence | CA-SYS | Bernoulli, logit link |
 | Richness | CA-SYS | A count that is not Poisson |
 
-Same ecological story throughout: carbon and nitrogen cycling in soil. The statistics change because the response changes.
+Same ecological story throughout: carbon and nitrogen cycling in soil. The statistics change because the [response]{.mark} changes.
 
 ::: {.notes}
 This table is the map for the next two hours, and it is worth leaving up for a moment. The last row is deliberately awkward: richness is an integer, so the reflex is Poisson, and the data say otherwise by a factor of 28. We come back to it.
+
+**Going further.** All four rows are exponential-dispersion families, $f(y) = \exp[\{y\theta - b(\theta)\}/\phi + c(y, \phi)]$, with $\mu = b'(\theta)$ and $\mathrm{Var}(Y) = \phi\, b''(\theta) = \phi V(\mu)$. Choosing a family is choosing $V(\mu)$; the link is a separate choice, and the canonical one is $g = (b')^{-1}$. That shared form is why one fitting algorithm, iteratively reweighted least squares, and one deviance-based toolkit serve every row. See Agresti [@agrestiFoundationsLinearGeneralized2015].
 :::

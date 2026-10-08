@@ -207,3 +207,22 @@ $presentation-h3-font-size: 1.02em;
   line-height: 1.25;
   margin-bottom: 0.3em;
 }
+
+// Highlighter for [term]{.mark}: a term the room must keep.
+.reveal .slides section mark {
+  background: linear-gradient(transparent 52%, #ffe08a 52%);
+  color: inherit;
+  padding: 0 0.08em;
+}
+
+// Hand-drawn illustrations (scripts/generate-sketches.R). Kept small so a
+// text slide does not scroll.
+.reveal .slides section img.sketch {
+  max-height: 240px !important;
+  border-radius: 6px;
+}
+
+.reveal .slides section img.sketch-sm {
+  max-height: 180px !important;
+  border-radius: 6px;
+}

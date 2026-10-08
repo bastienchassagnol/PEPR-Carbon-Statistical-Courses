@@ -1,11 +1,13 @@
 ## What to open next · the response {#sec-next-response}
 
-- zero-inflated and hurdle models, when zeros are a second process
-- compositions: log-ratios, and a deliberate rule for zeros, before any CLR
+- [zero-inflated]{.mark} and hurdle models, when zeros are a second process
+- compositions: [log-ratios]{.mark}, and a deliberate rule for zeros, before any CLR
 - splines and GAMs, when the warming or moisture curve is the result
 - quantile residuals and calibration, once the family is in place
 
 The longer GLM development is the SIB day already cited, and Agresti [@agrestiFoundationsLinearGeneralized2015].
+
+![](figures/generated/sketch-close-next.png){.sketch-sm fig-alt="Hand-drawn signpost with four arrows pointing left and right, labelled zeros, log-ratios, GAMs and residuals." fig-align="center"}
 
 ## What to open next · design, cause, and reuse
 
@@ -15,7 +17,99 @@ The longer GLM development is the SIB day already cited, and Agresti [@agrestiFo
 - a mechanistic model, when $\mu$ is the solution of a process rather than a linear predictor
 - a reproducible script, and a report that meets SAMPL
 
-FAIR habits matter here because the next person will need your unit, your missingness rule, and your seed.
+[FAIR]{.mark} habits matter here because the next person will need your unit, your missingness rule, and your seed.
+
+## A Bayesian reading, later {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #ddd6f5 100%)"}
+
+The causal hour did not use a posterior. These slides are the perspective if a later analysis does.
+
+## The mean can stay; the probability statement changes
+
+:::: {.columns}
+::: {.column width="62%"}
+A Bayesian fit of the same GLM still uses
+
+$$
+g(\mu_i) = \beta_0 + \beta_1 x_i
+$$
+
+and a family for $Y \mid x$. What changes is the status of $\beta$.
+
+- the [likelihood]{.mark} is the model for $Y$ given $\beta$
+- the [prior]{.mark} is what you are willing to say about $\beta$ before these rows
+- the [posterior]{.mark} is the updated distribution of $\beta$ given the rows
+
+Riley and colleagues note one use directly: a probability such as $\Pr(\text{rate ratio} < 0.9 \mid \text{data})$ [@riley12thDayChristmas2022].
+:::
+::: {.column width="38%"}
+![](figures/generated/sketch-close-bayes-update.png){.sketch-sm fig-alt="Hand-drawn curves over a beta axis: a wide grey prior, a narrower blue likelihood, and a green posterior peaked between them, closer to the likelihood."}
+:::
+::::
+
+::: {.notes}
+The GLM mean equation $g(\mu_i)=\beta_0+\beta_1 x_i$ stays; what moves is whether $\beta$ is fixed or uncertain. Walk the three bullets: likelihood for $Y\mid\beta$, prior before the rows, posterior after. Riley's example is a probability about a rate ratio, not a repeated-sampling interval—say that sentence aloud.
+
+**Going further.** Bayes' theorem gives $p(\beta \mid \mathbf{y}) = p(\mathbf{y} \mid \beta)\,p(\beta) / p(\mathbf{y})$, where the normalising constant $p(\mathbf{y}) = \int p(\mathbf{y} \mid \beta)\,p(\beta)\,d\beta$ is the marginal likelihood. For a GLM with a non-identity link there is no conjugate prior for $\beta$, so the posterior is computed numerically, by Markov chain Monte Carlo (Stan's Hamiltonian sampler in `brms` or `rstanarm`) or by a Laplace or INLA approximation. The Bernstein–von Mises theorem says that, for a fixed number of parameters, a prior with positive density at the true value, and a correctly specified, regular model, the posterior is asymptotically normal, centred at the maximum-likelihood estimate with covariance equal to the inverse Fisher information; this is why Bayesian and Wald intervals agree in large samples. Gelman and colleagues, *Bayesian Data Analysis* (3rd edition, 2013), is the standard text.
+:::
+
+## Three objects, in order
+
+```{mermaid}
+%%| fig-width: 10
+%%| fig-height: 2.6
+flowchart LR
+  prior["Prior $$p(\beta)$$"]
+  likelihood["$$p(Y \mid \beta)$$"]
+  posterior["$$p(\beta \mid Y)$$"]
+  prior --> posterior
+  likelihood --> posterior
+```
+
+No prior is "non-informative" merely because it was the software default. A prior labelled vague can still move $\hat\beta$ when the sample is small or the outcome is sparse. That check is a [sensitivity analysis]{.mark}.
+
+::: {.notes}
+Trace the Mermaid flow: prior $p(\beta)$ and likelihood $p(Y\mid\beta)$ both feed the posterior $p(\beta\mid Y)$. The punchline is the default-prior warning—"vague" can still pull $\hat\beta$ with sparse data or ten enclosures. Name refitting with a second prior as the honesty check on the next slide.
+
+**Going further.** A flat prior is not invariant: flat on $\beta$ is not flat on $e^{\beta}$, so "non-informative" depends on the scale chosen. Weakly informative priors put most mass on plausible values, for example $\beta_1 \sim \mathcal{N}(0, 1)$ on a log-rate scale with standardised $x$, which rules out a 100-fold change per standard deviation without favouring a sign. A prior predictive check simulates $Y$ from $p(\beta)$ and the family before seeing the data, and reveals priors that imply impossible responses, such as fluxes of $10^{6}$. For a group-level standard deviation $\sigma_u$ with few groups, Gelman (*Bayesian Analysis*, 2006) showed that the inverse-gamma$(\epsilon, \epsilon)$ prior is far from vague and recommended a half-$t$ or half-normal prior instead. Reporting the posterior under two priors is the minimal sensitivity analysis.
+:::
+
+## What you are allowed to say
+
+:::: {.columns}
+::: {.column width="62%"}
+A Wald interval from `glm` is a statement about the [sampling distribution]{.mark} of the estimator, under the model, if the experiment were repeated.
+
+A [posterior interval]{.mark} is a statement about $\beta$ given this sample and this prior.
+
+They can be numerically close for a large sample and a gentle prior. They are not the same sentence. Write the one you computed.
+
+With ten enclosures, the prior on $\sigma_u$ is not a detail. Refit with a second prior and show the slope again.
+:::
+::: {.column width="38%"}
+![](figures/generated/sketch-close-wald-vs-posterior.png){.sketch fig-alt="Hand-drawn contrast: on the left, seven horizontal intervals from repeated experiments around a dashed true value, one in red missing it, labelled repeat; on the right, one green posterior curve with its central area shaded, labelled this sample."}
+:::
+::::
+
+::: {.notes}
+Contrast two sentences: Wald interval is about the estimator under repeated experiments; posterior interval is about $\beta$ given this sample and this prior. They may look similar with lots of data—they are not interchangeable wording. Ten enclosures is the concrete SPRUCE hook for priors on $\sigma_u$; insist on a second prior in the supplement.
+
+**Going further.** A 95% confidence procedure covers the fixed true $\beta$ in 95% of repeated samples; a 95% credible interval contains 95% of the posterior mass for this sample. The two coincide asymptotically under the Bernstein–von Mises conditions, and exactly in a few cases, such as a normal mean with known variance and a flat prior, but can differ sharply with small samples, parameters near a boundary (a variance near zero), or sparse binary outcomes. Credible intervals come in two flavours: the equal-tailed interval, from the 2.5% and 97.5% posterior quantiles, and the highest-density interval, the shortest region of given mass, which differ for a skewed posterior such as that of $\sigma_u$. Neither has guaranteed frequentist coverage unless the prior matches the data-generating process; a simulation-based calibration check (Talts and colleagues, 2018) tests whether the computation itself is correct.
+:::
+
+## Where it earns its place this afternoon
+
+- [partial pooling]{.mark} of sites or enclosures, with an honest prior on the variance
+- a parameter that must stay positive, such as a variance or a rate
+- a small sample, where a weakly identified $\beta$ should not look precise
+- a hierarchical summary across studies, which is the meta-analysis version of the same idea
+
+It does not remove confounding, and it does not choose the estimand.
+
+::: {.notes}
+Read the bullet list as scopes, not sales points: partial pooling, positive parameters, small-$n$ uncertainty, hierarchical meta-analysis. Close with the last line—Bayes does not open blocked back-door paths and does not replace design thinking. The coefficient-versus-intervention slide already opened the causal hour. Do not re-teach Simpson here.
+
+**Going further.** Any MCMC fit has to pass diagnostics before the posterior is read. Run at least four chains from dispersed starting values and check the rank-normalised split $\hat{R} < 1.01$ and a bulk and tail effective sample size above about 400 (Vehtari and colleagues, *Bayesian Analysis*, 2021); with Hamiltonian Monte Carlo, any divergent transition is a warning that the sampler missed part of the posterior, typically the funnel between group effects and a small $\sigma_u$, which a non-centred parameterisation usually removes. Diagnostics say the computation is reliable, not that the model is right; that is the role of the posterior predictive check, which simulates replicate data $\mathbf{y}^{\text{rep}}$ from $p(\mathbf{y}^{\text{rep}} \mid \mathbf{y})$ and compares a statistic, such as the proportion of zeros or the variance-to-mean ratio, with its observed value (Gelman, Meng and Stern, *Statistica Sinica*, 1996). Partial pooling itself is the shrinkage of each group estimate towards the overall mean by a factor that depends on $\sigma_u^2$ and the group's sample size, the Bayesian counterpart of the best linear unbiased predictor in a mixed model.
+:::
 
 ## Books to open next
 

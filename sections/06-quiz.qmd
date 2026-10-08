@@ -1,26 +1,12 @@
 ## Before the quiz :question:
 
-Ten questions, two from each block: the datasets, the pitfalls, non-Gaussian responses, the design, and the causal reading. Pick an option, then press `x` to check. Press `q` to reset that question.
+Fifteen questions on new situations, not on the two datasets: four on the pitfalls, four on non-Gaussian responses, one on smoothing, two on the design, and four on the causal and Bayesian reading. Pick an option, then press `x` to check. Press `q` to reset that question.
 
 Use the notation from the first hour: $Y$ is the response, $x$ is the covariate, $\mu = \mathbb{E}(Y \mid x)$, and $j$ is the unit that received the treatment.
 
 ::: {.notes}
-About twelve minutes. Ask the room before anyone checks. The check key is x. f still flips a flashcard, earlier in the deck.
+About fifteen minutes, one minute a question. Ask the room before anyone checks. The check key is x. f still flips a flashcard, earlier in the deck. None of the fifteen needs CA-SYS or SPRUCE: the point is to transfer the rule to a study the room has not seen. If the clock is short, take questions 1, 5, 9, 10, and 13, one per block.
 :::
-
-## Sample A has twice the reads of sample B {.quiz-question}
-
-Both are CA-SYS soil samples. You want the rate of one taxon.
-
-- [Compare the raw counts. They are both counts.]{data-explanation="Twice the reads is about twice the chance of seeing any taxon, with no biology involved."}
-- [Put $\log(\text{library size})$ in as an offset.]{.correct data-explanation="The offset fixes that coefficient at 1, so the model is about a rate per read. Library size runs from 11,123 to 85,010 reads in this table."}
-- [Rarefy both samples to the smallest library, then use a Gaussian model.]{data-explanation="Discarding reads loses information, and the Gaussian family still does not match a count."}
-
-## SPRUCE qPCR copy numbers {.quiz-question}
-
-- [An integer count, so start with a Poisson.]{data-explanation="A qPCR copy number is an estimated abundance from a standard curve, not a counted integer."}
-- [A positive, skewed continuous response. Model it on a log scale.]{.correct data-explanation="The dataset ships log columns for that reason. The depth profile is roughly linear in $\log_{10}$ copies."}
-- [A proportion, because it is relative to the standard.]{data-explanation="It is copies per gram of dry peat, not a share of a whole."}
 
 ## A ratio of 0.97 (0.95 to 0.99), with $p < 0.05$ {.quiz-question}
 
@@ -28,66 +14,122 @@ Both are CA-SYS soil samples. You want the rate of one taxon.
 - [Detected, and small. Ask whether 3% matters.]{.correct data-explanation="The interval sits below 1, so the contrast is detected, and it is a 3% change. The p-value does not say whether that change matters."}
 - [Too uncertain to quote, because the interval is narrow.]{data-explanation="A narrow interval is a precise estimate. Here it is a precise estimate of a small effect."}
 
-## Sequencing failed for every core with pH below 4 {.quiz-question}
+## The lab analysis failed for every soil core with pH below 4 {.quiz-question}
 
-pH is recorded for every core, including the cores with no sequences.
+pH is recorded for every core, including the cores with no result.
 
-- [Missing completely at random: drop the cores.]{data-explanation="The failures track observed pH, so this is not a pattern with no systematic structure."}
-- [Missing at random given pH. pH has to enter the model.]{.correct data-explanation="Missingness depends on observed pH. That is not a licence to fit a complete-case model and forget the low-pH cores."}
+- [Missing completely at random: drop the cores.]{data-explanation="The failures track observed pH, so the missingness is not unrelated to the data."}
+- [Missing at random given pH. pH has to enter the model.]{.correct data-explanation="Missingness depends on observed pH. Condition on pH, in the model or in a multiple-imputation model, rather than fitting a complete-case model and forgetting the low-pH cores."}
 - [Missing not at random, so no model can use these rows.]{data-explanation="The driver here is observed. A missing-not-at-random story would need a variable you did not record."}
+
+## Fertiliser dose split at its median into "low" and "high" {.quiz-question}
+
+The dose was applied at eight levels, from 0 to 200 kg N per hectare.
+
+- [Fine: two groups make the effect easier to explain.]{data-explanation="The split treats 100 and 200 kg as the same regime, and 99 and 101 kg as different. Power drops, and the estimand is now a contrast between two arbitrary groups."}
+- [Keep dose continuous, and allow a curve if the response bends.]{.correct data-explanation="A slope, or a spline in dose, uses all eight levels. Report the change per unit of dose, with its interval."}
+- [Use three groups instead of two, to keep more information.]{data-explanation="Fewer cut points lose less, but every cut still throws away the ordering inside each group."}
+
+## Significant in grasslands ($p = 0.01$), not in forests ($p = 0.30$) {.quiz-question}
+
+The same liming treatment was tested in both ecosystems.
+
+- [The treatment works in grasslands only.]{data-explanation="A non-significant result in forests is not evidence of no effect there, and the forest sample may simply be smaller."}
+- [Estimate the difference of the two effects, with its interval.]{.correct data-explanation="The question is an interaction: treatment by ecosystem. The difference between significant and not significant is not itself significant."}
+- [Report both $p$-values side by side; the reader can compare.]{data-explanation="Two p-values do not test whether two effects differ. Only the product term, or the difference of effects, answers that."}
+
+## Earthworms counted in quadrats of 0.25, 0.5, and 1 m² {.quiz-question}
+
+You want the effect of tillage on earthworm density.
+
+- [Fit a Poisson model to the raw counts, ignoring the area.]{data-explanation="A larger quadrat collects more worms with no change in density. Area would then masquerade as an effect."}
+- [Poisson or negative binomial, with $\log(\text{area})$ as an offset.]{.correct data-explanation="The offset fixes the coefficient of log area at 1, so $\exp(\beta)$ is a ratio of densities per square metre."}
+- [Divide each count by its area, then fit a Poisson to the densities.]{data-explanation="The densities are no longer counts, and the variance of a count from a small quadrat is not the variance of one from a large quadrat."}
 
 ## Pearson $\chi^2/\mathrm{df} = 10.6$ after a Poisson fit {.quiz-question}
 
 The log-link rate ratio is the quantity you care about.
 
-- [Take $\log(Y+1)$ and fit a Gaussian linear model.]{data-explanation="That targets a different estimand. It is not a rate ratio for the mean count, and the offset no longer enters."}
-- [Keep the log link. Replace the Poisson variance.]{.correct data-explanation="On the CA-SYS reads the negative binomial adds $\mu^2/\theta$ with $\hat\theta = 29.3$, and the interval widens by a factor of 3.1, from 0.962-0.982 to 0.941-1.002."}
-- [Trust the Poisson interval: the mean model is right.]{data-explanation="A right mean with the wrong variance makes the interval too narrow. That is exactly what happened here."}
+- [Take $\log(Y+1)$ and fit a Gaussian linear model.]{data-explanation="That targets a different estimand. It is not a rate ratio for the mean count, and an offset no longer enters."}
+- [Keep the log link. Replace the Poisson variance.]{.correct data-explanation="A negative binomial adds $\mu^2/\theta$ to the variance, and a quasi-Poisson multiplies it by about 10.6. The mean model and the rate ratio stay; the interval widens."}
+- [Trust the Poisson interval: the mean model is right.]{data-explanation="A right mean with the wrong variance makes the interval too narrow, here by a factor of about $\sqrt{10.6} \approx 3.3$."}
 
-## $\exp(\hat\beta_1) = 4$ in a logit model of detection {.quiz-question}
+## $\exp(\hat\beta_1) = 4$ in a logit model of seedling survival {.quiz-question}
 
-One-unit increase in centred pH, other covariates held fixed.
+One-unit increase in centred soil moisture, other covariates held fixed.
 
-- [The detection probability is multiplied by 4.]{data-explanation="The probability change depends on where you start on the curve. It is not a constant factor."}
-- [The odds of detection are multiplied by 4.]{.correct data-explanation="The odds move by $\exp(\hat\beta_1)$. The change in $\pi$ does not."}
+- [The survival probability is multiplied by 4.]{data-explanation="The change in probability depends on where you start on the curve. It is not a constant factor."}
+- [The odds of survival are multiplied by 4.]{.correct data-explanation="The odds move by $\exp(\hat\beta_1)$. The change in $\pi$ does not."}
 - [The log-odds increase by 4.]{data-explanation="The log-odds increase by $\hat\beta_1$, which is $\log 4$, not 4."}
 
-## Analyse SPRUCE warming as low versus high, split at $+4.5^\circ\mathrm{C}$ {.quiz-question}
+## $\exp(\text{mean of } \log Y)$ reported as the mean of $Y$ {.quiz-question}
 
-- [Reasonable: two groups are easier to explain.]{data-explanation="The cut treats +4.5 and +9 as the same regime, and +4.5 and +2.25 as unrelated."}
-- [Keep the regression across the five levels.]{.correct data-explanation="The design is a regression. Report a slope per degree, and show the mean. Binning is the loss the design page already described."}
-- [Either, if the $p$-value agrees.]{data-explanation="Agreement of a test does not repair a cut that changes the estimand."}
+$Y$ is soil organic carbon stock, positive and right-skewed.
 
-## Nine depth increments in each SPRUCE plot {.quiz-question}
+- [Correct: exp undoes the log.]{data-explanation="exp undoes the log of one value, not the mean of logs. The mean of $\log Y$ is not the log of the mean of $Y$."}
+- [It estimates the median, below the mean. Correct for it, or fit a log-link GLM.]{.correct data-explanation="By Jensen's inequality, $\exp\{\mathbb{E}(\log Y)\} \le \mathbb{E}(Y)$. Under a log-normal the gap is a factor $\exp(\sigma^2/2)$; a smearing estimate or a Gamma GLM with a log link targets the mean directly."}
+- [It overestimates the mean, because the log stretches small values.]{data-explanation="The bias goes the other way: the back-transformed value sits below the arithmetic mean."}
 
-215 measured rows, 12 plots, two sampling months.
+## A smooth of soil temperature reports $\mathrm{edf} = 1.0$ {.quiz-question}
 
-- [215 replicates of the warming contrast.]{data-explanation="Warming is applied to the plot. Depths and months are repeats inside that plot."}
-- [Twelve plots. Depths and months are repeats inside $j$.]{.correct data-explanation="Ten chambered enclosures carry a warming level, plus two ambient plots. The 215 rows are not 215 independent trials of warming."}
-- [Nine replicates, because the depth profile is the measurement.]{data-explanation="Depth is a covariate measured inside each plot, not the unit that received the treatment."}
+The basis had $k = 10$ functions.
+
+- [The smooth failed. Refit with a larger $k$.]{data-explanation="A larger basis cannot help when the penalty already chose the straight line. Check $k$ when the edf is close to $k - 1$, not close to 1."}
+- [The penalty shrank the curve to a straight line. A linear term is enough.]{.correct data-explanation="One effective degree of freedom is a line. The data did not pay for any wiggle."}
+- [Temperature has no effect.]{data-explanation="edf measures how wiggly the curve is, not how steep. A straight line can have a large slope."}
+
+## Warming is set per open-top chamber {.quiz-question}
+
+Four warmed chambers, four control chambers, and ten soil cores in each.
+
+- [80 cores: 40 replicates per arm.]{data-explanation="Warming was applied to the chamber. The ten cores inside one chamber share its warming, its microclimate, and its errors."}
+- [Four replicates per arm. Cores are repeats inside $j$.]{.correct data-explanation="The chamber is the experimental unit. Fit a random intercept per chamber, or analyse chamber means; both give a test on eight units."}
+- [Ten replicates, one for each core position.]{data-explanation="Core position is not the unit that received the treatment."}
+
+## Twenty plots run downhill along a moisture gradient {.quiz-question}
+
+Four treatments, five plots each.
+
+- [Assign the treatments in order down the slope.]{data-explanation="Treatment is then confounded with moisture. No model can separate them."}
+- [Make five blocks along the slope, and randomise the four treatments inside each.]{.correct data-explanation="Blocking removes the gradient from the error. Randomisation inside the block keeps the contrast fair."}
+- [Randomise all twenty plots, and ignore the slope.]{data-explanation="Valid, but the moisture gradient stays in the residual, so the contrasts are less precise than in a blocked design."}
 
 ## Hospital B is worse overall, and better inside each severity {.quiz-question}
 
 A publishes 86% survival, B publishes 79%. Inside light cases, and again inside severe cases, B is higher.
 
 - [Book A. The overall rate is the only estimand.]{data-explanation="The overall rate weights the two severities differently in the two hospitals. The within-severity ranking goes the other way."}
-- [The pooled ranking can reverse because the case-mix differs. Severity belongs in the contrast.]{.correct data-explanation="Giltaire's table: B is higher in both strata. A's overall rate is higher because A treated mostly light cases."}
+- [The pooled ranking can reverse because the case-mix differs. Severity belongs in the contrast.]{.correct data-explanation="This is Simpson's paradox. B is higher in both strata. A's overall rate is higher because A treated mostly light cases."}
 - [The reversal means one of the two tables is a calculation error.]{data-explanation="The arithmetic is the paradox. The weights, not a mistaken cell, reverse the ranking."}
 
 ## Inflammation $Z$ is caused by both $X$ and $Y$ {.quiz-question}
 
 - [Put $Z$ in the regression. It is associated with both.]{data-explanation="That is a collider. Conditioning on it opens a path between $X$ and $Y$."}
-- [Do not control $Z$. Conditioning on a common effect creates a correlation.]{.correct data-explanation="Hertel's rule for a collider: leave it out. Controlling it is the overmatching he warns against."}
+- [Do not control $Z$. Conditioning on a common effect creates a correlation.]{.correct data-explanation="Leave a collider out. Controlling it creates an association between $X$ and $Y$ even when there is none."}
 - [Control $Z$ only when the sample is large.]{data-explanation="Sample size does not change the arrow. A common effect is still a collider."}
+
+## No-till raises soil moisture, and moisture raises $\mathrm{CO}_2$ efflux {.quiz-question}
+
+You want the total effect of no-till on efflux.
+
+- [Adjust for moisture, to compare like with like.]{data-explanation="Moisture sits on the path from no-till to efflux. Adjusting for it removes part of the effect you want."}
+- [Do not adjust for moisture. It is a mediator of the total effect.]{.correct data-explanation="The total effect includes the path through moisture. Adjusting for moisture answers a different question: the effect at fixed moisture."}
+- [Adjust for moisture only if it correlates with no-till.]{data-explanation="It correlates with no-till because no-till causes it. The arrow, not the correlation, decides."}
+
+## A 95% posterior interval of 0.2 to 0.9 for a warming slope {.quiz-question}
+
+- [In 95% of repeated experiments, an interval built this way covers the true slope.]{data-explanation="That is the repeated-sampling reading of a confidence interval."}
+- [Given the model, the prior, and the data, the slope lies in 0.2 to 0.9 with probability 0.95.]{.correct data-explanation="A posterior interval is a probability statement about the parameter, conditional on the prior and the likelihood."}
+- [The prior no longer matters once the interval excludes 0.]{data-explanation="With few units the prior can move the interval. Refit with a second prior and report both."}
 
 ## SAMPL, in workshop language :memo: {#sec-sampl}
 
 [Lang and Altman, SAMPL](https://www.equator-network.org/reporting-guidelines/sampl/) ask for the analysis to be explicit enough to audit. For this room, four lines are the minimum:
 
-1. []{.fragment fragment-index="1"} Purpose: describe, compare, explain, predict, explore, or confirm
-2. []{.fragment fragment-index="2"} Estimand, with the unit and the contrast
-3. []{.fragment fragment-index="3"} Family, link, and what you did about missing rows
-4. []{.fragment fragment-index="4"} The estimate, the interval, and the assumption you checked
+1. Purpose: describe, compare, explain, predict, explore, or confirm
+2. Estimand, with the unit and the contrast
+3. Family, link, and what you did about missing rows
+4. The estimate, the interval, and the assumption you checked
 
 "We used a mixed model" is not one of the four lines. The pitfalls card is [write so the analysis can be rerun](#sec-reporting).
 

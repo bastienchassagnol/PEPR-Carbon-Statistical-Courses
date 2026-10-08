@@ -1,3 +1,5 @@
+## The words of a design {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d6e2f5 100%)"}
+
 ## The analysis inherits the plan
 
 A mixed model does not repair an undescribed design. Before the formula, name:
@@ -7,11 +9,243 @@ A mixed model does not repair an undescribed design. Before the formula, name:
 - what was randomised, blocked, or only observed
 - which rows are repeats of the same unit
 
-Carbon data are often hierarchical, multi-site, and repeated in time. The random effect is the translation of that structure, not a decorative term.
+Carbon data are often hierarchical, multi-site, and repeated in time. The [random effect]{.mark} is the translation of that structure, not a decorative term.
 
 ::: {.notes}
 Open with the headline: the formula cannot fix a plan you never wrote down. Walk the four bullets in order and ask the room to name SPRUCE's treatment unit (the enclosure) and the observational unit on a flux row (collar by date). The common slip is to treat every depth–date line as an independent replicate; that mistake is what the random effect is meant to encode, not to paper over.
+
+**Going further.** Hurlbert (1984, *Ecological Monographs*, "Pseudoreplication and the design of ecological field experiments") named the error: testing a treatment effect with an error term built from samples that are not independent replicates of the treatment. His taxonomy separates simple pseudoreplication (one unit per treatment, many samples from it), temporal pseudoreplication (repeated dates treated as replicates), and sacrificial pseudoreplication (real replicates pooled before the test). The formal statement is that the correct denominator for a treatment comparison is the variance between experimental units, the stratum in which the treatment was randomised; a mixed model recovers it only if the random-effect structure matches that stratum. Bailey, *Design of Comparative Experiments* (2008), makes the distinction between experimental unit and observational unit the starting point of every analysis.
 :::
+
+## A study leaves some conditions free {#sec-study}
+
+In a study, conditions that move the outcome are outside the investigator's control. A field example is the weather, the food, and the predators.
+
+::: {.incremental}
+- In an [observational study]{.mark} the variable of interest itself is not assigned. That is where the reminder sits: correlation is not causation.
+:::
+
+::: {.notes}
+Field weather is the uncontrolled nuisance example. Step the fragment: the exposure of interest is not assigned, so the causal section's $do(x)$ language matters later. SPRUCE is not this slide—it is closer to the controlled-experiment and trial pair.
+:::
+
+## A trial randomises the assignment {#sec-rct}
+
+A [randomised controlled trial]{.mark} still cannot hold every nuisance fixed. It does control who receives the intervention.
+
+::: {.incremental}
+- With a large enough sample, the nuisances average out, and the contrast can be read as an effect of that assignment.
+
+- The trial is [prospective]{.mark}: the outcome is unknown when the groups are assigned.
+:::
+
+![](figures/generated/sketch-design-rct.png){.sketch-sm fig-alt="Hand-drawn coin marked with a question mark, with two arrows sending three stick figures to a blue treated group and three to a grey control group." fig-align="center"}
+
+::: {.notes}
+Fragment one: randomisation controls assignment, not every nuisance. Fragment two: prospective timing—outcome unknown at allocation. Ask whether warming at SPRUCE is "assigned" in this sense (yes on enclosure). Bridge to the causal deck: randomisation is a design fact, not a covariate trick.
+
+**Going further.** In potential-outcome notation, each unit has $Y_i(1)$ and $Y_i(0)$, and randomisation makes the assignment independent of both, so the difference of group means is unbiased for the average treatment effect without any model for the nuisances. "Average out" is a statement about the randomisation distribution, not about one realised allocation: a given trial can still be imbalanced on a covariate, and adjusting for a pre-specified prognostic covariate then gains precision without bias (Senn, 1994, *Statistics in Medicine*, "Testing for baseline balance in clinical trials", argues against testing for imbalance instead). Fisher's randomisation test uses the assignment mechanism itself as the reference distribution, so its validity needs no normality or independence assumption beyond the design. Imbens and Rubin, *Causal Inference for Statistics, Social, and Biomedical Sciences* (2015), chapters 5–7, develop the finite-population theory.
+:::
+
+## A meta-analysis studies the studies {#sec-meta-analysis}
+
+Huber calls a [meta-analysis]{.mark} an observational study of earlier experiments or studies. Two motives: a larger effective sample, and the hope that study-level bias averages out across studies.
+
+The hierarchical version, one estimate per site, is [fixed effect or random effects](#sec-fixed-random-meta).
+
+::: {.notes}
+Meta-analysis is observational at study level: you did not randomise which papers exist. The two motives on the slide are sample size and hope that study-level bias averages out—say both, without overselling the second. Point to the link back to fixed versus random effects for "one estimate per site".
+
+**Going further.** With study estimates $\hat\theta_j$ and within-study variances $v_j$, the fixed-effect (common-effect) estimate is the inverse-variance mean $\sum_j w_j\hat\theta_j / \sum_j w_j$ with $w_j = 1/v_j$; the random-effects model adds $\theta_j \sim \mathcal{N}(\theta, \tau^2)$ and uses $w_j = 1/(v_j + \tau^2)$, which flattens the weights and widens the interval. DerSimonian and Laird (1986, *Controlled Clinical Trials*, "Meta-analysis in clinical trials") give the moment estimator of $\tau^2$; REML or Paule–Mandel estimators and the Hartung–Knapp–Sidik–Jonkman interval behave better when the number of studies is small. $I^2$ describes the share of variability due to heterogeneity, not its size. Borenstein, Hedges, Higgins and Rothstein, *Introduction to Meta-Analysis* (2009), is the standard text.
+:::
+
+## Twenty weighings are not ten people {#sec-tech-bio}
+
+[Huber's weight-loss question](https://www.huber.embl.de/msmb/13-chap.html#biological-versus-technical-replicates). Twenty weighings of one person, on a precise scale, remeasure a value you already know. Ten people, weighed once each, start to ask whether the effect travels.
+
+::: {.incremental}
+- Name the [level you can generalise to]{.mark}: laboratory, operator, machine, protocol, strain, litter, animal. "Technical" and "biological" are too coarse for that list.
+:::
+
+![](figures/generated/sketch-design-tech-bio.png){.sketch-sm fig-alt="Hand-drawn comparison: on the left one red stick figure on a scale, weighed twenty times, labelled n equals 1; on the right ten green stick figures, labelled n equals 10." fig-align="center"}
+
+::: {.notes}
+Huber's twenty-versus-ten weighings is the memorable line. Step the fragment and make students pick a concrete level—sequencing run, core, plot—not the vague label "technical". That list feeds directly into the replicate table for SPRUCE and CA-SYS.
+
+**Going further.** With $m$ technical measurements on each of $J$ biological units, $Y_{ij} = \mu + u_j + \varepsilon_{ij}$, the variance of the grand mean is $\sigma_u^2/J + \sigma_\varepsilon^2/(Jm)$. Increasing $m$ only shrinks the second term; when $\sigma_u^2$ dominates, twenty weighings of one person leave the first term at $\sigma_u^2/1$, which no amount of technical precision removes. The optimal split under a cost $c_1$ per unit and $c_2$ per measurement is $m^\ast = \sqrt{(c_1/c_2)(\sigma_\varepsilon^2/\sigma_u^2)}$, the classical result for two-stage sampling (Cochran, *Sampling Techniques*, 1977, chapter 10). The level of inference is the level whose variance appears in the standard error: generalising to new animals needs $\sigma_{\text{animal}}^2$ to be estimable, so at least two animals per treatment, and preferably many more.
+:::
+
+## Randomise the nuisance you cannot block {#sec-randomise}
+
+When the nuisance is unknown in advance, [randomisation]{.mark} is the practical strategy: at a large enough sample, its effect averages out. It also limits [unconscious bias]{.mark}, such as extra care for the samples that were hard to obtain.
+
+He points to Senn (2004) for the ways a "better" scheme than simple randomisation can go wrong.
+
+::: {.notes}
+When blocking is impossible, randomisation is the practical defence—both against unknown nuisances and unconscious handling bias. Mention Senn as the caution on fancy schemes without lecturing the chapter. Ask for one carbon-lab nuisance you could randomise but not block (plate position, run order).
+
+**Going further.** Randomisation does two separate jobs. It removes systematic bias, because any unmeasured covariate is independent of treatment in expectation; and it justifies the error term, because under the randomisation the expected treatment mean square equals the residual mean square when there is no effect (Fisher, *The Design of Experiments*, 1935). Restricted randomisation (blocking, stratification, minimisation) keeps both properties only if the analysis includes the restriction, which is why a blocked design must have the block in the model. Run order and plate position are classic carriers of drift; a randomised order turns drift into noise, while a systematic order turns it into bias. Senn's 2004 discussion of "better" allocation schemes (*Statistics in Medicine*) makes the point that deterministic balancing can break the link between design and analysis.
+:::
+
+## Balance makes each effect identifiable {#sec-balanced}
+
+A [balanced design]{.mark} gives every factor combination the same number of replicates. Each factor's effect can then be separated. A nuisance that is balanced against the factor of interest is in the same position.
+
+::: {.incremental}
+- An unbalanced plan can be forced by cost. The warning is that the analysis is then on thin ice.
+:::
+
+![](figures/generated/sketch-design-balanced.png){.sketch-sm fig-alt="Two hand-drawn two-by-two grids: on the left every cell holds three green dots, labelled balanced; on the right the cells hold six, one, none, and four red dots, labelled unbalanced." fig-align="center"}
+
+::: {.notes}
+Balanced means equal replication per combination so effects separate. Step the fragment: unbalanced designs are common when money runs out—keep the "thin ice" phrase for the methods section. Do not confuse balance with randomisation; you need both stories in different papers.
+
+**Going further.** In a linear model $\mathbb{E}(\mathbf{Y}) = \mathbf{X}\boldsymbol\beta$, a linear function $\mathbf{c}^{\top}\boldsymbol\beta$ is estimable when $\mathbf{c}^{\top}$ lies in the row space of $\mathbf{X}$; an empty cell, as in the right-hand grid, makes the corresponding interaction non-estimable. With equal replication the columns for different factors are orthogonal, so the sums of squares decompose uniquely and the order of terms does not matter. Unbalanced data break that orthogonality: sequential (type I), partial (type II) and marginal (type III) sums of squares then test different hypotheses, and type III tests on main effects in the presence of an interaction depend on the contrast coding. Searle, *Linear Models for Unbalanced Data* (1987), is the reference; Agresti covers estimability in *Foundations of Linear and Generalized Linear Models* [@agrestiFoundationsLinearGeneralized2015].
+:::
+
+## A pair is one block {#sec-pairing-picture}
+
+![Left, treatment and control in one pot, assigned by a coin. Right, both plants on the same side, so the side is mixed up with the treatment.](figures/generated/design-pairing.jpg){fig-alt="Two pots. The left pot has one treated seedling and one control seedling, with a coin above, labelled one pair. The right pot has both seedlings on the treated side, and an arrow saying the side of the pot is confounded with the treatment." width="88%"}
+
+The left pot is a [pair]{.mark}: the nuisance (the pot) is shared, and the treatment is assigned inside it. The right pot lets the side of the pot wear the treatment's name.
+
+::: {.notes}
+Cover the right pot first. Fisher's complaint about Darwin was this picture: every cross-pollinated plant on one side. The coin is the randomisation inside the block. Thirty seconds, then the Huber link on the next slide.
+:::
+
+## Pairing is the smallest block {#sec-pairing}
+
+[Block what you can, and randomise what you cannot](https://www.huber.embl.de/msmb/13-chap.html#blocking-and-pairing). A [paired design]{.mark} is the simplest block: twins, or the same person before and after.
+
+::: {.incremental}
+- Fisher criticised Darwin for putting every cross-pollinated plant on the same side of the pot. A coin flip for the side would have kept that side from masquerading as the cross.
+
+- When a natural pair does not exist, a [matched design]{.mark} builds pairs on age, sex, or health, and treats one of the pair.
+:::
+
+::: {.notes}
+Fisher's Darwin pot-side story is the vivid warning—blocking is about removing a directional nuisance. Fragment two: matched pairs when nature does not give you twins. Pairing is the smallest block; SPRUCE blocking discussion earlier is the same idea at enclosure scale.
+
+**Going further.** For a paired comparison, $\mathrm{Var}(\bar d) = 2\sigma^2(1 - \rho)/n$, where $\rho$ is the within-pair correlation, against $2\sigma^2/n$ for two independent groups of the same size. The relative efficiency of the paired design is therefore $1/(1 - \rho)$: with $\rho = 0.5$ pairing halves the number of units needed. The price is $n - 1$ instead of $2n - 2$ residual degrees of freedom, which matters only when $n$ is very small or $\rho$ is close to zero. More generally, the efficiency of a randomised complete block design relative to a completely randomised one is estimated from the block and residual mean squares (Cochran and Cox, *Experimental Designs*, 1957; Montgomery, *Design and Analysis of Experiments*, chapter 4). Matching without analysing the pairs throws the gain away, and for a binary $Y$ the matched analysis (McNemar, conditional logistic) targets a conditional, not a marginal, odds ratio.
+:::
+
+## Ten minutes: name the units :pencil: {#sec-design-terms-write}
+
+On your own study, or on [SPRUCE](#sec-spruce) or [CA-SYS](#sec-casys), write four lines:
+
+- the unit that received the treatment, or the exposure
+- the unit that was measured
+- what was assigned, blocked, or only observed
+- which rows are repeats of the same unit
+
+::: {.notes}
+Ten minutes, writing, not talking. If a group has no study of their own, send them to SPRUCE. Do not show the next slide until the time is up.
+:::
+
+## One reading: SPRUCE {#sec-replicate}
+
+SPRUCE is the designed case, so the words are easier to pin down than in an observational table.
+
+- Treatment unit: the enclosure. Warming and CO$_2$ are assigned there
+- Measured unit: a depth on a date, inside that enclosure
+- Assigned: the ten chambered enclosures. Two ambient plots were never given a warming level
+- Repeats: depths and dates that share an enclosure are not new enclosures
+
+| If you need… | The replicate is… |
+| --- | --- |
+| The warming slope | The enclosure, $n = 10$ |
+| A collar method | Collars within an enclosure |
+| A seasonal curve | Dates within an enclosure |
+
+The same table is [where the replicate is](#sec-replicate). CA-SYS is the other exercise: the system sits on the plot, and the four points in a plot are the repeats.
+
+::: {.notes}
+Read the four bullets, then the table. $n = 10$ is the line that surprises people who counted depth-date rows. Offer CA-SYS only if a group chose it: plot is $j$, point is $i$.
+:::
+
+## Contrasts {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #f6e2c4 100%)"}
+
+## Treatment contrasts use one reference {#sec-contr-treatment}
+
+[Larmarange, chapter 26](https://larmarange.github.io/guide-R/analyses/contrastes.html#contrastes-de-type-traitement). For an unordered factor, R's default is `contr.treatment`. A factor with $n$ levels becomes $n-1$ columns. The [reference level]{.mark} sits in the intercept.
+
+In the `marker ~ grade` example the intercept is $1.0669$ and the grade II coefficient is $-0.3864$. The mean at grade II is the sum:
+
+$$
+1.0669 + (-0.3864) = 0.6805.
+$$
+
+`contr.treatment(n, base =)` and `contr.SAS()` move which level is the reference.
+
+![](figures/generated/sketch-design-contr-treatment.png){.sketch-sm fig-alt="Hand-drawn level means for four levels I to IV. A dashed line marks the reference level I, and blue arrows labelled beta 1 to beta 3 run from that line to the means of levels II, III and IV." fig-align="center"}
+
+::: {.notes}
+Walk the arithmetic on the slide: intercept $1.0669$ plus grade II coefficient $-0.3864$ gives $0.6805$. Emphasise $n-1$ columns and one reference in the intercept. Students confuse "coefficient for II" with "mean at II" unless you do the sum aloud. `contr.treatment` and `contr.SAS` only move the reference level.
+
+**Going further.** A factor with $L$ levels and an intercept gives a cell-means model $\mu_\ell$ with only $L$ estimable means but $L + 1$ parameters in the overparametrised form $\beta_0 + \alpha_\ell$; a contrast coding is a choice of $L - 1$ columns that removes the redundancy. The coding matrix $\mathbf{C}$ (what `contrasts()` shows) is not the hypothesis matrix: the coefficients estimate the rows of the generalised inverse of $[\mathbf{1}\;\mathbf{C}]$, so reading a coefficient requires inverting the coding (Schad, Vasishth, Hohenstein and Kliegl, 2020, *Journal of Memory and Language*, "How to capitalize on a priori contrasts in linear (mixed) models: a tutorial"). With treatment coding the hypothesis matrix is simple, $\beta_\ell = \mu_\ell - \mu_1$, which is why it reads well. In a model with an interaction, the "main effect" of another factor under treatment coding is its effect at the reference level only, a frequent misreading of type III tables. Any estimable contrast $\sum_\ell c_\ell\mu_\ell$ with $\sum_\ell c_\ell = 0$ can be obtained afterwards from any coding, for example with `emmeans`.
+:::
+
+## Sum contrasts use the mean of the level means {#sec-contr-sum}
+
+[`contr.sum`](https://larmarange.github.io/guide-R/analyses/contrastes.html#contrastes-de-type-somme) compares each level with the [unweighted mean]{.mark} of the level means. The last level is coded $-1$, so one factor's coefficients sum to zero and the intercept is that grand mean.
+
+The grade level that was coded $-1$ has deviation $-(0.1525 - 0.2339) = 0.0814$, which is also $0.9958 - 0.9144$.
+
+Fitted values, residual sum of squares, and AIC match the treatment-contrast fit. What changes is the reading of each coefficient.
+
+::: {.notes}
+`contr.sum` centres on the unweighted mean of level means; the $-1$ coding line explains the $0.0814$ deviation. Stress that predictions do not move—only the sentences attached to each $\hat\beta$. Ask which contrast you would use if the scientific question is "grade II versus average grade".
+
+**Going further.** Sum coding gives $\beta_0 = \frac{1}{L}\sum_\ell \mu_\ell$ and $\beta_\ell = \mu_\ell - \beta_0$ for $\ell < L$, with the last deviation recovered as $-\sum_{\ell<L}\beta_\ell$. The grand mean is unweighted, so with unequal group sizes it differs from the overall sample mean of $Y$; a weighted-effect coding exists when the population mean is the target. Sum coding matters most with interactions: centred codings make the main effects in a factorial model average effects over the other factor's levels, which is what type III sums of squares assume, whereas treatment coding makes them simple effects at a reference level. The two parametrisations span the same column space, so fitted values, residuals and likelihood are identical, exactly as the slide says; only the hypotheses tested by individual coefficients change.
+:::
+
+## An ordered factor can carry a trend {#sec-contr-poly}
+
+[Further codings in the same chapter](https://larmarange.github.io/guide-R/analyses/contrastes.html#autres-types-de-contrastes).
+
+::: {.incremental}
+- `MASS::contr.sdif` compares each level with the one before it. For grade, II minus I is $-0.39$, the same gap as the treatment contrast against grade I.
+
+- `contr.helmert` compares each new level with the mean of the earlier levels. Keep it for a question that is exactly that comparison.
+
+- `contr.poly` is the default for an [ordered factor]{.mark}. The columns are a linear, a quadratic, and a cubic trend. That is the coding for ordered time or dose when the question is the shape, including a bend. The intercept is again the mean of the level means.
+:::
+
+::: {.notes}
+Step three fragments in order: successive differences (`contr.sdif`), Helmert versus earlier mean, then polynomial trends for ordered dose or time. Tie `contr.sdif`'s $-0.39$ back to the treatment contrast against grade I. Pick the coding to match the estimand, not R's default habit.
+
+**Going further.** `contr.poly` returns orthogonal polynomial contrasts: for $L$ equally spaced levels, columns of degree $1$ to $L - 1$, each orthogonal to the others and to the intercept, scaled to unit length. With balanced data the linear, quadratic and cubic sums of squares then partition the factor's sum of squares exactly, so a lack-of-fit test of linearity is the joint test of the degree-2-and-higher columns. The default assumes equal spacing; for unequally spaced doses pass the actual values, `contr.poly(L, scores = ...)`, or the trend coefficients describe the wrong shape. Helmert contrasts are also mutually orthogonal under balance, but successive differences are not, so their coefficients are correlated. Because a coefficient's meaning depends on scaling, report the fitted level means or the trend in units of $x$ rather than the raw `.L` and `.Q` coefficients.
+:::
+
+## Eight minutes: which contrast? :pencil: {#sec-design-contr-write}
+
+Pick one factor in your study, or `system` in CA-SYS, or warming in SPRUCE.
+
+- How many levels?
+- What is the reference, if there is one?
+- Is the question "each level against a baseline", "each level against the mean", or "the shape along an order"?
+
+![](figures/generated/sketch-design-contr-choice.png){.sketch-sm fig-alt="Three hand-drawn panels of level means: arrows from a dashed reference level labelled baseline, arrows from a dashed grand-mean line labelled mean, and a rising trend through ordered dots labelled order." fig-align="center"}
+
+::: {.notes}
+Eight minutes. The next slide is the CA-SYS reading. Do not hint at `contr.sum` until they have written a question in words.
+:::
+
+## One reading: CA-SYS systems {#sec-design-contr-answer}
+
+`system` has four levels, SD1, SD2, TS1, TS2. They are not an order.
+
+- Against a baseline, SD1 in the intercept: three coefficients, SD2, TS1, and TS2. That is `contr.treatment`
+- Against the mean of the four systems: `contr.sum`. The coefficients add to zero
+- Tillage, no-till against tilled, is a different contrast. It collapses SD1 with SD2, and TS1 with TS2. It is not one of the three system coefficients
+
+Warming at SPRUCE is the ordered case: five steps, so a linear trend is the first column of `contr.poly`. The system factor is the one that needs a reference chosen on purpose.
+
+::: {.notes}
+Do the SD1 arithmetic only if someone asks. The point is that "the TS2 coefficient" is not "the mean at TS2" until you add the intercept. Mention the SPRUCE polynomial in one sentence and stop.
+:::
+
+## Designs {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #e4d8f5 100%)"}
 
 ## A short map of plans {.smaller}
 
@@ -28,46 +262,153 @@ Tanaka's [edibble slides](https://emitanaka.org/slides/toronto2022/) are a preci
 
 ::: {.notes}
 Use the table as a menu, not a checklist. Pause on split-plot: the hard-to-change factor is randomised on the large unit (enclosure $\mathrm{CO}_2$), while the easy factor can sit inside (collar schedule). Ask which row best describes CA-SYS tillage zones versus the mixed zone. Tanaka is the homework link for writing units before `lmer()`.
+
+**Going further.** A split-plot has two randomisations and therefore two error strata. With $a$ whole-plot levels in $r$ blocks and $b$ subplot levels, the whole-plot factor $A$ is tested against the whole-plot error (block $\times$ $A$, $(r-1)(a-1)$ degrees of freedom), while the subplot factor $B$ and the $A \times B$ interaction are tested against the smaller subplot error, $a(r-1)(b-1)$ degrees of freedom. The design deliberately buys precision for $B$ and $A \times B$ at the expense of $A$; analysing it as a factorial with one residual overstates the evidence for $A$. In a mixed model, the whole-plot error is the random effect `(1 | block:A)`, and with balanced data REML reproduces the stratified ANOVA exactly. Yates (1937) introduced the split-plot analysis; Bailey, *Design of Comparative Experiments* (2008), and Montgomery, *Design and Analysis of Experiments*, chapter 14, give the expected mean squares.
 :::
 
-## Completely randomised, then blocked
+## Do not bin the gradient you built {#sec-spruce-bins}
 
-Completely randomised: every enclosure could have received every warming level, and you trust the site to be homogeneous.
+SPRUCE kept five warming levels, $+0$ to $+9^\circ\mathrm{C}$ in steps of $2.25^\circ\mathrm{C}$, each at ambient and elevated CO$_2$, on ten enclosures.
 
-Blocked: you group units that share a nuisance (a boardwalk, a water-table band, a day) and randomise **inside** the block.
+A [regression]{.mark} on that gradient was the design. Splitting it into "low" and "high" spends the shape the levels were built to show. The number of enclosures still has to exceed the number of parameters.
 
-SPRUCE's design page says a block was considered, and that preliminary surveys did not show a gradient strong enough to require one. That is a design assumption, and it belongs in the report.
+![](figures/generated/sketch-design-spruce-bins.png){.sketch-sm fig-alt="Hand-drawn comparison: on the left five points on a rising green line, labelled five levels with a tick; on the right two red bars labelled low and high, labelled two bins with a cross." fig-align="center"}
 
 ::: {.notes}
-Contrast the two paragraphs: CRD needs homogeneity across enclosures; blocking needs a named nuisance gradient inside each block. SPRUCE's "no block" sentence is an assumption about the bog, not a statistical default. Experimental unit for warming assignment remains the enclosure in both layouts.
+This is the slide the pitfalls section points at. Five levels are a regression, not a two-group test. Ten enclosures cannot carry a saturated $5 \times 2$ cell-means model with a residual. One minute.
+
+**Going further.** For a straight-line model, $\mathrm{Var}(\hat\beta_1) = \sigma^2 / \sum_i (x_i - \bar x)^2$, so the slope uses every level's distance from the mean; binning replaces $x$ by a group indicator and, for a linear truth with evenly spread levels, loses a substantial share of that information (Cohen, 1983, *Applied Psychological Measurement*, "The cost of dichotomization", shows that a median split of a normal $x$ costs the equivalent of about 38% of the sample). The variance formula also says the D-optimal design for a known straight line puts half the units at each extreme; SPRUCE's five equally spaced levels are a deliberate compromise that keeps the power to detect curvature. Ten enclosures leave $10 - p$ residual degrees of freedom: intercept, slope, $\mathrm{CO}_2$, and their product leave six, a saturated $5 \times 2$ means model leaves none.
 :::
 
-## Factorial: the interaction is the point
+## Choose the runs before the measurements {#sec-doe}
 
-Warming and $\mathrm{CO}_2$ are crossed. The scientific question on the design page is not only "does warming matter?" It is also "does elevated $\mathrm{CO}_2$ **change** the warming response?"
+A [design of experiments]{.mark} picks the combinations you will run, before any $Y$ is recorded. The organising question is the objective, not the historical name of the matrix.
 
-That second question is $\beta_3$ in
+A smaller matrix buys its size by giving something up. The usual sacrifice is [aliasing]{.mark}: two effects share one column, so the fit cannot tell them apart. The four families below are the ones the overview treats as the working set: fractional factorials, definitive screening, a response surface, and an optimal design.
 
-$$
-g(\mu_{ij}) = \beta_0 + \beta_1 x_{1j} + \beta_2 x_{2j} + \beta_3 x_{1j} x_{2j} + \cdots
-$$
-
-If you fit two separate slopes and then compare their $p$-values, you have skipped $\beta_3$.
+NIST's selection chapter is the map: [how do you select an experimental design?](https://www.itl.nist.gov/div898/handbook/pri/section3/pri33.htm)
 
 ::: {.notes}
-Point at $\beta_3$ and the product term $x_{1j}x_{2j}$: that is the "does $\mathrm{CO}_2$ change the warming response?" estimand on the design page. Warming and $\mathrm{CO}_2$ are crossed across enclosures: each enclosure $j$ receives one combination. Students often run two one-factor models; say explicitly that those tests are not the interaction row.
+DOE chooses $x$ combinations before any $Y$ is measured—the objective drives the matrix, not the historical name. Aliasing is the price of a smaller design: two effects share a column. Name the four families on the slide as the working set for the next four slides, then point to NIST as the map.
 :::
 
-## Split-plot: the large unit is hard to change
+## A fraction spends the interactions {#sec-doe-fraction}
 
-A factor that is expensive to reset is applied to the large unit. A factor that is easy to reset is applied inside it.
+:::: {.columns}
+::: {.column width="62%"}
+A full factorial of $k$ two-level factors needs $2^k$ runs. Ten factors need $1024$. A [fractional factorial]{.mark} keeps $2^{k-p}$ runs. Five factors at a quarter fraction need $2^{5-2} = 8$, against $32$ for the full $2^5$.
 
-Cookie-dough batches and oven trays are the textbook version. In the field, an enclosure's $\mathrm{CO}_2$ setpoint and a collar's measurement schedule are not interchangeable units.
+[Resolution]{.mark} says which effects are aliased. A low resolution is a screen for main effects. A high resolution leaves the interactions you care about separable. NIST's note on resolution is [here](https://www.itl.nist.gov/div898/handbook/pri/section3/pri3345.htm).
+:::
 
-The error term for the large-unit factor is the large-unit variance. Using the inner residual will make the interval too small.
+::: {.column width="38%"}
+![](figures/generated/sketch-design-fraction.png){.sketch fig-alt="Hand-drawn cube of a two-level three-factor design: four alternate corners are filled blue as the runs kept, four are left open, labelled four of eight runs."}
+:::
+::::
 
 ::: {.notes}
-Cookie dough and oven trays are the anchor image; then map large unit to enclosure setpoint and inner unit to collar measurement. The misread is pooling collar residuals to test a whole-enclosure factor—that uses the wrong denominator. Name which variance belongs on the enclosure factor before you open the mixed-model slide.
+Use the numbers on the slide: $2^{5-2}=8$ runs versus $32$ for a full $2^5$. Resolution vocabulary tells you which interactions are sacrificed—low resolution screens mains; high resolution protects interactions you still need. Students sometimes treat a fraction as "the same factorial but cheaper" without reading the alias table.
+
+**Going further.** A fraction is defined by generators: the half fraction of $2^3$ in the sketch uses $C = AB$, so the defining relation is $I = ABC$ and every effect is aliased with its product with $ABC$ ($A$ with $BC$, $B$ with $AC$, $C$ with $AB$). The resolution is the length of the shortest word in the defining relation: resolution III aliases main effects with two-factor interactions, IV aliases main effects only with three-factor interactions but two-factor interactions with each other, and V keeps main effects and two-factor interactions clear of each other. Among designs of equal resolution, minimum aberration (Fries and Hunter, 1980, *Technometrics*) picks the one with the fewest short words. An aliased pair is estimated as a sum, so the fit is unbiased for that sum, not for either effect, and a fold-over can break the aliasing afterwards. Box, Hunter and Hunter, *Statistics for Experimenters* (2nd edition, 2005), chapters 5–6, is the classic treatment.
+:::
+
+## A definitive screen also sees a curve {#sec-doe-dsd}
+
+Plackett–Burman is the classical screen: $11$ two-level factors in $12$ runs, with main effects aliased with two-factor interactions. NIST describes it as a design for when the main effects are the focus.
+
+A [definitive screening design]{.mark} is the modern alternative for continuous factors. The run count is about $2k+1$, so $14$ factors need about $29$ runs rather than $2^{14}$. Each factor has levels $-1$, $0$, and $+1$, so a quadratic term $\beta_{11} x^2$ can be seen. JMP's account: main effects are orthogonal to two-factor interactions, and those interactions are not completely aliased with each other. [Definitive screening designs](https://www.jmp.com/en/statistics-knowledge-portal/design-of-experiments/screening-designs/definitive-screening-designs).
+
+::: {.notes}
+Contrast Plackett–Burman's $11$ factors in $12$ runs with main effects aliased to two-factor interactions against definitive screening's three levels per factor. The $0$ level is what lets a quadratic $\beta_{11}x^2$ appear—Plackett–Burman cannot do that. Quote $2k+1$ when someone asks how many runs for fourteen factors.
+
+**Going further.** Jones and Nachtsheim (2011, *Journal of Quality Technology*, "A class of three-level designs for definitive screening in the presence of second-order effects") built the design from a conference matrix $\mathbf{C}$: the runs are $\mathbf{C}$, $-\mathbf{C}$ and a centre run, which is why there are $2k + 1$. The fold-over makes every main effect orthogonal to every two-factor interaction and to every quadratic term, so main-effect estimates are unbiased by any second-order effect. Quadratic terms are estimable, but with low power, and they are correlated with each other; a two-factor interaction is partially aliased with others rather than completely. Plackett–Burman designs (Plackett and Burman, 1946, *Biometrika*) have "complex aliasing" instead: each two-factor interaction is spread over several main-effect columns with coefficients like $\pm 1/3$, which is harder to unpick than the clean aliasing of a regular fraction. Both rely on effect sparsity: only a few factors are active.
+:::
+
+## A surface needs three levels {#sec-doe-rsm}
+
+Once a few factors remain, the question moves from "which factor?" to "where is the optimum?". The working model is quadratic: a linear term, a square, and a product for each pair.
+
+::: {.incremental}
+- A [central composite design]{.mark} is a factorial, plus axial points $(\pm\alpha, 0)$ and $(0, \pm\alpha)$, plus centre points.
+
+- A [Box–Behnken design]{.mark} also estimates that quadratic surface, and it avoids the corner where every factor is at its extreme.
+:::
+
+Both are in JMP's [introduction to DOE](https://www.jmp.com/support/help/en/19.2/jmp/introduction-to-doe.shtml).
+
+::: {.notes}
+After screening, the question is "where is the optimum?"—hence linear, square, and product terms. Fragment one: central composite adds axial and centre points. Fragment two: Box–Behnken avoids the all-extremes corner. Both need more than two levels per factor; link back to SPRUCE's continuous warming grid as a field analogue of "shape", not necessarily a CCD.
+
+**Going further.** The second-order model is $\mu = \beta_0 + \sum_k \beta_k x_k + \sum_k \beta_{kk} x_k^2 + \sum_{k<l} \beta_{kl} x_k x_l$, and the stationary point is $\mathbf{x}_s = -\tfrac{1}{2}\mathbf{B}^{-1}\mathbf{b}$, whose nature (maximum, minimum or saddle) is read from the eigenvalues of $\mathbf{B}$ in canonical analysis. A central composite design is rotatable, so the prediction variance depends only on the distance from the centre, when $\alpha = (n_F)^{1/4}$ with $n_F$ the number of factorial points; $\alpha = 1$ gives the face-centred version that stays inside the cube. Replicated centre points give a pure-error estimate and a test of curvature. The method goes back to Box and Wilson (1951, *Journal of the Royal Statistical Society, Series B*, "On the experimental attainment of optimum conditions"); Myers, Montgomery and Anderson-Cook, *Response Surface Methodology* (4th edition, 2016), is the current text.
+:::
+
+## An optimal design is computed for the constraint {#sec-doe-optimal}
+
+D-optimal, I-optimal, and A-optimal designs are algorithm-built matrices. They are the modern choice when the run budget is tight, the factors are a mix of continuous and categorical, or the experimental region is an awkward shape.
+
+The matrix is less readable than a textbook factorial. The criterion is explicit: [D-optimality]{.mark}, for example, targets the precision of the coefficient estimates. A [mixture]{.mark}, where the factors are parts of a constant sum, needs its own geometry rather than one of these factorials.
+
+![](figures/generated/sketch-design-optimal.png){.sketch-sm fig-alt="Hand-drawn irregular green region inside a dashed square whose four corners are marked with red crosses; black design points sit on the edge and centre of the region instead." fig-align="center"}
+
+::: {.notes}
+When the region is awkward or the budget is tight, the computer builds the matrix against D-, I-, or A-optimality. Say explicitly that the criterion replaces the pretty symmetry of a textbook factorial. Mixture designs are the exception named on the slide—proportions summing to one are not a standard factorial cube.
+
+**Going further.** For a linear model with design matrix $\mathbf{X}$, $\mathrm{Var}(\hat{\boldsymbol\beta}) = \sigma^2(\mathbf{X}^{\top}\mathbf{X})^{-1}$. D-optimality maximises $\det(\mathbf{X}^{\top}\mathbf{X})$, which minimises the volume of the joint confidence ellipsoid; A-optimality minimises $\mathrm{tr}\big((\mathbf{X}^{\top}\mathbf{X})^{-1}\big)$, the average coefficient variance; I-optimality minimises the prediction variance averaged over the region, the natural choice when the aim is a response surface. The Kiefer–Wolfowitz equivalence theorem (1960, *Canadian Journal of Mathematics*) states that, for approximate designs, D-optimality and G-optimality (minimising the maximum prediction variance) coincide, and the maximum standardised prediction variance then equals the number of parameters $p$, which gives a certificate of optimality. The criterion is optimal only for the model you specify: a D-optimal design for a straight line has no interior points and cannot detect curvature. For a GLM, $\mathbf{X}^{\top}\mathbf{W}\mathbf{X}$ depends on the unknown $\boldsymbol\beta$, so designs are locally optimal or Bayesian. Atkinson, Donev and Tobias, *Optimum Experimental Designs, with SAS* (2007), is the reference.
+:::
+
+## A decision tree for the matrix {#sec-doe-tree}
+
+- **Objective**, chosen before any measurement
+  - **Screen**, when many factors might matter: a fractional factorial, Plackett–Burman, or a definitive screening design
+    - **Interactions**, once a few factors remain: a full or high-resolution factorial
+      - **Optimise**: a central composite, a Box–Behnken, or an optimal design
+  - **Taguchi**, when the target is robustness to uncontrolled noise
+  - **Mixture**, when the factors are parts of a constant sum
+
+::: {.notes}
+Walk the nested bullets top-down: objective before measurement, then screen versus optimise branches. Taguchi and mixture are leaves students may never use but should recognise on a methods form. This tree is the thirty-second recap before Schielzeth's figures make crossing and nesting visual.
+:::
+
+## Eight minutes: name the plan :pencil: {#sec-design-doe-write}
+
+For your study, or for SPRUCE, write which row of the map it is, and what the plan spent.
+
+- screen, factorial, gradient, or mixed model of units
+- what was given up: aliasing, a missing cross, or too few units for the parameters
+
+![](figures/generated/sketch-design-spruce-grid.png){.sketch-sm fig-alt="Hand-drawn grid of ten squares: five warming steps from plus 0 to plus 9 degrees across, ambient and elevated CO2 rows down, labelled n equals 10 enclosures." fig-align="center"}
+
+::: {.notes}
+Eight minutes. SPRUCE is the worked answer because the warming grid is a designed shape, not a screen of dozens of factors.
+:::
+
+## One reading: the SPRUCE grid {#sec-design-doe-answer}
+
+SPRUCE is not a fractional factorial. Two factors were built, and the combinations exist.
+
+- Warming is a gradient: five levels, used as a regression
+- CO$_2$ is crossed with warming on the same enclosure
+- Ten enclosures. A slope, a CO$_2$ shift, and their product are a few parameters. A separate mean for every cell is not
+- Nothing is aliased. The limit is $n$, not resolution
+
+CA-SYS is the other shape: systems sit in zones, and two zones contain only one practice. That is a [missing cross]{.mark}, which is a design fact, not a fractional factorial you chose.
+
+::: {.notes}
+Count parameters on the board: intercept, warming slope, CO2, interaction, against ten enclosures. Then say the CA-SYS missing cross in one sentence. Do not open JMP.
+:::
+
+## Mixed models {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d4efe8 100%)"}
+
+## $i$ is not a new $j$
+
+![Three observations labelled i inside one cluster labelled j.](figures/generated/design-nested.jpg){fig-alt="A rectangle marked j containing three circles, each marked i. The caption says i is not a new j." width="72%"}
+
+The box is the unit that was assigned. The circles are rows inside it. Counting circles as if they were boxes makes the interval too small.
+
+::: {.notes}
+Point at the box first. For SPRUCE the box is the enclosure. For CA-SYS it is the plot. The circles are depths, dates, or sampling points.
+
+**Going further.** With $m$ rows per cluster and intraclass correlation $\rho = \sigma_u^2/(\sigma_u^2 + \sigma_\varepsilon^2)$, the variance of a mean over $J$ clusters is inflated by the design effect $1 + (m - 1)\rho$ relative to $Jm$ independent rows (Kish, *Survey Sampling*, 1965). The effective sample size is $Jm / \big(1 + (m-1)\rho\big)$, which tends to $J/\rho$ as $m$ grows: adding circles to a box cannot buy more information than the boxes themselves carry. Even $\rho = 0.1$ with $m = 21$ triples the variance. For a treatment assigned to clusters, the degrees of freedom of the test are of the order of $J$ minus the number of cluster-level parameters, not $Jm$.
 :::
 
 ## Crossed, nested, or both {#sec-crossed-nested}
@@ -86,7 +427,7 @@ flowchart TD
   enclosure --> collar --> date
 ```
 
-Warming and $\mathrm{CO}_2$ are crossed on the enclosure. Collars and dates are nested in the enclosure. A technical replicate nested in a core is a further level, and it is rarely the level of inference.
+Warming and $\mathrm{CO}_2$ are [crossed]{.mark} on the enclosure. Collars and dates are [nested]{.mark} in the enclosure. A technical replicate nested in a core is a further level, and it is rarely the level of inference.
 
 ::: {.notes}
 Trace the Mermaid arrows: warming and $\mathrm{CO}_2$ both hit enclosure $j$; collar and date $i$ sit below. Ask where a core technical replicate would hang, and whether inference should live there. Schielzeth Figure 1 on the next pages is the same vocabulary with different ink.
@@ -105,10 +446,12 @@ flowchart LR
 
 Use a Gaussian equation for $Y_{ij}$ only when $Y$ can live on that scale. For a count or a detection, the cluster term sits on the link, as in the diagram.
 
-$u_j$ is a property of the cluster. It is not a covariate you forgot to measure, unless you are willing to say so. Ignoring it is the pitfall [repeated rows are not replicates](#sec-clusters).
+$u_j$ is a [property of the cluster]{.mark}. It is not a covariate you forgot to measure, unless you are willing to say so. Ignoring it is the pitfall [repeated rows are not replicates](#sec-clusters).
 
 ::: {.notes}
 Read the equation on the link scale in the diagram, not on the count scale unless $Y$ is Gaussian. $u_j \sim \mathcal{N}(0,\sigma_u^2)$ is a distribution over enclosures, not a missing fixed covariate. If someone proposes "just add enclosure as a factor", ask whether they have all levels or a sample of bogs—that leads into the next slide's columns.
+
+**Going further.** For a Gaussian $Y$, the random intercept induces a compound-symmetric covariance within a cluster: $\mathrm{Var}(Y_{ij}) = \sigma_u^2 + \sigma_\varepsilon^2$ and $\mathrm{Cov}(Y_{ij}, Y_{i'j}) = \sigma_u^2$, so the intraclass correlation is $\rho = \sigma_u^2/(\sigma_u^2 + \sigma_\varepsilon^2)$. On a non-identity link the story changes: $\beta_1$ in a generalised linear mixed model is a conditional (cluster-specific) effect, and the marginal, population-averaged effect is attenuated; for a logit link, roughly $\beta_1/\sqrt{1 + 0.346\,\sigma_u^2}$ (Zeger, Liang and Albert, 1988, *Biometrics*). The likelihood integrates over $u_j$, which has no closed form for non-Gaussian $Y$; Laplace approximation (`glmer()` default) or adaptive Gauss–Hermite quadrature (`nAGQ > 1`) is needed, and both are less accurate with few observations per cluster. Testing $\sigma_u^2 = 0$ puts the null on the boundary of the parameter space, so the likelihood-ratio statistic follows a 50:50 mixture of $\chi^2_0$ and $\chi^2_1$, not $\chi^2_1$ (Self and Liang, 1987, *Journal of the American Statistical Association*).
 :::
 
 ## Fixed and random name the target {#sec-fixed-random-target}
@@ -131,277 +474,26 @@ Ten enclosures is a small sample of a variance. $\hat\sigma_u$ will be noisy.
 :::
 ::::
 
-Partial pooling is the practical reason to bother: an enclosure with two bad weeks borrows strength from the others. The meta-analysis version, one estimate per site, is [fixed effect or random effects](#sec-fixed-random-meta).
+[Partial pooling]{.mark} is the practical reason to bother: an enclosure with two bad weeks borrows strength from the others. The meta-analysis version, one estimate per site, is [fixed effect or random effects](#sec-fixed-random-meta).
 
 ::: {.notes}
-Left column: warming slope is a fixed estimand you report. Right column: enclosures are a random draw from a bog population, and ten of them makes $\hat\sigma_u$ noisy—quote that line. Partial pooling is the punchline for sparse clusters. Link forward to the meta-analysis bullet on Huber's slide later in the section.
-:::
+Left column: warming slope is a fixed estimand you report. Right column: enclosures are a random draw from a bog population, and ten of them makes $\hat\sigma_u$ noisy—quote that line. Partial pooling is the punchline for sparse clusters. The meta-analysis slide, earlier in the hour, is the same idea with one estimate per site.
 
-## Repeated measures are a time series inside $j$
-
-Do not run a separate test at each date and then narrate the dates that were "significant".
-
-A first model for a repeated flux:
-
-- a term for time, or for season
-- the treatment, which does not change inside the enclosure
-- the treatment $\times$ time interaction, if the contrast itself changes
-- a dependence for the residuals, or a random intercept for the enclosure
-
-Dates are $i$. They do not become new experimental units because there are many of them.
-
-::: {.notes}
-Warn against the "significant Tuesdays" narrative first. Then walk the bullet list: treatment is constant inside enclosure $j$; interaction matters if warming changes the time course. Index $i$ is the wave, not a new experimental unit. This slide sets up the AR(1) and `(time | enclosure)` calls near the end of the section.
-:::
-
-## SPRUCE chose a regression, not five bins
-
-The design page records an earlier incomplete factorial, then a quantitative comparison: more temperature levels, used as a regression, resolved the shape better than a small ANOVA, at lower cost.
-
-What was built:
-
-- five warming levels, from $+0$ to $+9^\circ\mathrm{C}$, steps of $2.25^\circ\mathrm{C}$
-- each level at ambient and at elevated $\mathrm{CO}_2$
-- ten enclosures, plus chamberless areas
-
-The number of experimental units has to exceed the number of regression parameters you intend to estimate.
-
-::: {.notes}
-Stress the design-page trade-off: quantitative regression beat a small ANOVA on cost and shape. Read the warming grid: $+0$ to $+9^\circ\mathrm{C}$ in steps of $2.25^\circ\mathrm{C}$, crossed with ambient versus elevated $\mathrm{CO}_2$, on ten enclosures. Ask how many parameters that grid wants versus $n=10$ enclosures—the next slide's table answers "what is $n$ for which question?"
-:::
-
-## Where the replicate is {#sec-replicate}
-
-| If you need… | The replicate is… |
-| --- | --- |
-| The warming slope | The enclosure, $n = 10$ |
-| A collar method variance | Collars within an enclosure |
-| A seasonal curve | Dates within an enclosure, with dependence |
-| A claim about other bogs | Something this design does not contain |
-
-Pooling every depth-date row into one residual answers none of these cleanly. The SPRUCE rows were introduced as [one line per plot](#sec-spruce-profiles).
-
-::: {.notes}
-Read the table row by row. For the warming slope, $n=10$ means ten enclosures, not hundreds of flux rows. Collar and seasonal rows are different estimands. The pool-everything residual is the error students reach for when they paste the long data frame into `lm()`.
-:::
-
-## Do not bin the gradient you built {#sec-spruce-bins}
-
-The design page allows a fallback: bin the ten enclosures into low, medium, and high for an ANOVA, if a variable forces it.
-
-That fallback spends the design. Adjacent levels, $+4.5$ and $+6.75$, become either "the same" or "different" by a cut. The curve we already plotted is exactly what the binning throws away.
-
-Keep $x_1$ continuous. Report the slope per $^\circ\mathrm{C}$, with an interval, and show the fitted mean. The same cut, as a reporting pitfall, is [do not dichotomise](#sec-dichotomise).
-
-::: {.notes}
-The fallback ANOVA bins are on the design page for software constraints, not for science. Name the adjacent levels $+4.5$ and $+6.75^\circ\mathrm{C}$ that a three-bin cut would glue together. Tie back to the SPRUCE curve already shown in the datasets section—binning throws away exactly that shape.
-:::
-
-## A controlled experiment sets the conditions {#sec-controlled}
-
-[Huber, chapter 13](https://www.huber.embl.de/msmb/13-chap.html#sec-design-typesexps): you control the system, the environment, and the readout.
-
-[]{.fragment fragment-index="1"} The vignette is a characterised cell line, a defined medium, a measured dose, and a pathway reporter read at 72 h.
-
-::: {.notes}
-Huber chapter 13 is the authority line: control system, environment, and readout. Reveal the fragment and ask what is held fixed at 72 h. This is the contrast anchor before "study" and "trial" loosen different levers.
-:::
-
-## A study leaves some conditions free {#sec-study}
-
-In a study, conditions that move the outcome are outside the investigator's control. A field example is the weather, the food, and the predators.
-
-[]{.fragment fragment-index="1"} In an observational study the variable of interest itself is not assigned. That is where the reminder sits: correlation is not causation.
-
-::: {.notes}
-Field weather is the uncontrolled nuisance example. Step the fragment: the exposure of interest is not assigned, so the causal section's $do(x)$ language matters later. SPRUCE is not this slide—it is closer to the controlled-experiment and trial pair.
-:::
-
-## A trial randomises the assignment {#sec-rct}
-
-A randomised controlled trial still cannot hold every nuisance fixed. It does control who receives the intervention.
-
-[]{.fragment fragment-index="1"} With a large enough sample, the nuisances average out, and the contrast can be read as an effect of that assignment.
-
-[]{.fragment fragment-index="2"} The trial is prospective: the outcome is unknown when the groups are assigned.
-
-::: {.notes}
-Fragment one: randomisation controls assignment, not every nuisance. Fragment two: prospective timing—outcome unknown at allocation. Ask whether warming at SPRUCE is "assigned" in this sense (yes on enclosure). Bridge to the causal deck: randomisation is a design fact, not a covariate trick.
-:::
-
-## A meta-analysis studies the studies {#sec-meta-analysis}
-
-Huber calls a meta-analysis an observational study of earlier experiments or studies. Two motives: a larger effective sample, and the hope that study-level bias averages out across studies.
-
-The hierarchical version, one estimate per site, is [fixed effect or random effects](#sec-fixed-random-meta).
-
-::: {.notes}
-Meta-analysis is observational at study level: you did not randomise which papers exist. The two motives on the slide are sample size and hope that study-level bias averages out—say both, without overselling the second. Point to the link back to fixed versus random effects for "one estimate per site".
-:::
-
-## Twenty weighings are not ten people {#sec-tech-bio}
-
-[Huber's weight-loss question](https://www.huber.embl.de/msmb/13-chap.html#biological-versus-technical-replicates). Twenty weighings of one person, on a precise scale, remeasure a value you already know. Ten people, weighed once each, start to ask whether the effect travels.
-
-[]{.fragment fragment-index="1"} Name the level you can generalise to: laboratory, operator, machine, protocol, strain, litter, animal. "Technical" and "biological" are too coarse for that list.
-
-::: {.notes}
-Huber's twenty-versus-ten weighings is the memorable line. Step the fragment and make students pick a concrete level—sequencing run, core, plot—not the vague label "technical". That list feeds directly into the replicate table for SPRUCE and CA-SYS.
-:::
-
-## Randomise the nuisance you cannot block {#sec-randomise}
-
-When the nuisance is unknown in advance, randomisation is the practical strategy: at a large enough sample, its effect averages out. It also limits unconscious bias, such as extra care for the samples that were hard to obtain.
-
-He points to Senn (2004) for the ways a "better" scheme than simple randomisation can go wrong.
-
-::: {.notes}
-When blocking is impossible, randomisation is the practical defence—both against unknown nuisances and unconscious handling bias. Mention Senn as the caution on fancy schemes without lecturing the chapter. Ask for one carbon-lab nuisance you could randomise but not block (plate position, run order).
-:::
-
-## Balance makes each effect identifiable {#sec-balanced}
-
-A balanced design gives every factor combination the same number of replicates. Each factor's effect can then be separated. A nuisance that is balanced against the factor of interest is in the same position.
-
-[]{.fragment fragment-index="1"} An unbalanced plan can be forced by cost. The warning is that the analysis is then on thin ice.
-
-::: {.notes}
-Balanced means equal replication per combination so effects separate. Step the fragment: unbalanced designs are common when money runs out—keep the "thin ice" phrase for the methods section. Do not confuse balance with randomisation; you need both stories in different papers.
-:::
-
-## Pairing is the smallest block {#sec-pairing}
-
-[Block what you can, and randomise what you cannot](https://www.huber.embl.de/msmb/13-chap.html#blocking-and-pairing). A paired design is the simplest block: twins, or the same person before and after.
-
-[]{.fragment fragment-index="1"} Fisher criticised Darwin for putting every cross-pollinated plant on the same side of the pot. A coin flip for the side would have kept that side from masquerading as the cross.
-
-[]{.fragment fragment-index="2"} When a natural pair does not exist, a matched design builds pairs on age, sex, or health, and treats one of the pair.
-
-::: {.notes}
-Fisher's Darwin pot-side story is the vivid warning—blocking is about removing a directional nuisance. Fragment two: matched pairs when nature does not give you twins. Pairing is the smallest block; SPRUCE blocking discussion earlier is the same idea at enclosure scale.
-:::
-
-## Treatment contrasts use one reference {#sec-contr-treatment}
-
-[Larmarange, chapter 26](https://larmarange.github.io/guide-R/analyses/contrastes.html#contrastes-de-type-traitement). For an unordered factor, R's default is `contr.treatment`. A factor with $n$ levels becomes $n-1$ columns. The reference level sits in the intercept.
-
-In the `marker ~ grade` example the intercept is $1.0669$ and the grade II coefficient is $-0.3864$. The mean at grade II is the sum:
-
-$$
-1.0669 + (-0.3864) = 0.6805.
-$$
-
-`contr.treatment(n, base =)` and `contr.SAS()` move which level is the reference.
-
-::: {.notes}
-Walk the arithmetic on the slide: intercept $1.0669$ plus grade II coefficient $-0.3864$ gives $0.6805$. Emphasise $n-1$ columns and one reference in the intercept. Students confuse "coefficient for II" with "mean at II" unless you do the sum aloud. `contr.treatment` and `contr.SAS` only move the reference level.
-:::
-
-## Sum contrasts use the mean of the level means {#sec-contr-sum}
-
-[`contr.sum`](https://larmarange.github.io/guide-R/analyses/contrastes.html#contrastes-de-type-somme) compares each level with the unweighted mean of the level means. The last level is coded $-1$, so one factor's coefficients sum to zero and the intercept is that grand mean.
-
-The grade level that was coded $-1$ has deviation $-(0.1525 - 0.2339) = 0.0814$, which is also $0.9958 - 0.9144$.
-
-Fitted values, residual sum of squares, and AIC match the treatment-contrast fit. What changes is the reading of each coefficient.
-
-::: {.notes}
-`contr.sum` centres on the unweighted mean of level means; the $-1$ coding line explains the $0.0814$ deviation. Stress that predictions do not move—only the sentences attached to each $\hat\beta$. Ask which contrast you would use if the scientific question is "grade II versus average grade".
-:::
-
-## An ordered factor can carry a trend {#sec-contr-poly}
-
-[Further codings in the same chapter](https://larmarange.github.io/guide-R/analyses/contrastes.html#autres-types-de-contrastes).
-
-[]{.fragment fragment-index="1"} `MASS::contr.sdif` compares each level with the one before it. For grade, II minus I is $-0.39$, the same gap as the treatment contrast against grade I.
-
-[]{.fragment fragment-index="2"} `contr.helmert` compares each new level with the mean of the earlier levels. Keep it for a question that is exactly that comparison.
-
-[]{.fragment fragment-index="3"} `contr.poly` is the default for an ordered factor. The columns are a linear, a quadratic, and a cubic trend. That is the coding for ordered time or dose when the question is the shape, including a bend. The intercept is again the mean of the level means.
-
-::: {.notes}
-Step three fragments in order: successive differences (`contr.sdif`), Helmert versus earlier mean, then polynomial trends for ordered dose or time. Tie `contr.sdif`'s $-0.39$ back to the treatment contrast against grade I. Pick the coding to match the estimand, not R's default habit.
-:::
-
-## Choose the runs before the measurements {#sec-doe}
-
-A design of experiments picks the combinations you will run, before any $Y$ is recorded. The organising question is the objective, not the historical name of the matrix.
-
-A smaller matrix buys its size by giving something up. The usual sacrifice is aliasing: two effects share one column, so the fit cannot tell them apart. The four families below are the ones the overview treats as the working set: fractional factorials, definitive screening, a response surface, and an optimal design.
-
-NIST's selection chapter is the map: [how do you select an experimental design?](https://www.itl.nist.gov/div898/handbook/pri/section3/pri33.htm)
-
-::: {.notes}
-DOE chooses $x$ combinations before any $Y$ is measured—the objective drives the matrix, not the historical name. Aliasing is the price of a smaller design: two effects share a column. Name the four families on the slide as the working set for the next four slides, then point to NIST as the map.
-:::
-
-## A fraction spends the interactions {#sec-doe-fraction}
-
-A full factorial of $k$ two-level factors needs $2^k$ runs. Ten factors need $1024$. A fractional factorial keeps $2^{k-p}$ runs. Five factors at a quarter fraction need $2^{5-2} = 8$, against $32$ for the full $2^5$.
-
-Resolution says which effects are aliased. A low resolution is a screen for main effects. A high resolution leaves the interactions you care about separable. NIST's note on resolution is [here](https://www.itl.nist.gov/div898/handbook/pri/section3/pri3345.htm).
-
-::: {.notes}
-Use the numbers on the slide: $2^{5-2}=8$ runs versus $32$ for a full $2^5$. Resolution vocabulary tells you which interactions are sacrificed—low resolution screens mains; high resolution protects interactions you still need. Students sometimes treat a fraction as "the same factorial but cheaper" without reading the alias table.
-:::
-
-## A definitive screen also sees a curve {#sec-doe-dsd}
-
-Plackett–Burman is the classical screen: $11$ two-level factors in $12$ runs, with main effects aliased with two-factor interactions. NIST describes it as a design for when the main effects are the focus.
-
-A definitive screening design is the modern alternative for continuous factors. The run count is about $2k+1$, so $14$ factors need about $29$ runs rather than $2^{14}$. Each factor has levels $-1$, $0$, and $+1$, so a quadratic term $\beta_{11} x^2$ can be seen. JMP's account: main effects are orthogonal to two-factor interactions, and those interactions are not completely aliased with each other. [Definitive screening designs](https://www.jmp.com/en/statistics-knowledge-portal/design-of-experiments/screening-designs/definitive-screening-designs).
-
-::: {.notes}
-Contrast Plackett–Burman's $11$ factors in $12$ runs with main effects aliased to two-factor interactions against definitive screening's three levels per factor. The $0$ level is what lets a quadratic $\beta_{11}x^2$ appear—Plackett–Burman cannot do that. Quote $2k+1$ when someone asks how many runs for fourteen factors.
-:::
-
-## A surface needs three levels {#sec-doe-rsm}
-
-Once a few factors remain, the question moves from "which factor?" to "where is the optimum?". The working model is quadratic: a linear term, a square, and a product for each pair.
-
-[]{.fragment fragment-index="1"} A central composite design is a factorial, plus axial points $(\pm\alpha, 0)$ and $(0, \pm\alpha)$, plus centre points.
-
-[]{.fragment fragment-index="2"} A Box–Behnken design also estimates that quadratic surface, and it avoids the corner where every factor is at its extreme.
-
-Both are in JMP's [introduction to DOE](https://www.jmp.com/support/help/en/19.2/jmp/introduction-to-doe.shtml).
-
-::: {.notes}
-After screening, the question is "where is the optimum?"—hence linear, square, and product terms. Fragment one: central composite adds axial and centre points. Fragment two: Box–Behnken avoids the all-extremes corner. Both need more than two levels per factor; link back to SPRUCE's continuous warming grid as a field analogue of "shape", not necessarily a CCD.
-:::
-
-## An optimal design is computed for the constraint {#sec-doe-optimal}
-
-D-optimal, I-optimal, and A-optimal designs are algorithm-built matrices. They are the modern choice when the run budget is tight, the factors are a mix of continuous and categorical, or the experimental region is an awkward shape.
-
-The matrix is less readable than a textbook factorial. The criterion is explicit: D-optimality, for example, targets the precision of the coefficient estimates. A mixture, where the factors are parts of a constant sum, needs its own geometry rather than one of these factorials.
-
-::: {.notes}
-When the region is awkward or the budget is tight, the computer builds the matrix against D-, I-, or A-optimality. Say explicitly that the criterion replaces the pretty symmetry of a textbook factorial. Mixture designs are the exception named on the slide—proportions summing to one are not a standard factorial cube.
-:::
-
-## A decision tree for the matrix {#sec-doe-tree}
-
-- **Objective**, chosen before any measurement
-  - **Screen**, when many factors might matter: a fractional factorial, Plackett–Burman, or a definitive screening design
-    - **Interactions**, once a few factors remain: a full or high-resolution factorial
-      - **Optimise**: a central composite, a Box–Behnken, or an optimal design
-  - **Taguchi**, when the target is robustness to uncontrolled noise
-  - **Mixture**, when the factors are parts of a constant sum
-
-::: {.notes}
-Walk the nested bullets top-down: objective before measurement, then screen versus optimise branches. Taguchi and mixture are leaves students may never use but should recognise on a methods form. This tree is the thirty-second recap before Schielzeth's figures make crossing and nesting visual.
+**Going further.** In the balanced Gaussian random-intercept model, the predicted cluster effect (the BLUP) is $\hat u_j = \lambda_j(\bar Y_{\cdot j} - \hat\mu)$ with shrinkage factor $\lambda_j = \sigma_u^2/(\sigma_u^2 + \sigma_\varepsilon^2/m_j)$: a cluster with few rows or noisy rows is pulled harder towards the grand mean. That is partial pooling between the two extremes, no pooling (a fixed effect per cluster, $\lambda_j = 1$) and complete pooling (ignore clusters, $\lambda_j = 0$). Robinson (1991, *Statistical Science*, "That BLUP is a good thing: the estimation of random effects") reviews the theory, and Gelman and Hill, *Data Analysis Using Regression and Multilevel/Hierarchical Models* (2007), chapter 12, gives the applied reading. With ten clusters $\hat\sigma_u^2$ is imprecise and can be estimated as zero, a singular fit, in which case the model reduces silently to complete pooling.
 :::
 
 ## Nesting is a property of the experiment {#sec-nested-crossed}
 
 [Schielzeth and Nakagawa](https://doi.org/10.1111/j.2041-210x.2012.00251.x) (*Methods in Ecology and Evolution*, 2013). A nested factor can be fitted with the syntax of a crossed factor, provided each nested level has a unique label. The design still decides what the variances mean.
 
-The difference that matters is the interaction variance. In a nested experiment it is pooled with the main-effect variance of the nested factor. A crossed experiment can separate the two. The pooling is fixed by which combinations occur, not by the formula.
+The difference that matters is the [interaction variance]{.mark}. In a nested experiment it is pooled with the main-effect variance of the nested factor. A crossed experiment can separate the two. The pooling is fixed by which combinations occur, not by the formula.
 
 If a cross would have been feasible and meaningful, the data are nested by design, and the pooling has to be stated. If a cross would be irrelevant, the nesting is natural.
 
 ::: {.notes}
 Schielzeth and Nakagawa: unique labels let nested factors use crossed syntax, but the experiment still decides what variances mean. The interaction variance pools with the nested main effect in a nested design; a cross can separate them. Ask whether enclosure-by-collar should be crossed or nested given how SPRUCE was built—the Mermaid slide earlier is your answer key.
+
+**Going further.** In a balanced two-way random model with $a$ levels of $A$, $b$ of $B$ and $n$ replicates per cell, the expected mean squares are $\mathbb{E}(\mathrm{MS}_A) = \sigma_\varepsilon^2 + n\sigma_{AB}^2 + bn\sigma_A^2$ and $\mathbb{E}(\mathrm{MS}_{AB}) = \sigma_\varepsilon^2 + n\sigma_{AB}^2$, so $\sigma_A^2$ is separable from $\sigma_{AB}^2$ only because $B$ is crossed with $A$. If $B$ is nested in $A$, the corresponding mean square estimates $\sigma_\varepsilon^2 + n(\sigma_{B}^2 + \sigma_{AB}^2)$: the two variances are confounded, which is the pooling Schielzeth and Nakagawa describe. In `lme4` syntax, `(1 | A/B)` expands to `(1 | A) + (1 | A:B)`, and `(1 | A) + (1 | B)` with uniquely labelled $B$ levels fits the same model; the syntax cannot recover a variance the design never separated. Searle, Casella and McCulloch, *Variance Components* (1992), give the full derivations.
 :::
 
 ## Crossed, nested, blocked, split {#sec-schielzeth-fig1}
@@ -424,59 +516,9 @@ A crossed design can estimate each of those four variances. Nested sampling leav
 Figure 2 flows from two factors and their interaction into trait value, then down to four variance components. In a cross you can estimate interaction variance separately; nested sampling pools it. Students often fit `(1|nested)` and interpret $\sigma_u^2$ as "noise" without stating what was pooled.
 :::
 
-## Repeated in time is longitudinal {#sec-longitudinal}
-
-[Angelino and Marcone](https://www.sib.swiss/training/course/20260907_ADDMG), September 2026: a repeated-measures design records each individual more than once. The design is longitudinal when those repeats are ordered in time.
-
-Three predictors sit beside $Y$: time, a covariate that changes with time, and a covariate that does not. The aim is how $\mu$ depends on them across the waves.
-
-Godechot's panel is the econometric name for the same layout: several dates for one person, set against a single cross-section. Within-person changes become visible, and age can be separated from cohort.
-
-::: {.notes}
-Angelino and Marcone: repeated measures becomes longitudinal when time is ordered. Name the three predictor types beside $Y$—time, time-varying covariate, time-invariant covariate. Godechot's panel vocabulary helps economists in the room; enclosure waves are the carbon analogue.
-:::
-
-## Classical repeated-measures ANOVA wants a rectangle {#sec-sphericity}
-
-The same course lists two limits. The ANOVA keeps only people with every wave. It also assumes sphericity: every pair of times has the same variance of the difference. When that fails, the $F$ ratios inflate.
-
-A mixed model keeps an incomplete person. The dependence goes into $u_j$, or into a residual correlation. Dates stay index $i$. They do not become new experimental units.
-
-::: {.notes}
-Two limits of classical RM-ANOVA: complete cases only, and sphericity of differenced times. When sphericity fails, $F$ ratios inflate. Mixed models keep partial follow-up and put dependence in $u_j$ or correlated residuals—preview `corAR1` on the `nlme` slide. Dates remain index $i$, not new units.
-:::
-
-## Fixed levels are the ones you would use again {#sec-choose-fixed-random}
-
-A fixed factor has levels you chose in order to compare them, and you would use those levels again. Sex, in their example, is fixed. It shifts the mean of $Y$.
-
-A random factor has levels you can treat as a sample from a population of effects. They need not reappear. The target is their variance, and the usual model for that draw is Gaussian. The same factor can be either, depending on the question. The earlier statement is [fixed and random name the target](#sec-fixed-random-target).
-
-Godechot's condition for a random person effect $a_i$: it is uncorrelated with the covariates. When it is not, he centres each person, the within estimator, and treats $a_i$ as fixed. His Hausman rule follows the comparison: if the within fit and the random-effect fit disagree, keep the within fit.
-
-::: {.notes}
-Sex as a fixed factor shifts the mean; random enclosures target $\sigma_u^2$. The same factor can flip roles with the question—link [#sec-fixed-random-target]. Godechot's Hausman story: if $a_i$ correlates with covariates, centre within person and prefer the within fit when it disagrees with the random-effects fit.
-:::
-
-## The line is allowed to vary inside $j$ {#sec-multilevel}
-
-::: model
-$$
-Y_{ij} = (\beta_0 + u_{0j}) + (\beta_1 + u_{1j})\, t_{ij} + \varepsilon_{ij}.
-$$
-:::
-
-$j$ is the person, the child, or the enclosure. $i$ is the wave. $\beta_0$ and $\beta_1$ are the mean intercept and the mean slope. $u_{0j}$ and $u_{1j}$ are the cluster's departures, mean zero, usually Gaussian.
-
-The sketch replaces a separate line for each of sixteen children with these four parameters. Ignoring $j$ treats the waves as independent, and the interval uses the wrong variance. The same hierarchy is what lets a longitudinal sample be a multilevel model.
-
-::: {.notes}
-Read the model callout: random intercept $u_{0j}$ and random slope $u_{1j}$ on time inside cluster $j$. Sixteen separate lines become four population parameters plus cluster departures. Ignoring $j$ is independence across waves—the wrong standard error. This is the generative story behind the spaghetti plot two slides ahead.
-:::
-
 ## ML and REML answer different targets {#sec-ml-reml}
 
-The practical gap is often small. A likelihood-ratio comparison of two models uses ML.
+The practical gap is often small. A [likelihood-ratio comparison]{.mark} of two models uses ML.
 
 ```{r}
 #| echo: false
@@ -519,11 +561,13 @@ ml_reml |>
 
 ::: {.notes}
 Use the rendered table: ML for comparing nested models by likelihood ratio; REML for variance components on a typical report. The row "Comparing two models" is the one students forget—switch to ML before the LRT. Angelino and Marcone are the source note at the bottom of the table.
+
+**Going further.** For a Gaussian linear model with $p$ fixed effects, ML gives $\hat\sigma^2 = \mathrm{RSS}/n$, biased downward by the factor $(n - p)/n$ because it ignores the degrees of freedom spent on $\boldsymbol\beta$; REML maximises the likelihood of $n - p$ error contrasts $\mathbf{K}^{\top}\mathbf{Y}$ with $\mathbf{K}^{\top}\mathbf{X} = \mathbf{0}$, which do not depend on $\boldsymbol\beta$, and recovers $\mathrm{RSS}/(n - p)$ (Patterson and Thompson, 1971, *Biometrika*). In mixed models the same correction matters most when the number of clusters is small relative to the cluster-level fixed effects, exactly the SPRUCE case. Because the REML likelihood depends on $\mathbf{X}$, two REML fits with different fixed effects are likelihoods of different data, so their ratio is meaningless; two REML fits with the same fixed part and different random parts can be compared. Harville (1977, *Journal of the American Statistical Association*) also gives the Bayesian reading: REML is the marginal likelihood after integrating $\boldsymbol\beta$ out under a flat prior.
 :::
 
 ## `nlme` carries the residual correlation {#sec-nlme-lme4}
 
-The same course names two R packages. `nlme` is the one they single out for a flexible covariance. `lme4` is the other. The split below is what the two fitting functions actually expose.
+The same course names two R packages. `nlme` is the one they single out for a [flexible covariance]{.mark}. `lme4` is the other. The split below is what the two fitting functions actually expose.
 
 ```{r}
 #| echo: false
@@ -561,9 +605,105 @@ pkgs |>
 
 ::: {.notes}
 Read the three rows: `nlme::lme` exposes `correlation =`, including `corAR1()`; `lmer()` does not take a correlation argument on the residual. `lme4` wins on multiple `(1|group)` terms in one formula. Pick the package to match whether residual time correlation or multiple clusters is the harder problem.
+
+**Going further.** Neither package gives exact $F$ tests for fixed effects in unbalanced mixed models, because the null distribution of the Wald statistic depends on estimated variance components. `nlme` reports $t$ and $F$ with "containment" denominator degrees of freedom taken from the grouping level where each term varies; `lmer()` reports no $P$ values at all. `lmerTest` adds the Satterthwaite approximation, which matches the first two moments of the variance of $\mathbf{c}^{\top}\hat{\boldsymbol\beta}$ to a scaled $\chi^2$, and `pbkrtest` the Kenward–Roger method (Kenward and Roger, 1997, *Biometrics*), which also inflates the covariance matrix of $\hat{\boldsymbol\beta}$ for the uncertainty in the variance components and is the more accurate choice with few clusters. With ten enclosures, both give denominator degrees of freedom near the enclosure-level count, not the number of rows; a parametric bootstrap of the likelihood ratio is the alternative when the approximations are in doubt. The AR(1) term in `nlme` models $\mathrm{Cor}(\varepsilon_{ij}, \varepsilon_{i'j}) = \phi^{|t_i - t_{i'}|}$ within a cluster (Pinheiro and Bates, *Mixed-Effects Models in S and S-PLUS*, 2000, chapter 5).
 :::
 
-## The call, then the picture {#sec-lmer-code}
+## Eight minutes: where does $u_j$ sit? :pencil: {#sec-design-mixed-write}
+
+On your hierarchy, or on SPRUCE:
+
+- what is $j$, and what is $i$?
+- which factor is fixed, because you would use those levels again?
+- which factor is random, because the levels are a sample you want to generalise?
+
+::: {.notes}
+Eight minutes. The answer slide is SPRUCE, because the enclosure is a sample of a bog and the warming levels are the ones the design would use again.
+:::
+
+## One reading: an enclosure effect {#sec-design-mixed-answer}
+
+- $j$ is the enclosure. $i$ is a depth, or a date, inside it
+- Warming and CO$_2$ are fixed. Those levels are the contrast
+- The enclosure is random if the target is a bog, not these ten boxes alone. Ten levels is a small sample of $\sigma_u^2$
+- $u_j$ sits on the link. Depths that share an enclosure share that draw
+
+A model that ignores $j$ treats two depths in one enclosure as if they were two enclosures. That is the interval that is too small.
+
+::: {.notes}
+Write $u_j$ on the link, not on the copy-number scale, unless they are already on $\log_{10}$. Ten enclosures means $\hat\sigma_u$ will be noisy. Say that, then stop. The longitudinal random-slope picture is in the file and hidden.
+
+**Going further.** Power for a cluster-level treatment depends on the number of clusters far more than on rows per cluster: for a two-arm comparison with $J$ clusters per arm and $m$ rows each, the standard error of the difference is $\sqrt{2(\sigma_u^2 + \sigma_\varepsilon^2/m)/J}$, which hits a floor of $\sqrt{2\sigma_u^2/J}$ however large $m$ becomes. The required number of clusters is the individually randomised sample size times the design effect $1 + (m-1)\rho$, divided by $m$, plus a small-sample correction because the test has about $2J - 2$ degrees of freedom (Donner and Klar, *Design and Analysis of Cluster Randomization Trials in Health Research*, 2000). For complex designs, simulate: generate data from the fitted mixed model with the planned $J$, $m$ and effect size, refit, and count rejections, for example with the `simr` package (Green and MacLeod, 2016, *Methods in Ecology and Evolution*). With ten enclosures, the useful planning question is the smallest warming slope detectable with reasonable power, not whether more depths would help.
+:::
+
+## Repeated measures are a time series inside $j$ {visibility="hidden"}
+
+Do not run a separate test at each date and then narrate the dates that were "significant".
+
+A first model for a repeated flux:
+
+- a term for time, or for season
+- the treatment, which does not change inside the enclosure
+- the treatment $\times$ time interaction, if the contrast itself changes
+- a dependence for the residuals, or a random intercept for the enclosure
+
+Dates are $i$. They do not become new experimental units because there are many of them.
+
+::: {.notes}
+Warn against the "significant Tuesdays" narrative first. Then walk the bullet list: treatment is constant inside enclosure $j$; interaction matters if warming changes the time course. Index $i$ is the wave, not a new experimental unit. This slide sets up the AR(1) and `(time | enclosure)` calls near the end of the section.
+:::
+
+## Repeated in time is longitudinal {#sec-longitudinal visibility="hidden"}
+
+[Angelino and Marcone](https://www.sib.swiss/training/course/20260907_ADDMG), September 2026: a repeated-measures design records each individual more than once. The design is longitudinal when those repeats are ordered in time.
+
+Three predictors sit beside $Y$: time, a covariate that changes with time, and a covariate that does not. The aim is how $\mu$ depends on them across the waves.
+
+Godechot's panel is the econometric name for the same layout: several dates for one person, set against a single cross-section. Within-person changes become visible, and age can be separated from cohort.
+
+::: {.notes}
+Angelino and Marcone: repeated measures becomes longitudinal when time is ordered. Name the three predictor types beside $Y$—time, time-varying covariate, time-invariant covariate. Godechot's panel vocabulary helps economists in the room; enclosure waves are the carbon analogue.
+:::
+
+## Classical repeated-measures ANOVA wants a rectangle {#sec-sphericity visibility="hidden"}
+
+The same course lists two limits. The ANOVA keeps only people with every wave. It also assumes sphericity: every pair of times has the same variance of the difference. When that fails, the $F$ ratios inflate.
+
+A mixed model keeps an incomplete person. The dependence goes into $u_j$, or into a residual correlation. Dates stay index $i$. They do not become new experimental units.
+
+::: {.notes}
+Two limits of classical RM-ANOVA: complete cases only, and sphericity of differenced times. When sphericity fails, $F$ ratios inflate. Mixed models keep partial follow-up and put dependence in $u_j$ or correlated residuals—preview `corAR1` on the `nlme` slide. Dates remain index $i$, not new units.
+:::
+
+## Fixed levels are the ones you would use again {#sec-choose-fixed-random visibility="hidden"}
+
+A fixed factor has levels you chose in order to compare them, and you would use those levels again. Sex, in their example, is fixed. It shifts the mean of $Y$.
+
+A random factor has levels you can treat as a sample from a population of effects. They need not reappear. The target is their variance, and the usual model for that draw is Gaussian. The same factor can be either, depending on the question. The earlier statement is [fixed and random name the target](#sec-fixed-random-target).
+
+Godechot's condition for a random person effect $a_i$: it is uncorrelated with the covariates. When it is not, he centres each person, the within estimator, and treats $a_i$ as fixed. His Hausman rule follows the comparison: if the within fit and the random-effect fit disagree, keep the within fit.
+
+::: {.notes}
+Sex as a fixed factor shifts the mean; random enclosures target $\sigma_u^2$. The same factor can flip roles with the question—link [#sec-fixed-random-target]. Godechot's Hausman story: if $a_i$ correlates with covariates, centre within person and prefer the within fit when it disagrees with the random-effects fit.
+:::
+
+## The line is allowed to vary inside $j$ {#sec-multilevel visibility="hidden"}
+
+::: model
+$$
+Y_{ij} = (\beta_0 + u_{0j}) + (\beta_1 + u_{1j})\, t_{ij} + \varepsilon_{ij}.
+$$
+:::
+
+$j$ is the person, the child, or the enclosure. $i$ is the wave. $\beta_0$ and $\beta_1$ are the mean intercept and the mean slope. $u_{0j}$ and $u_{1j}$ are the cluster's departures, mean zero, usually Gaussian.
+
+The sketch replaces a separate line for each of sixteen children with these four parameters. Ignoring $j$ treats the waves as independent, and the interval uses the wrong variance. The same hierarchy is what lets a longitudinal sample be a multilevel model.
+
+::: {.notes}
+Read the model callout: random intercept $u_{0j}$ and random slope $u_{1j}$ on time inside cluster $j$. Sixteen separate lines become four population parameters plus cluster departures. Ignoring $j$ is independence across waves—the wrong standard error. This is the generative story behind the spaghetti plot two slides ahead.
+:::
+
+## The call, then the picture {#sec-lmer-code visibility="hidden"}
 
 Warming sits on the enclosure. Time sits on the wave. The excerpt is from [generate-slide-figures.R](scripts/generate-slide-figures.R). The second call is the `nlme` version of the same mean, with an AR(1) residual. It is not the fit drawn on the next slide.
 
@@ -589,7 +729,7 @@ A farm block under a split-plot is the same `(1 | cluster)` term. [Chapter 29 of
 Walk `lmer(Y ~ time * warming + (time | enclosure), REML = TRUE)` first: warming on enclosure, time on the wave. The `nlme` block adds `corAR1(form = ~ time | enclosure)`—same mean structure, explicit residual correlation. Say the second call is not the fit drawn on the next slide. Posit chapter 29 links farm blocks to `(1|cluster)` for split-plot thinking.
 :::
 
-## Twelve enclosures, two slopes {#sec-lmer-plot}
+## Twelve enclosures, two slopes {#sec-lmer-plot visibility="hidden"}
 
 ![Twelve enclosures, ambient and warmed, with a random intercept and a random slope. Illustrative simulation, seed 20261005.](figures/generated/longitudinal-random-slope.png){width="88%" fig-alt="Spaghetti plot of a response against time for twelve enclosures. Ambient and warmed series have different colours. Each enclosure has its own fitted line."}
 

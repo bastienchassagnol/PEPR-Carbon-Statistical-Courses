@@ -1,6 +1,8 @@
+## A smooth mean {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d4f0f6 100%)"}
+
 ## Smooth $\mu(x)$, and say what you assumed {#sec-smooth}
 
-StatHarbor Analytics, *Smoothing and Nonparametric Methods*, uses "nonparametric" for a curve that is not fixed in advance as a short formula. Complexity may grow with $n$. The structure that replaces the formula is smoothness, locality, or a penalty.
+StatHarbor Analytics, *Smoothing and Nonparametric Methods*, uses "[nonparametric]{.mark}" for a curve that is not fixed in advance as a short formula. Complexity may grow with $n$. The structure that replaces the formula is smoothness, locality, or a penalty.
 
 ::: assumption
 $$
@@ -30,7 +32,7 @@ flowchart LR
 
 Left to right: a straight mean, a local polynomial, a bandwidth chosen by GCV, a spline with knots, a spline with a penalty, then one smooth per covariate.
 
-Each step spends a tuning choice: a bandwidth, a set of knots, or a penalty. The last step is how that choice survives more than one covariate.
+Each step spends a [tuning choice]{.mark}: a bandwidth, a set of knots, or a penalty. The last step is how that choice survives more than one covariate.
 
 ::: {.notes}
 Walk the Mermaid arrow by arrow; pause on GCV as the first automatic knob, and on GAM as the escape from the curse of dimensionality. Ask which step first stops being a single formula you could write on one line. The map is the spine for the rest of the section.
@@ -38,7 +40,7 @@ Walk the Mermaid arrow by arrow; pause on GCV as the first automatic knob, and o
 
 ## Flexibility spends variance {#sec-bias-variance}
 
-At a point $x_0$, the bias–variance decomposition for the curve is:
+At a point $x_0$, the [bias–variance decomposition]{.mark} for the curve is:
 
 $$
 \mathbb{E}\big(\hat\mu(x_0) - \mu(x_0)\big)^2
@@ -48,8 +50,12 @@ $$
 
 Predicting a new $Y$ adds $\mathrm{Var}(\varepsilon \mid x_0)$ on top of that. More flexibility usually cuts the bias and raises the variance. A small bandwidth is the noisy end. A large bandwidth is the oversmoothed end.
 
+![](figures/generated/sketch-smoothing-bias-variance.png){.sketch-sm fig-alt="Hand-drawn curves against flexibility: squared bias falls, variance rises, and their sum is a U-shaped error curve with its minimum marked best." fig-align="center"}
+
 ::: {.notes}
 Read the displayed decomposition at $x_0$, then add verbally that irreducible $\mathrm{Var}(\varepsilon \mid x)$ is extra when predicting $Y$. Students often blame "overfitting" only on wiggly $\hat\mu$ and forget the noise term. Tie "small $h$" and "large span" to the two ends of the trade-off named on the slide.
+
+**Going further.** For a local linear smoother with bandwidth $h$ and a twice-differentiable $\mu$, the leading terms are $\mathrm{Bias}\big(\hat\mu(x_0)\big) \approx \tfrac{1}{2}h^2\mu''(x_0)\int u^2K(u)\,\mathrm{d}u$ and $\mathrm{Var}\big(\hat\mu(x_0)\big) \approx \sigma^2(x_0)\int K^2 / \big(n h f(x_0)\big)$, with $f$ the design density. Balancing $h^4$ against $1/(nh)$ gives $h_{\mathrm{opt}} \propto n^{-1/5}$ and a mean squared error of order $n^{-4/5}$, slower than the $n^{-1}$ of a correctly specified parametric model. The constant depends on the unknown $\mu''$, which is why plug-in rules and cross-validation exist. The expansion assumes $h \to 0$ and $nh \to \infty$, an interior $x_0$, and a smooth $\mu$; it breaks at a boundary or a kink. Fan and Gijbels, *Local Polynomial Modelling and Its Applications* (1996), derive it in full.
 :::
 
 ## A kernel is a local bump {#sec-kde}
@@ -60,10 +66,12 @@ $$
 \hat f_h(x) = \frac{1}{nh}\sum_{i=1}^{n} K\!\left(\frac{x_i - x}{h}\right).
 $$
 
-They name four kernels: Gaussian, Epanechnikov, uniform, and triangular. Bandwidth matters far more than which of those four you pick.
+They name four kernels: Gaussian, Epanechnikov, uniform, and triangular. [Bandwidth]{.mark} matters far more than which of those four you pick.
 
 ::: {.notes}
 For a Gaussian kernel, Silverman's rule of thumb is $\hat h \approx 1.06\,\hat\sigma\, n^{-1/5}$. They say it is often adequate for a roughly unimodal symmetric density, and that it fails for a skewed, multimodal, or heavy-tailed density. The AMISE-optimal bandwidth shrinks as $n^{-1/5}$: nonparametric rates are slower than a well-specified parametric rate.
+
+**Going further.** The asymptotic mean integrated squared error is $\mathrm{AMISE}(h) = \frac{R(K)}{nh} + \frac{h^4}{4}\,\mu_2(K)^2\,R(f'')$, with $R(g) = \int g^2$ and $\mu_2(K) = \int u^2 K(u)\,\mathrm{d}u$. Minimising gives $h^\ast = \big[R(K)/(\mu_2(K)^2 R(f'') n)\big]^{1/5}$; Silverman's rule is this formula with a Gaussian $f$ plugged into $R(f'')$, which is exactly why it oversmooths a bimodal density. The Epanechnikov kernel minimises AMISE over kernels, but the Gaussian loses only about 5% efficiency, which is the formal reason the kernel choice is secondary. Data-driven alternatives are least-squares cross-validation (unbiased but highly variable) and the Sheather–Jones plug-in (`bw.SJ()` in R), usually the better default. Silverman, *Density Estimation for Statistics and Data Analysis* (1986), and Wand and Jones, *Kernel Smoothing* (1995), are the references.
 :::
 ## Local weights for $\mu(x_0)$ {#sec-nw}
 
@@ -71,68 +79,95 @@ For a Gaussian kernel, Silverman's rule of thumb is $\hat h \approx 1.06\,\hat\s
 $$
 \hat\mu(x_0) = \sum_{i=1}^{n} w_i(x_0)\, Y_i, \qquad \sum_i w_i(x_0) = 1.
 $$
-Nadaraya–Watson sets $w_i$ from $K((x_i-x_0)/h)$. That fit is a local constant: a weighted average of nearby $Y_i$.
+Nadaraya–Watson sets $w_i$ from $K((x_i-x_0)/h)$. That fit is a [local constant]{.mark}: a weighted average of nearby $Y_i$.
 :::
 
-Near the edge of $x$ the window is one-sided, so a local constant is pulled inward and the curve flattens. That boundary bias is why the next fit is local linear.
+Near the edge of $x$ the window is one-sided, so a local constant is pulled inward and the curve flattens. That [boundary bias]{.mark} is why the next fit is local linear.
 
 ::: {.notes}
 In the model callout, emphasise $\sum_i w_i(x_0)=1$ so $\hat\mu$ is a convex combination of neighbours. At the boundary, name the flattening before students decide the biology "drops off". The next slide is the fix: fit a line in the window instead of a constant.
+
+**Going further.** Nadaraya–Watson is $w_i(x_0) = K\big((x_i - x_0)/h\big) / \sum_k K\big((x_k - x_0)/h\big)$, the solution of a weighted least-squares fit of a constant. Its interior bias is $h^2\mu_2(K)\big(\tfrac{1}{2}\mu''(x_0) + \mu'(x_0) f'(x_0)/f(x_0)\big)$: the second term, the design bias, depends on how the $x_i$ are spread, not on the curve alone. At a boundary the bias is of order $h$ rather than $h^2$, because the one-sided window has a non-zero first moment. Both defects vanish for the local linear fit, which is "design-adaptive" in the sense of Fan (1992, *Journal of the American Statistical Association*, "Design-adaptive nonparametric regression").
 :::
 
 ## Fit a line in the window {#sec-local-linear}
 
-At $x_0$, minimise the weighted residual sum of squares of a line in $(x_i - x_0)$. The fitted value is the local intercept.
+:::: {.columns}
+::: {.column width="62%"}
+At $x_0$, minimise the weighted residual sum of squares of a line in $(x_i - x_0)$. The fitted value is the [local intercept]{.mark}.
 
-[]{.fragment fragment-index="1"} Degree 0 is the local constant, Nadaraya–Watson.
+::: {.incremental}
+- Degree 0 is the local constant, Nadaraya–Watson.
 
-[]{.fragment fragment-index="2"} Degree 1 is local linear. The usual default: less boundary bias, still local.
+- Degree 1 is local linear. The usual default: less boundary bias, still local.
 
-[]{.fragment fragment-index="3"} Degree 2 is local quadratic.
+- Degree 2 is local quadratic.
+:::
+
 
 The SIB course LOESS often uses the quadratic. The two sources agree on the algorithm and differ on the default degree.
+:::
+
+::: {.column width="38%"}
+![](figures/generated/sketch-smoothing-local-linear.png){.sketch fig-alt="Hand-drawn rising curve with a shaded window at the right edge. Inside the window a flat red segment, the local constant, falls short of the curve, while a green local line follows it to the edge."}
+:::
+::::
 
 ::: {.notes}
 Step the three fragments: 0 recovers Nadaraya–Watson, 1 is the usual compromise, 2 is what LOESS may use. Ask why the fitted value is the intercept at $x_0$ rather than the slope. Mention the SIB versus StatHarbor default only as a software detail, not a statistical fight.
+
+**Going further.** Local polynomial regression of degree $p$ solves $\min_{\boldsymbol\beta} \sum_i K\big((x_i - x_0)/h\big)\big(Y_i - \sum_{r=0}^{p}\beta_r (x_i - x_0)^r\big)^2$, and $r!\,\hat\beta_r$ estimates the $r$-th derivative $\mu^{(r)}(x_0)$. Fan and Gijbels show that odd degrees are preferable: going from $p$ even to $p+1$ removes a bias term without increasing the asymptotic variance, so degree 1 beats degree 0 and degree 3 beats degree 2 for the curve itself. The fitted value is still linear in $\mathbf{Y}$, $\hat\mu(x_0) = \mathbf{e}_1^{\top}(\mathbf{X}^{\top}\mathbf{W}\mathbf{X})^{-1}\mathbf{X}^{\top}\mathbf{W}\mathbf{Y}$, which is what lets GCV and effective degrees of freedom apply. Higher degree buys lower bias at the price of more variance in sparse regions, so a larger $h$ is needed. Fan and Gijbels, *Local Polynomial Modelling and Its Applications* (1996), chapter 3.
 :::
 
 ## LOESS is that regression, with a span {#sec-loess}
 
 ::: model
-LOESS is local polynomial regression with a nearest-neighbour window. The span is a proportion of the sample, in $(0, 1]$. A typical example is $0.3$. The window widens where $x$ is sparse. The usual weight is the tricube kernel.
+LOESS is local polynomial regression with a nearest-neighbour window. The [span]{.mark} is a proportion of the sample, in $(0, 1]$. A typical example is $0.3$. The window widens where $x$ is sparse. The usual weight is the tricube kernel.
 :::
 
-[]{.fragment fragment-index="1"} Choose the span, find the nearest neighbours, weight them, fit the local polynomial.
+::: {.incremental}
+- Choose the span, find the nearest neighbours, weight them, fit the local polynomial.
 
-[]{.fragment fragment-index="2"} The fit does not start from a named formula, and it does not return one.
+- The fit does not start from a named formula, and it does not return one.
 
-[]{.fragment fragment-index="3"} It wants a large, densely sampled $x$. The usual use is exploratory smoothing of a scatterplot.
+- It wants a large, densely sampled $x$. The usual use is exploratory smoothing of a scatterplot.
+:::
+
 
 ::: {.notes}
 Contrast span $0.3$ with a fixed $h$: neighbours count, so sparse regions get a wider window. Fragment 2 is the honesty check—no single $\beta_0+\beta_1 x$ to publish. Fragment 3 sets expectations: LOESS is for looking, not for a table of coefficients without extra work.
+
+**Going further.** The tricube weight is $W(u) = (1 - |u|^3)^3$ for $|u| < 1$, with $u$ the distance to $x_0$ divided by the distance to the $q$-th nearest neighbour, $q = \lceil \text{span} \times n \rceil$. A nearest-neighbour bandwidth is a variable bandwidth, $h(x_0) \propto 1/f(x_0)$ roughly, so the variance is more even across $x$ than with a fixed $h$, at the cost of more bias where data are sparse. Because the fit is linear in $\mathbf{Y}$, R's `loess()` reports an "equivalent number of parameters" $\mathrm{tr}(\mathbf{S})$ and approximate $F$ tests between spans, but these rest on Gaussian errors and the approximation of Cleveland and Grosse. The method is from Cleveland (1979, *Journal of the American Statistical Association*, "Robust locally weighted regression and smoothing scatterplots") and Cleveland and Devlin (1988, same journal).
 :::
 
 ## Robust LOESS reweights large residuals {#sec-loess-robust}
 
 Robust LOESS protects the local fit from a few extreme $Y_i$.
 
-[]{.fragment fragment-index="1"} Fit an initial LOESS curve.
+::: {.incremental}
+- Fit an initial LOESS curve.
 
-[]{.fragment fragment-index="2"} Compute residuals.
+- Compute residuals.
 
-[]{.fragment fragment-index="3"} Downweight unusually large residuals.
+- Downweight unusually large residuals.
 
-[]{.fragment fragment-index="4"} Refit with both the proximity weights and those robustness weights.
+- Refit with both the proximity weights and those [robustness weights]{.mark}.
+:::
+
 
 The span is still chosen separately. The next slide is that choice, for a linear smoother. Robust weights take the fit outside the linear-smoother case their GCV formula assumes.
 
 ::: {.notes}
 Walk the four fragments as an iteration students may not see in code. Stress that span tuning is separate from robust reweighting. Flag the last sentence: once robust weights enter, the neat $\mathbf{S}\mathbf{Y}$ story on the GCV slide is only approximate.
+
+**Going further.** Cleveland's robustness step uses the bisquare weight $\delta_i = B\big(e_i / (6\,\mathrm{MAD})\big)$ with $B(u) = (1 - u^2)^2$ for $|u| < 1$ and $0$ otherwise, where $e_i$ are the current residuals and MAD is their median absolute deviation. Two or three iterations are the default (`lowess()` uses `iter = 3`; `loess(family = "symmetric")` uses four). This is iteratively reweighted least squares for a local M-estimator, so a point with $|e_i| > 6\,\mathrm{MAD}$ gets weight zero. The cost is that the smoother matrix now depends on $\mathbf{Y}$, so trace-based degrees of freedom, GCV, and standard errors are approximations. Cleveland (1979, *Journal of the American Statistical Association*) is the original source.
 :::
 
 ## GCV chooses the bandwidth {#sec-gcv}
 
-A linear smoother is $\hat{\mathbf{Y}} = \mathbf{S}\mathbf{Y}$. Leave-one-out cross-validation refits $n$ times. Generalised cross-validation approximates it:
+:::: {.columns}
+::: {.column width="62%"}
+A [linear smoother]{.mark} is $\hat{\mathbf{Y}} = \mathbf{S}\mathbf{Y}$. Leave-one-out cross-validation refits $n$ times. [Generalised cross-validation]{.mark} approximates it:
 
 $$
 \mathrm{GCV}(h)
@@ -140,39 +175,55 @@ $$
 $$
 
 The bandwidth that minimises GCV is their predictive choice. The same criterion, with the penalty weight in place of $h$, is how they tune a smoothing spline. Kernel choice stays secondary.
+:::
+
+::: {.column width="38%"}
+![](figures/generated/sketch-smoothing-gcv.png){.sketch fig-alt="Hand-drawn U-shaped GCV curve against the bandwidth h, with its minimum marked h-hat; a jagged red fit labelled noisy sits above small h and a flat orange line labelled flat sits above large h."}
+:::
+::::
 
 ::: {.notes}
 Point at $\mathrm{tr}(\mathbf{S})/n$ in the denominator as the complexity penalty. Ask what happens if $h$ is so small that $\hat\mu(x_i)$ nearly interpolates. Link forward to splines: $\lambda$ replaces $h$ in the same GCV pattern on a later slide.
+
+**Going further.** For any linear smoother, leave-one-out needs no refitting: $\mathrm{CV} = \frac{1}{n}\sum_i \big((Y_i - \hat\mu(x_i))/(1 - S_{ii})\big)^2$. GCV replaces each $S_{ii}$ by the average $\mathrm{tr}(\mathbf{S})/n$, which makes the criterion invariant to rotations of the data and cheap to compute (Craven and Wahba, 1979, *Numerische Mathematik*, "Smoothing noisy data with spline functions"). It is asymptotically optimal for prediction error, but its curve is often flat near the minimum and it undersmooths in a noticeable fraction of samples, especially with autocorrelated errors, which it mistakes for signal. For penalised splines and GAMs, Wood (2011, *Journal of the Royal Statistical Society, Series B*, "Fast stable restricted maximum likelihood and marginal likelihood estimation of semiparametric generalized linear models") recommends REML for $\lambda$ instead: it has a sharper optimum and less undersmoothing. For a non-Gaussian $Y$, the residual sum of squares is replaced by the deviance (UBRE or GCV on the working model).
 :::
 
 ## A global polynomial moves the whole curve
 
 Extend the line by powers of $x$. A quadratic uses $x$ and $x^2$. Stop at degree 3 or 4: higher powers become strange near the ends of $x$. A global polynomial also means a local change can alter the fit far away.
 
-[Lopez-Ayala, Riley, Collins, and Zimmermann](https://doi.org/10.1136/bmj-2024-082440) add fractional polynomials: powers that need not be whole numbers. The function is still defined on the whole range of $x$, so a pile of values in one tail can distort the shape everywhere.
+[Lopez-Ayala, Riley, Collins, and Zimmermann](https://doi.org/10.1136/bmj-2024-082440) add [fractional polynomials]{.mark}: powers that need not be whole numbers. The function is still defined on the whole range of $x$, so a pile of values in one tail can distort the shape everywhere.
 
 ::: {.notes}
 Use the end-of-range warning: high-degree terms wiggle where data are thin. Fractional polynomials are still global—one tail can bend the entire curve. This slide motivates knots and penalties next; local methods are not the only fix for global rigidity.
+
+**Going further.** A degree-2 fractional polynomial is $\beta_1 x^{p_1} + \beta_2 x^{p_2}$ with powers chosen from $\{-2, -1, -0.5, 0, 0.5, 1, 2, 3\}$, where $x^0$ means $\log x$ and a repeated power $p_1 = p_2 = p$ gives $x^p$ and $x^p \log x$; $x$ must be positive, so a shift is often needed. Royston and Altman (1994, *Applied Statistics*, "Regression using fractional polynomials of continuous covariates") introduced them, and Royston and Sauerbrei's book *Multivariable Model-building* (2008) gives the closed-test procedure for choosing the powers. The search over powers is a model selection step, so the nominal degrees of freedom of the final fit understate the true flexibility: the usual fix is to count about two degrees of freedom per chosen power. A high-degree ordinary polynomial is also ill-conditioned, which is why `poly()` uses an orthogonal basis.
 :::
 
 ## A regression spline spends its flexibility at knots {#sec-reg-spline}
 
 ::: model
-Knots $\xi_1,\ldots,\xi_K$ cut $x$ into intervals. A cubic piece is fitted in each, with $f$, $f'$, and $f''$ continuous at the knots. The truncated-power basis is $\beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + \sum_k \theta_k (x-\xi_k)_+^3$.
+[Knots]{.mark} $\xi_1,\ldots,\xi_K$ cut $x$ into intervals. A cubic piece is fitted in each, with $f$, $f'$, and $f''$ continuous at the knots. The [truncated-power basis]{.mark} is $\beta_0 + \beta_1 x + \beta_2 x^2 + \beta_3 x^3 + \sum_k \theta_k (x-\xi_k)_+^3$.
 :::
 
 The analyst chooses how many knots, and where. A common default is the quantiles of $x$. After the continuity constraints, each added knot costs about one degree of freedom, and the spline is most flexible where the knots are dense. A step function, a piecewise constant, misses the trend unless the cut-points are real breaks. That is the [dichotomisation](#sec-dichotomise) case.
 
 ::: {.notes}
 In the model callout, read the truncated-power basis once, then say software rarely uses it raw. Knot placement is a scientific choice disguised as a default quantile rule. The dichotomisation link is deliberate: cutting $x$ is a spline with too few pieces and wrong continuity.
+
+**Going further.** A cubic regression spline with $K$ interior knots spans a linear space of dimension $K + 4$, so once the basis is built the fit is ordinary least squares (or a GLM) and all the usual inference applies, conditional on the knots. That conditioning is the weakness: choosing $K$ or the knot positions from the same data is model selection, and the reported intervals ignore it. Penalised regression splines resolve this by taking a generous basis (say 10–20 knots) and controlling wiggliness with a penalty instead of the knot count; Eilers and Marx (1996, *Statistical Science*, "Flexible smoothing with B-splines and penalties") use a difference penalty on adjacent B-spline coefficients, the P-spline. With enough knots, the result is insensitive to their exact number. Ruppert, Wand and Carroll, *Semiparametric Regression* (2003), is the applied reference.
 :::
 
 ## B-splines span the same curves {#sec-b-spline}
 
-The truncated-power basis is clear and numerically unstable. A B-spline basis spans the same spline space with local support: each basis function is zero outside a few intervals. The design matrix is sparse, and the fit is better conditioned. Software prefers this basis. The knots are still chosen by hand. The next smoother removes that choice and penalises roughness instead.
+The truncated-power basis is clear and numerically unstable. A B-spline basis spans the same spline space with [local support]{.mark}: each basis function is zero outside a few intervals. The design matrix is sparse, and the fit is better conditioned. Software prefers this basis. The knots are still chosen by hand. The next smoother removes that choice and penalises roughness instead.
+
+![](figures/generated/sketch-smoothing-bspline.png){.sketch-sm fig-alt="Hand-drawn row of overlapping bell-shaped cubic B-spline basis functions; one is shaded in blue with an arrow labelled local, showing it is zero outside a short stretch." fig-align="center"}
 
 ::: {.notes}
 Students who implement splines meet instability before they meet the maths. Local support means a knot move affects only a band of basis functions—good for interpretation and for sparse matrices. Hand-chosen knots remain; the penalty slide removes counting knots as the main tuning problem.
+
+**Going further.** A cubic B-spline $B_k(x)$ is non-zero on at most four adjacent knot intervals, non-negative, and the basis sums to one at every $x$ (partition of unity); it is built by the Cox–de Boor recursion from piecewise constants. The truncated powers $(x - \xi_k)_+^3$ are almost collinear when knots are close, so $\mathbf{X}^{\top}\mathbf{X}$ has a huge condition number; the B-spline basis spans exactly the same space with a banded $\mathbf{X}^{\top}\mathbf{X}$, so the fitted curve is identical in exact arithmetic and much more stable in floating point. In R, `splines::bs()` gives this basis and `splines::ns()` the natural-spline version. De Boor, *A Practical Guide to Splines* (1978, revised 2001), is the standard reference.
 :::
 
 ## A penalty replaces the knot count {#sec-smooth-spline}
@@ -182,11 +233,15 @@ $$
 \sum_{i=1}^{n}\big(Y_i - \mu(x_i)\big)^2
   + \lambda \int \big(\mu''(t)\big)^2\,\mathrm{d}t.
 $$
-The first term is fidelity. The integral is curvature. Here $\lambda$ is the penalty weight, not a Poisson rate and not a relative intensity. Large $\lambda$ forces a smooth curve. Small $\lambda$ allows a wiggly one. A straight line has $\mu'' = 0$, so the penalty does not forbid a bend. It discourages a bend the data do not support.
+The first term is [fidelity]{.mark}. The integral is [curvature]{.mark}. Here $\lambda$ is the penalty weight, not a Poisson rate and not a relative intensity. Large $\lambda$ forces a smooth curve. Small $\lambda$ allows a wiggly one. A straight line has $\mu'' = 0$, so the penalty does not forbid a bend. It discourages a bend the data do not support.
 :::
+
+![](figures/generated/sketch-smoothing-penalty.png){.sketch-sm fig-alt="Two hand-drawn fits to the same scatter of grey points: on the left a red line zig-zags through every point, labelled small lambda; on the right a smooth green line passes between them, labelled large lambda." fig-align="center"}
 
 ::: {.notes}
 Read $\lambda$ carefully against Poisson notation from the previous chapter. Large $\lambda$ shrinks curvature; small $\lambda$ chases the data. The straight-line remark prevents the myth that penalised splines cannot be linear—they can, when the data justify it.
+
+**Going further.** The penalty has a Bayesian reading. Writing the curve in a basis, $\mu = \mathbf{X}\boldsymbol\beta$, the penalty is $\lambda\,\boldsymbol\beta^{\top}\boldsymbol\Omega\boldsymbol\beta$, and minimising the penalised criterion is the same as finding the posterior mode under the improper Gaussian prior $\boldsymbol\beta \sim \mathcal{N}(\mathbf{0}, \sigma^2 \boldsymbol\Omega^{-}/\lambda)$: $\lambda$ is a ratio of noise variance to prior "wiggliness" variance. Kimeldorf and Wahba (1970, *Annals of Mathematical Statistics*) proved the smoothing spline is the posterior mean under an integrated Wiener-process prior, and Wahba (1983, *Journal of the Royal Statistical Society, Series B*, "Bayesian confidence intervals for the cross-validated smoothing spline") built the intervals `mgcv` still uses. The same equivalence writes the spline as a mixed model: the null space of the penalty (the straight line) is fixed, the penalised part is a random effect, and $\lambda$ becomes a variance ratio that REML can estimate. That is the bridge to the design section's variance components.
 :::
 
 ## The solution is a natural cubic spline {#sec-spline-theorem}
@@ -197,20 +252,24 @@ The minimiser, over a suitable class of functions, is a natural cubic spline wit
 
 The same properties hold: piecewise cubic, knots at the distinct $x_i$, continuous first and second derivatives, and linear beyond the extreme knots. An infinite-dimensional penalty problem becomes a finite spline. In matrix form it is penalised least squares, the ridge pattern $(\mathbf{N}^{\top}\mathbf{N} + \lambda\boldsymbol{\Omega})^{-1}\mathbf{N}^{\top}\mathbf{Y}$.
 
-Effective degrees of freedom are $\mathrm{tr}(\mathbf{S}_\lambda)$. As $\lambda \to \infty$ the fit approaches a straight line. As $\lambda \to 0$ it approaches interpolation. GCV, with $\mathrm{tr}(\mathbf{S}_\lambda)$ in the denominator, chooses $\lambda$.
+[Effective degrees of freedom]{.mark} are $\mathrm{tr}(\mathbf{S}_\lambda)$. As $\lambda \to \infty$ the fit approaches a straight line. As $\lambda \to 0$ it approaches interpolation. GCV, with $\mathrm{tr}(\mathbf{S}_\lambda)$ in the denominator, chooses $\lambda$.
 
 ::: {.notes}
 The theorem is the bridge from calculus to computation: one knot per distinct $x_i$, yet a finite solve. Walk $\mathrm{tr}(\mathbf{S}_\lambda)$ as effective df and tie $\lambda\to\infty$ and $\lambda\to 0$ to the bias–variance slide. GCV reuses the same trace in the denominator as for kernel smoothers.
+
+**Going further.** The theorem (Reinsch, 1967; stated in Green and Silverman, *Nonparametric Regression and Generalized Linear Models*, 1994, chapter 2) holds over the Sobolev space of functions with square-integrable second derivative, for at least three distinct $x_i$. With $\mathbf{S}_\lambda = \mathbf{N}(\mathbf{N}^{\top}\mathbf{N} + \lambda\boldsymbol\Omega)^{-1}\mathbf{N}^{\top}$, the Demmler–Reinsch eigen-decomposition gives $\mathbf{S}_\lambda = \sum_k \mathbf{u}_k\mathbf{u}_k^{\top}/(1 + \lambda d_k)$, so $\mathrm{edf} = \sum_k 1/(1 + \lambda d_k)$: each eigenvector is shrunk, the two with $d_k = 0$ (constant and line) never, and the wiggliest the most. That is why edf is not an integer and why it lies between 2 and $n$. Other definitions exist, $2\,\mathrm{tr}(\mathbf{S}) - \mathrm{tr}(\mathbf{S}\mathbf{S}^{\top})$ for the residual degrees of freedom among them; they coincide for a projection and differ for a smoother. Hastie and Tibshirani, *Generalized Additive Models* (1990), chapter 3, compares them.
 :::
 
 ## Restricted cubics are the applied form of that constraint {#sec-rcs}
 
-[The BMJ guide](https://doi.org/10.1136/bmj-2024-082440) calls the natural spline a restricted cubic spline: cubics between the inner knots, and a straight line before the first knot and after the last. The tails, where points are few and outliers bite, stay stable. With $k$ knots the model spends $k-1$ degrees of freedom. Three knots, their usual start, sit at the 10th, 50th, and 90th percentiles of $x$. Three to five knots is the range they recommend, and AIC can choose the number. The exact quantile locations rarely change the curve.
+[The BMJ guide](https://doi.org/10.1136/bmj-2024-082440) calls the natural spline a [restricted cubic spline]{.mark}: cubics between the inner knots, and a straight line before the first knot and after the last. The tails, where points are few and outliers bite, stay stable. With $k$ knots the model spends $k-1$ degrees of freedom. Three knots, their usual start, sit at the 10th, 50th, and 90th percentiles of $x$. Three to five knots is the range they recommend, and AIC can choose the number. The exact quantile locations rarely change the curve.
 
-Coefficients of a spline are not the summary. The partial-effect plot is.
+Coefficients of a spline are not the summary. The [partial-effect plot]{.mark} is.
 
 ::: {.notes}
 Translate "natural" to straight tails beyond the outer knots—where extrapolation would otherwise explode. Three knots at 10th, 50th, 90th percentiles are a concrete default to quote. End on the BMJ line: report partial effects, not raw $\theta_k$ from the basis.
+
+**Going further.** Linearity beyond the boundary knots means $\mu'' = \mu''' = 0$ there, which removes four parameters from the unrestricted cubic spline with $k$ knots ($k + 4$ parameters including the intercept), leaving $k$, that is an intercept plus $k - 1$ slopes. Stone and Koo (1985, *Proceedings of the Berkeley Conference in Honor of Jerzy Neyman and Jack Kiefer*) proposed the restriction; Harrell's *Regression Modeling Strategies* (2nd edition, 2015, chapter 2) gives the default knot quantiles for $k = 3$ to $7$ and the `rms::rcs()` parametrisation. A test of linearity is the joint Wald or likelihood-ratio test that the $k - 2$ non-linear coefficients are zero, and it is valid only if $k$ was fixed before looking at the data. For a GLM the curve is linear on the link scale in the tails, not on the scale of $Y$.
 :::
 
 ## The curve can rise twice {#sec-rcs-glucose}
@@ -218,20 +277,30 @@ Translate "natural" to straight tails beyond the outer knots—where extrapolati
 On the meningitis data, CSF glucose against bacterial meningitis: a straight line, and a cut at 62 mg/dL, both miss the second rise at high glucose that the three-knot restricted cubic shows.
 
 ::: assumption
-Do not categorise a continuous covariate, and do not assume a straight line, whether the aim is to predict, explain, or describe. Spend degrees of freedom first on the covariates that matter. Choosing the shape by eye, before the fit, spends phantom degrees of freedom and makes the interval too narrow.
+Do not categorise a continuous covariate, and do not assume a straight line, whether the aim is to predict, explain, or describe. Spend degrees of freedom first on the covariates that matter. Choosing the shape by eye, before the fit, spends [phantom degrees of freedom]{.mark} and makes the interval too narrow.
 :::
+
+![](figures/generated/sketch-smoothing-two-rises.png){.sketch-sm fig-alt="Hand-drawn schematic: a green smooth curve falls, flattens, then rises a second time at high x, labelled second rise, while a red two-level step at a dashed cut misses that second rise." fig-align="center"}
 
 ::: {.notes}
 Point at 62 mg/dL as the failed dichotomy, then at the second rise only the spline catches. The assumption callout is the policy slide: eyeballing the shape before fitting steals df and narrows intervals dishonestly. About two minutes if you discuss phantom df.
+
+**Going further.** "Phantom degrees of freedom" is Harrell's name, in *Regression Modeling Strategies*, for the parameters a data-driven choice examined and then discarded: picking a cut-point, a transformation, or a knot count after looking at $Y$. The final model reports only the survivors, so its residual variance, standard errors and $P$ values are computed as if the shape had been fixed in advance; simulation shows type I error well above nominal. For an optimised cut-point the problem is classical: the minimum $P$ value over cut-points needs a correction (Altman, Lausen, Sauerbrei and Schumacher, 1994, *Journal of the National Cancer Institute*, "Dangers of using 'optimal' cutpoints in the evaluation of prognostic factors"). The honest alternatives are to pre-specify the number of knots, to penalise and estimate $\lambda$ as part of the fit, or to bootstrap the whole selection procedure.
 :::
 
 ## A neighbourhood empties as dimension grows {#sec-curse}
 
-Local methods need nearby observations. As the number of covariates grows, those neighbourhoods empty, and "local" stops meaning a small window. Naive multivariate smoothing breaks down. The practical compromise is an additive mean: one smooth per covariate, estimated as a one-dimensional problem.
+Local methods need nearby observations. As the number of covariates grows, those neighbourhoods empty, and "local" stops meaning a small window. Naive multivariate smoothing breaks down. The practical compromise is an [additive mean]{.mark}: one smooth per covariate, estimated as a one-dimensional problem.
+
+![](figures/generated/sketch-smoothing-curse.png){.sketch fig-alt="Hand-drawn comparison: on a line, p equals 1, a short green window holds several points; in a square, p equals 2, a red window of similar relative size is empty." fig-align="center"}
 
 ::: {.notes}
 Draw an empty ball in $p$ dimensions with fixed neighbour count—intuition beats formula here. Additive structure is a modelling assumption, not a free lunch: no interactions unless you add them. The GAM slide is the constructive response named on this slide.
+
+**Going further.** To capture a fraction $r$ of uniformly spread data with a hypercube neighbourhood in $p$ dimensions, the edge must be $r^{1/p}$ of the range: 10% of the data needs 46% of each axis when $p = 3$ and 79% when $p = 10$, so "local" is no longer local. Stone (1982, *Annals of Statistics*, "Optimal global rates of convergence for nonparametric regression") showed the best achievable rate for a twice-differentiable $\mu$ is $n^{-4/(4+p)}$ for the mean squared error, so the sample needed for a given accuracy grows exponentially in $p$. An additive model restores the one-dimensional rate $n^{-4/5}$ for each component, whatever $p$, because each $s_j$ is estimated from one coordinate. The price is bias whenever the true $\mu$ has interactions, which can be added back as low-dimensional tensor-product smooths. Hastie, Tibshirani and Friedman, *The Elements of Statistical Learning* (2009), section 2.5, gives the geometry.
 :::
+
+## Additive smooths {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d5eadf 100%)"}
 
 ## A GAM is an additive smooth on the link {#sec-gam}
 
@@ -240,26 +309,31 @@ $$
 g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
 \qquad \mu = \mathbb{E}(Y \mid \mathbf{x}).
 $$
-A logistic GAM uses the logit. A Poisson GAM uses the log. Each $s_j$ is a one-dimensional smoother. Backfitting cycles through partial residuals until the smooths settle.
+A logistic GAM uses the logit. A Poisson GAM uses the log. Each $s_j$ is a one-dimensional smoother. [Backfitting]{.mark} cycles through partial residuals until the smooths settle.
 :::
 
 Because the mean is a sum, each $\hat s_j$ has its own plot: a line, a threshold, a saturation, a U-shape. That plot is the component, not a black-box importance score. The BMJ guide names `mgcv` for this fit, beside `rms` for the restricted cubic, and treats GAMs and LOESS as the alternatives to fractional polynomials and splines.
 
 ::: {.notes}
 Read $g(\mu)$ first so Poisson and logistic examples slot in from the GLM hour. Each $\hat s_j$ plot is the estimand for that covariate, holding others in the partial-residual sense. Mention `mgcv` and `rms` as the two R cultures named on the slide.
+
+**Going further.** Modern GAM software does not backfit: `mgcv` writes each $s_j$ in a penalised regression-spline basis, absorbs an identifiability constraint $\sum_i s_j(x_{ij}) = 0$, and maximises the penalised likelihood by penalised iteratively reweighted least squares, with the vector of smoothing parameters chosen by REML or marginal likelihood (Wood, *Generalized Additive Models: An Introduction with R*, 2nd edition, 2017). Pointwise intervals come from the Bayesian posterior covariance $(\mathbf{X}^{\top}\mathbf{W}\mathbf{X} + \mathbf{S}_\lambda)^{-1}\phi$, here with $\mathbf{S}_\lambda$ the summed penalty matrices; Marra and Wood (2012, *Scandinavian Journal of Statistics*) show they have close to nominal coverage averaged across the function, not at every $x$. The $P$ values in `summary.gam()` are approximate Wald tests with a reference distribution on the edf (Wood, 2013, *Biometrika*, "On p-values for smooth components of an extended generalized additive model") and ignore the uncertainty in $\lambda$, so they tend to be somewhat too small. Concurvity, the smooth analogue of collinearity, arises when one $s_j(x_j)$ can be well approximated by the others; `mgcv::concurvity()` reports it, and high values make each component unstable even when the sum is well estimated.
 :::
 
 ## Which smoother for which task {#sec-which-smoother}
 
-[]{.fragment fragment-index="1"} Exploratory visualisation: LOESS.
+::: {.incremental}
+- Exploratory visualisation: LOESS.
 
-[]{.fragment fragment-index="2"} Density estimation: kernel density estimation.
+- Density estimation: kernel density estimation.
 
-[]{.fragment fragment-index="3"} A stable smooth regression in one covariate: smoothing splines.
+- A stable smooth regression in one covariate: smoothing splines.
 
-[]{.fragment fragment-index="4"} Moderate flexibility with the basis written down: regression splines, including restricted cubics and B-splines.
+- Moderate flexibility with the basis written down: regression splines, including restricted cubics and B-splines.
 
-[]{.fragment fragment-index="5"} Several covariates, with a plot per covariate: a generalised additive model.
+- Several covariates, with a plot per covariate: a generalised additive model.
+:::
+
 
 ::: {.notes}
 Step the five fragments and ask the room to match a CA-SYS or SPRUCE exploratory plot to item 1 versus item 5. KDE is easy to forget because regression stole the hour. Item 4 is when you need a written basis for simulation or reporting.
@@ -267,13 +341,18 @@ Step the five fragments and ask the room to match a CA-SYS or SPRUCE exploratory
 
 ## Four controls on the flexibility {#sec-smooth-takeaways}
 
-[]{.fragment fragment-index="1"} Smoothness or locality replaces a rigid global formula.
+::: {.incremental}
+- Smoothness or locality replaces a rigid global formula.
 
-[]{.fragment fragment-index="2"} The control is a bandwidth, a penalty, or the size of the basis.
+- The control is a bandwidth, a penalty, or the size of the basis.
 
-[]{.fragment fragment-index="3"} Choosing that control is part of the performance, not a detail after the fit.
+- Choosing that control is part of the performance, not a detail after the fit.
 
-[]{.fragment fragment-index="4"} In higher dimensions, an additive structure, or some other structure, becomes necessary.
+- In higher dimensions, an additive structure, or some other structure, becomes necessary.
+:::
+
+![](figures/generated/sketch-smoothing-knobs.png){.sketch-sm fig-alt="Three hand-drawn dials side by side, labelled h for the bandwidth, lambda for the penalty, and K for the size of the basis." fig-align="center"}
+
 
 ::: {.notes}
 StatHarbor's reading list: Hastie, Tibshirani, and Friedman (2009), *The Elements of Statistical Learning*; Wood (2017), *Generalized Additive Models: An Introduction with R*; Wasserman (2006), *All of Nonparametric Statistics*; Fan and Gijbels (1996), *Local Polynomial Modelling and Its Applications*; Silverman (1986), *Density Estimation for Statistics and Data Analysis*; Green and Silverman (1994), *Nonparametric Regression and Generalized Linear Models*. MARS and projection pursuit are their two extensions that relax strict additivity. They mark the links to kernels and neural nets as conceptual, not equivalences.

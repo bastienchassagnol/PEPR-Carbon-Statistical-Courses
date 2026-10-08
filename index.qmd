@@ -28,7 +28,6 @@ citeproc: true
 link-citations: true
 slide-level: 2
 filters:
-  - fragmention
   - reveal-header
   - custom-callout
   - code-fullscreen
@@ -133,21 +132,27 @@ format:
 
 {{< include sections/03b-smoothing.qmd >}}
 
+# Nonlinear regression {.center visibility="hidden"}
+
+A named curve in the parameters. Hidden from the audience deck.
+
+{{< include sections/03c-nonlinear.qmd >}}
+
 # Experimental design {.center}
 
-:abacus: Twenty minutes for the plan. Vocabulary, contrasts, and the longitudinal close are the reference stack.
+:abacus: Words, contrasts, designs, then a mixed model. Ten minutes on the units, then a short application after each block. The worked answer is SPRUCE, except for the contrasts, which use CA-SYS.
 
 {{< include sections/04-design.qmd >}}
 
-# Bayesian fits and causal estimands {.center}
+# Causal estimands {.center}
 
-:balance_scale: Twenty minutes for the probability statement. Simpson, the DAG roles, and the network search are the reference stack.
+:balance_scale: Twenty minutes. Simpson, the DAG roles, and the network search. A Bayesian reading of the same mean is in the close.
 
 {{< include sections/05-bayesian-causal.qmd >}}
 
 # Quiz {.center}
 
-:question: Ten questions, two from each block, then the SAMPL draft.
+:question: Fifteen questions on situations outside the two datasets, then the SAMPL draft.
 
 {{< include sections/06-quiz.qmd >}}
 

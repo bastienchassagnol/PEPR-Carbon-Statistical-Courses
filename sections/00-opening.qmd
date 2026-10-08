@@ -1,11 +1,16 @@
 ## How the four hours are split :hourglass_flowing_sand:
 
-- []{.fragment fragment-index="1"} **30 min.** Who is here, and two datasets we will keep in view
-- []{.fragment fragment-index="2"} **50 min.** The question, a PICO exercise, and twelve reporting pitfalls
-- []{.fragment fragment-index="3"} **70 min.** Non-Gaussian responses: QQ plots, then Poisson, negative binomial, and logit
-- []{.fragment fragment-index="4"} **20 min.** Experimental design and hierarchical models
-- []{.fragment fragment-index="5"} **20 min.** Bayesian regression and causal estimands
-- []{.fragment fragment-index="6"} **50 min.** Quiz and the SAMPL draft, then reproducibility and the close
+::: {.incremental}
+- **30 min.** Who is here, and two datasets we will keep in view
+- **50 min.** The question, a PICO exercise, and twelve reporting pitfalls
+- **70 min.** Non-Gaussian responses: QQ plots, then Poisson, negative binomial, and logit
+- **20 min.** Experimental design and hierarchical models
+- **20 min.** Bayesian regression and causal estimands
+- **50 min.** Quiz and the SAMPL draft, then reproducibility and the close
+:::
+
+![](figures/generated/sketch-opening-agenda.png){.sketch-sm fig-alt="A strip of six coloured blocks whose widths are proportional to 30, 50, 70, 20, 20, and 50 minutes, under the label four hours, six blocks." fig-align="center"}
+
 
 ::: {.notes}
 Down walks this section. Right jumps to the next section. The PICO writing block and the closing SAMPL block are protected. If a GLM slide runs long, shorten the tour of pitfalls 6 to 8 rather than the exercises. Speaker view: press S. A chalkboard is available if you want to annotate a PICO live.
@@ -76,13 +81,20 @@ Name the project only if someone asks what sits next to the carbon workshop. Hal
 
 ## FairCarboN, and why the carbon budget needs it
 
-The [Paris Agreement](https://www.pepr-faircarbon.fr/objectifs-organisation/contexte) asks to hold warming well below $2^\circ\mathrm{C}$, and to reach climate neutrality in the second half of this century. Continental ecosystems have to cut emissions and absorb those that remain:
+:::: {.columns}
+::: {.column width="62%"}
+The [Paris Agreement](https://www.pepr-faircarbon.fr/objectifs-organisation/contexte) asks to hold warming well below $2^\circ\mathrm{C}$, and to reach [climate neutrality]{.mark} in the second half of this century. Continental ecosystems have to cut emissions and absorb those that remain:
 
 - forests, grassland, cropland, fresh water, peatland, coasts, and cities
 
 That has to happen without giving up the other services those ecosystems provide.
 
 [FairCarboN](https://www.pepr-faircarbon.fr/) is the French programme for that science. CNRS and INRAE co-lead it, with €40 million over 2023–2029. The next slide is that page.
+:::
+::: {.column width="38%"}
+![](figures/generated/sketch-opening-carbon-budget.png){.sketch fig-alt="A chimney with a red arrow labelled emit rising from it, and a tree on soil with a green arrow labelled absorb coming down into it, under the words net roughly zero."}
+:::
+::::
 
 ::: {.notes}
 One minute. The point is the contribution the ecosystems are being asked to make, not a tour of the governance chart. If the following frame is blank, open the link: some hosts refuse to be embedded. Preview links are on, so the click opens an overlay.
@@ -147,11 +159,14 @@ Two or three people answer aloud. Listen for Gaussian assumptions, compositional
 
 Not a catalogue of tests. A sequence you can reuse:
 
-- []{.fragment fragment-index="1"} a scientific question, with a purpose
-- []{.fragment fragment-index="2"} an estimand, including its unit
-- []{.fragment fragment-index="3"} a distribution for $Y$ that respects the support of the data
-- []{.fragment fragment-index="4"} a check you can show, preferably a plot
-- []{.fragment fragment-index="5"} a sentence a colleague can re-implement
+::: {.incremental}
+- a scientific question, with a purpose
+- an [estimand]{.mark}, including its unit
+- a distribution for $Y$ that respects the [support]{.mark} of the data
+- a check you can show, preferably a plot
+- a sentence a colleague can re-implement
+:::
+
 
 ::: {.notes}
 This is the pedagogical aim from the course plan. About one minute.
@@ -238,6 +253,8 @@ The dots are possible values of $Y$ at that $x$. $\mu$ is their mean, not one of
 
 ::: {.notes}
 The slice is one $x$. $\mu$ sits in the middle of the $Y$s. The usual misreading is to treat $\mu$ as a fitted line already; the line comes on the next slide.
+
+**Going further.** $\mu(\mathbf{x}) = \mathbb{E}(Y \mid \mathbf{x})$ is the function $m$ that minimises the expected squared error $\mathbb{E}\{(Y - m(\mathbf{x}))^2\}$; geometrically it is the $L^2$ projection of $Y$ onto functions of $\mathbf{x}$. Change the loss and the target changes: absolute error gives the conditional median, and the check loss gives a conditional quantile. That is why "regression" without a named target is ambiguous for skewed responses. The conditional mean exists only when $\mathbb{E}|Y| < \infty$. A standard treatment is in Rice, *Mathematical Statistics and Data Analysis* [@riceMathematicalStatisticsData].
 :::
 
 ## The identity link leaves $\mu$ on its own scale {.smaller #sec-identity-link}
@@ -248,10 +265,12 @@ The slice is one $x$. $\mu$ sits in the middle of the $Y$s. The usual misreading
 $g(\mu) = \mu = \beta_0 + \beta_1 x$
 :::
 
-A Gaussian linear model is this case. $\beta_1$ is a change in the mean of $Y$, in the units of $Y$.
+A [Gaussian linear model]{.mark} is this case. $\beta_1$ is a change in the mean of $Y$, in the units of $Y$.
 
 ::: {.notes}
 The line is $\mu$, not a cloud of observations. Identity means $g$ does nothing. $\beta_1$ keeps the units of $Y$.
+
+**Going further.** The identity is the canonical link of the Gaussian family, so ordinary least squares and maximum likelihood coincide when $Y \mid \mathbf{x} \sim \mathcal{N}(\mu, \sigma^2)$. Normality is not needed for the point estimate: the Gauss–Markov theorem makes $\hat{\boldsymbol\beta}$ the best linear unbiased estimator as soon as the errors have mean zero, constant variance, and no correlation. Normality buys exact $t$ and $F$ distributions in small samples. The identity link can predict a negative mean, which is the first warning sign for counts and concentrations. See Agresti, *Foundations of Linear and Generalized Linear Models* [@agrestiFoundationsLinearGeneralized2015].
 :::
 
 ## Log and logit move $\mu$ first {.smaller #sec-log-logit}
@@ -271,26 +290,30 @@ $\mathrm{logit}(\pi) = \beta_0 + \beta_1 x$
 :::
 ::::
 
-On the log link, a step of 1 in $x$ multiplies $\mu$ by $\exp(\beta_1)$. On the logit, $Y$ is binary, so $\mu = \pi$, and the same step multiplies the odds by $\exp(\beta_1)$.
+On the log link, a step of 1 in $x$ multiplies $\mu$ by $\exp(\beta_1)$. On the logit, $Y$ is binary, so $\mu = \pi$, and the same step multiplies the [odds]{.mark} by $\exp(\beta_1)$.
 
 ::: {.notes}
 Left curve is a count mean, right curve is a probability. Both still have the same linear predictor. Ask which of their responses is a count and which is a detection.
+
+**Going further.** Log and logit are the canonical links of the Poisson and Bernoulli families: writing the density in exponential-family form, the natural parameter is $g(\mu)$, so $\mathbf{X}^{\top}\mathbf{y}$ is sufficient and the score equations reduce to $\mathbf{X}^{\top}(\mathbf{y} - \boldsymbol\mu) = 0$. The fit uses iteratively reweighted least squares. $\exp(\beta_1)$ is a rate ratio on the log link and an odds ratio on the logit. The odds ratio is non-collapsible: adding a covariate that is unrelated to $x$ still changes $\beta_1$, unlike a risk difference. Agresti's *Foundations of Linear and Generalized Linear Models* covers both links [@agrestiFoundationsLinearGeneralized2015].
 :::
 
 ## $i$ sits inside $j$ {#sec-index-j}
 
 ![Three observations labelled i inside one cluster labelled j.](figures/generated/notation-cluster.jpg){fig-alt="A rectangle marked j containing three circles, each marked i." width="78%"}
 
-$j$ is the cluster the treatment sits on: a site, an enclosure, a batch. $i$ is one row inside it: a core, a date, a collar. Rows that share a $j$ are not independent replicates.
+$j$ is the cluster the treatment sits on: a site, an enclosure, a batch. $i$ is one row inside it: a core, a date, a collar. Rows that share a $j$ are not [independent replicates]{.mark}.
 
 ::: {.notes}
 Point at $j$ first, then the three $i$s. Ask which index received the treatment in their design. If they say the core, the enclosure is the $j$ they have skipped.
+
+**Going further.** With a cluster effect $u_j \sim \mathcal{N}(0, \sigma_u^2)$ and residual variance $\sigma^2$, two rows in the same $j$ have intraclass correlation $\rho = \sigma_u^2 / (\sigma_u^2 + \sigma^2)$. For a cluster-level treatment with $m$ rows per cluster, the variance of a mean is inflated by the design effect $1 + (m - 1)\rho$, so the effective sample size is $n / \{1 + (m-1)\rho\}$. As $\rho \to 1$, it tends to the number of clusters. Treating the $i$ as independent is what Hurlbert named pseudoreplication (📄 *Pseudoreplication and the design of ecological field experiments*, Ecological Monographs, 1984).
 :::
 
 ## Inner product and norm {.algebra-panel}
 ![Panel 1 of the StatHarbor algebra poster: the inner product, the Euclidean norm, and distance as the norm of a difference.](figures/generated/algebra-sketch-01.jpg){fig-alt="Formula for the inner product of x and y, the Euclidean norm, and a sketch of the angle between two vectors."}
 
-An inner product measures alignment. The norm is a length. The sketches follow the twelve panels [StatHarbor Analytics](https://www.linkedin.com/posts/statistics-linearalgebra-biostatistics-share-7484322853023154176-qHXd/) published; the originals stay in `figures/sources/`.
+An inner product measures [alignment]{.mark}. The norm is a [length]{.mark}. The sketches follow the twelve panels [StatHarbor Analytics](https://www.linkedin.com/posts/statistics-linearalgebra-biostatistics-share-7484322853023154176-qHXd/) published; the originals stay in `figures/sources/`.
 
 ::: {.notes}
 Five panels are live. Name the object, not the proof. Panels from the spectral decomposition onward are in the file but hidden.
@@ -299,7 +322,7 @@ Five panels are live. Name the object, not the proof. Panels from the spectral d
 ## Matrix multiplication {.algebra-panel}
 ![Panel 2: eta equals X beta, with a schematic of a design matrix times a coefficient vector.](figures/generated/algebra-sketch-02.jpg){fig-alt="The equation eta equals X beta, and a small picture of a design matrix multiplying a coefficient vector."}
 
-$\eta = X\beta$ is the linear predictor. Each column of $X$ is a covariate. Each row is one observation.
+$\eta = X\beta$ is the [linear predictor]{.mark}. Each column of $X$ is a covariate. Each row is one observation.
 
 ::: {.notes}
 Tie $X$ to a design matrix they will see in GLMs. One line on dimensions: $n$ rows, $p$ columns.
@@ -308,28 +331,34 @@ Tie $X$ to a design matrix they will see in GLMs. One line on dimensions: $n$ ro
 ## Least squares {.algebra-panel}
 ![Panel 3: the ordinary least-squares estimator and the orthogonality of residuals.](figures/generated/algebra-sketch-03.jpg){fig-alt="The formula for beta hat when X has full column rank, and the statement that residuals are orthogonal to the columns of X."}
 
-Least squares minimises $\|y - X\beta\|^2$. The residual is orthogonal to the columns of $X$. That orthogonality is the [projection](#sec-algebra) from the notation block.
+Least squares minimises $\|y - X\beta\|^2$. The residual is [orthogonal]{.mark} to the columns of $X$. That orthogonality is the [projection](#sec-algebra) from the notation block.
 
 ::: {.notes}
 Stress orthogonality as geometry, not algebra trivia. It returns on the geometry row of the statistics map.
+
+**Going further.** Setting the gradient of $\|\mathbf{y} - \mathbf{X}\boldsymbol\beta\|^2$ to zero gives the normal equations $\mathbf{X}^{\top}\mathbf{X}\hat{\boldsymbol\beta} = \mathbf{X}^{\top}\mathbf{y}$, which are exactly the orthogonality statement. The Gauss–Markov theorem: if $\mathbb{E}(\boldsymbol\varepsilon) = 0$, $\mathrm{Var}(\boldsymbol\varepsilon) = \sigma^2 \mathbf{I}$, and $\mathbf{X}$ has full column rank, then $\hat{\boldsymbol\beta}$ has the smallest variance among linear unbiased estimators. It fails when the errors are heteroscedastic or correlated; generalised least squares with weights $\boldsymbol\Sigma^{-1}$ then restores optimality. Under collinearity $\mathbf{X}^{\top}\mathbf{X}$ is near-singular and the variance of $\hat{\boldsymbol\beta}$ explodes.
 :::
 
 ## The hat matrix {.algebra-panel #sec-hat}
 ![Panel 4: the projection matrix onto the column space of X.](figures/generated/algebra-sketch-04.jpg){fig-alt="The formula for the hat matrix, and a sketch of y projected onto the column space with an orthogonal residual."}
 
-$P_X$ projects $y$ onto the column space. When $X$ has full column rank, $P_X = X(X^{\mathsf T}X)^{-1}X^{\mathsf T}$, and $\hat y = P_X y$.
+$P_X$ [projects]{.mark} $y$ onto the column space. When $X$ has full column rank, $P_X = X(X^{\mathsf T}X)^{-1}X^{\mathsf T}$, and $\hat y = P_X y$.
 
 ::: {.notes}
 The hat matrix name is deliberate: $\hat y$ is a linear function of $y$. Mention rank only if someone asks about collinearity.
+
+**Going further.** $P_X$ is symmetric and idempotent, with trace equal to its rank $p$, the number of columns. Its diagonal $h_{ii}$ is the leverage of row $i$: it averages $p/n$, and $\mathrm{Var}(y_i - \hat y_i) = \sigma^2 (1 - h_{ii})$, which is why raw residuals are studentised before they are compared. Cook's distance combines $h_{ii}$ with the residual. In a GLM the same role is played by $\mathbf{W}^{1/2}\mathbf{X}(\mathbf{X}^{\top}\mathbf{W}\mathbf{X})^{-1}\mathbf{X}^{\top}\mathbf{W}^{1/2}$, with $\mathbf{W}$ the IRLS weights at convergence.
 :::
 
 ## A quadratic form {.algebra-panel}
 ![Panel 5: the quadratic form x transpose A x, drawn as ellipses.](figures/generated/algebra-sketch-05.jpg){fig-alt="The quadratic form x transpose A x, with a sketch of elliptical level curves."}
 
-$x^{\mathsf T}Ax$ is a squared length that depends on $A$. A variance, and a Mahalanobis distance, are this shape.
+$x^{\mathsf T}Ax$ is a squared length that depends on $A$. A variance, and a [Mahalanobis distance]{.mark}, are this shape.
 
 ::: {.notes}
 Ellipses on the panel are the picture to remember. The eigenvalue slide that used to follow is hidden; do not open it unless someone asks.
+
+**Going further.** Cochran's theorem: if $\mathbf{y} \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I})$ and $\mathbf{A}$ is symmetric and idempotent of rank $r$, then $\mathbf{y}^{\top}\mathbf{A}\mathbf{y} / \sigma^2 \sim \chi^2_r$. The residual sum of squares is the quadratic form in $\mathbf{I} - P_X$, of rank $n - p$, which is where the $n - p$ in $s^2$ and the $\chi^2$ and $F$ reference distributions come from. A Mahalanobis distance of a $d$-variate normal vector is $\chi^2_d$, which sets outlier thresholds. Hogg, McKean and Craig, *Introduction to Mathematical Statistics*, proves the result [@hoggIntroductionMathematicalStatistics2019].
 :::
 
 ## Spectral decomposition {.algebra-panel visibility="hidden"}
@@ -405,7 +434,7 @@ $$
 s = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n}(Y_i - \bar Y)^2}
 $$
 
-$s$ is the spread of the observations around $\bar Y$. The empirical standard error of the mean replaces the unknown scale with that $s$:
+$s$ is the spread of the observations around $\bar Y$. The empirical [standard error of the mean]{.mark} replaces the unknown scale with that $s$:
 
 $$
 \frac{s}{\sqrt{n}}
@@ -415,7 +444,7 @@ $$
 ::: {.column width="50%"}
 **Theoretical**
 
-The estimand here is the mean. Its sampling variance is $\sigma^2/n$, so
+The estimand here is the mean. Its [sampling variance]{.mark} is $\sigma^2/n$, so
 
 $$
 \mathrm{SE}(\bar Y) = \frac{\sigma}{\sqrt{n}}.
@@ -427,6 +456,8 @@ In the draw on the next slides, $\sigma = 15$ and $n = 50$, so $15/\sqrt{50} = 2
 
 ::: {.notes}
 Read both formulas once. The common mistake is reporting $s$ where the reader expects an uncertainty for $\bar Y$. Ask the room which number would go in an error bar for the mean.
+
+**Going further.** $\mathrm{Var}(\bar Y) = \sigma^2/n$ needs the $Y_i$ to be uncorrelated with a common variance; with clustered rows it is multiplied by the design effect. $s^2$ is unbiased for $\sigma^2$, but $s$ is slightly biased for $\sigma$ (Jensen's inequality). Under normality $(\bar Y - \mu)/(s/\sqrt{n})$ follows a $t_{n-1}$ distribution exactly; otherwise the central limit theorem makes it approximately standard normal for large $n$, at a rate that worsens with skewness. See Hogg, McKean and Craig [@hoggIntroductionMathematicalStatistics2019].
 :::
 
 ## One sample, then a thousand means
@@ -469,7 +500,7 @@ One $Y$ versus several correlated outcomes: let the diagram do the work. Ask who
 
 **Multivariable:** one $Y$, several predictors. A logistic regression of detection on age, sex, body mass, and smoking is multivariable. It is not multivariate.
 
-**Multivariate:** several responses, in one model, with the correlation between them. A multivariate probit, or a GEE for several binary outcomes. Systolic and diastolic pressure together, not as two separate fits.
+**Multivariate:** several responses, in one model, with the [correlation between them]{.mark}. A multivariate probit, or a GEE for several binary outcomes. Systolic and diastolic pressure together, not as two separate fits.
 
 Calling the first model "multivariate logistic regression" names a different analysis. Clinical papers often swap the words. Reporting guidelines give the reason to keep the words apart:
 
@@ -478,6 +509,8 @@ Calling the first model "multivariate logistic regression" names a different ana
 
 ::: {.notes}
 Thirty seconds. The misuse is in the adjective, not the link function. Invite one example from the room before you move to the statistics map.
+
+**Going further.** A genuinely multivariate model specifies the joint distribution of a response vector $\mathbf{Y}_i = (Y_{i1}, \dots, Y_{iK})$, for example a multivariate normal with an unstructured covariance, or a GLMM with correlated random effects across outcomes. Generalised estimating equations (Liang and Zeger, 📄 *Longitudinal data analysis using generalized linear models*, Biometrika, 1986) model only the marginal means and a working correlation, and still give consistent $\hat{\boldsymbol\beta}$ with a sandwich standard error if that working correlation is wrong. The gain over separate fits is efficiency when outcomes are correlated and a joint test across outcomes.
 :::
 
 ## Functions and models
@@ -490,7 +523,9 @@ $$
 f(x), \quad P(Y \mid X)
 $$
 
-A model specifies a conditional distribution, not just a rule.
+A model specifies a [conditional distribution]{.mark}, not just a rule.
+
+![](figures/generated/sketch-opening-function-model.png){.sketch-sm fig-alt="A rising blue line labelled f of x, with three green sideways bell curves along it labelled P of Y given x."}
 :::
 
 ::: {.column width="50%"}
@@ -507,6 +542,8 @@ A model specifies a conditional distribution, not just a rule.
 
 ::: {.notes}
 Open the map: ten rows, one idea each. Read the take-away aloud; it sets the tone for the afternoon. The next nine slides are the rest of the same poster. About two minutes for the full set if you do not stop on every row.
+
+**Going further.** A parametric model is a family $\{P_\theta : \theta \in \Theta\}$ of conditional distributions of $Y$ given $\mathbf{x}$. When the truth is not in the family, the maximum-likelihood estimate still converges, to the $\theta^*$ that minimises the Kullback–Leibler divergence from the truth (White, 📄 *Maximum likelihood estimation of misspecified models*, Econometrica, 1982). The model is then a projection, and its standard errors need the sandwich form. Box's aphorism that all models are wrong but some are useful is the informal version of that result.
 :::
 
 ## Derivatives, local change
@@ -519,7 +556,9 @@ $$
 f'(x), \quad \nabla_{\theta} \ell(\theta)
 $$
 
-First-order derivatives define local linear approximations.
+First-order derivatives define [local linear approximations]{.mark}.
+
+![](figures/generated/sketch-opening-derivative.png){.sketch-sm fig-alt="A black rising curve with a red point on it and a short red tangent line through that point, labelled f prime of x."}
 :::
 
 ::: {.column width="50%"}
@@ -535,6 +574,8 @@ First-order derivatives define local linear approximations.
 
 ::: {.notes}
 Link the score to MLE on the next rows. A common misread is to treat a derivative as a causal effect without defining the perturbation.
+
+**Going further.** A first-order Taylor expansion $g(\hat\theta) \approx g(\theta) + g'(\theta)(\hat\theta - \theta)$ gives the delta method: $\mathrm{Var}\{g(\hat\theta)\} \approx g'(\theta)^2 \mathrm{Var}(\hat\theta)$, which is how a standard error moves from the link scale to the response scale. The score $\nabla_\theta \ell$ has mean zero at the true $\theta$ and variance equal to the Fisher information. The influence function is the derivative of a functional $\psi(P)$ in the direction of a point mass, and its variance gives the asymptotic variance of the plug-in estimator. All three fail where $g$ or $\ell$ is not differentiable, for example at a parameter boundary.
 :::
 
 ## Integrals and sums
@@ -547,7 +588,7 @@ $$
 \int f(x)\,dx, \quad \sum_x x\,P(X = x)
 $$
 
-Integration = aggregation over a measure.
+Integration = [aggregation]{.mark} over a measure.
 :::
 
 ::: {.column width="50%"}
@@ -563,6 +604,8 @@ Integration = aggregation over a measure.
 
 ::: {.notes}
 Expectation is the row the workshop lives on. Ask where they last marginalised a nuisance parameter; keep the answer to one sentence.
+
+**Going further.** The law of total expectation, $\mathbb{E}(Y) = \mathbb{E}\{\mathbb{E}(Y \mid \mathbf{x})\}$, and the law of total variance, $\mathrm{Var}(Y) = \mathbb{E}\{\mathrm{Var}(Y \mid \mathbf{x})\} + \mathrm{Var}\{\mathbb{E}(Y \mid \mathbf{x})\}$, are the two integrals the deck uses most. In a mixed model the likelihood is $\prod_j \int \prod_i p(y_{ij} \mid u_j)\, p(u_j)\, du_j$; it is closed-form for the Gaussian case and needs a Laplace or Gauss–Hermite approximation for a GLMM. A Bayesian marginal likelihood is the same integral over $\theta$, which is why it is sensitive to the prior.
 :::
 
 ## Probability and distributions
@@ -575,7 +618,7 @@ $$
 P, \quad f(x), \quad P(X \in A)
 $$
 
-Probability defines a measure over possible outcomes.
+Probability defines a [measure]{.mark} over possible outcomes.
 :::
 
 ::: {.column width="50%"}
@@ -591,6 +634,8 @@ Probability defines a measure over possible outcomes.
 
 ::: {.notes}
 Do not open a philosophy debate. Note that the same symbol $P$ carries different readings in different frameworks.
+
+**Going further.** Kolmogorov's axioms define $P$ as a non-negative, countably additive measure with total mass one. A density is a derivative of $P$ with respect to a reference measure (Radon–Nikodym): Lebesgue measure for a continuous $Y$, counting measure for a count. That is why a Poisson probability mass function and a Gaussian density sit in the same likelihood machinery. Frequentist and Bayesian readings share the axioms and differ in what $P$ may be placed on: the data only, or the parameters too.
 :::
 
 ## Expectation
@@ -603,7 +648,9 @@ $$
 \mathbb{E}_P[X], \quad \psi(P), \quad \mu
 $$
 
-Statistics targets functionals of distributions, not raw data.
+Statistics targets [functionals]{.mark} of distributions, not raw data.
+
+![](figures/generated/sketch-opening-expectation.png){.sketch-sm fig-alt="A right-skewed blue density resting on a beam, balanced on a red triangle marked mu, labelled E of X balances."}
 :::
 
 ::: {.column width="50%"}
@@ -622,6 +669,8 @@ In this workshop that functional is usually $\mu = \mathbb{E}(Y \mid \mathbf{x})
 
 ::: {.notes}
 Stress estimand language: $\psi(P)$ is the object inference targets. Point to $\mu$ on the notation slide if anyone looks lost. The next card asks them to say that quantity; do not re-derive the expectation.
+
+**Going further.** An estimand is a functional $\psi(P)$; the plug-in estimator replaces $P$ by the empirical distribution $\hat P_n$, so the sample mean estimates $\mathbb{E}_P(Y)$. ICH E9(R1) names its attributes: population, variable, handling of intercurrent events, and population-level summary. The conditional mean $\mathbb{E}(Y \mid \mathbf{x})$ and the marginal mean $\mathbb{E}(Y)$ are different functionals, and on a non-identity link averaging the conditional effect over $\mathbf{x}$ does not give the marginal effect. Rice covers plug-in estimation [@riceMathematicalStatisticsData].
 :::
 
 ## Say the precise word {#sec-words}
@@ -652,6 +701,8 @@ In one sentence: what is an estimand?
 The quantity the analysis is trying to learn: $\mu$, the unit it belongs to, and the contrast. The software is not the estimand.
 :::
 
+![](figures/generated/sketch-opening-estimand.png){.sketch-sm fig-alt="A target of three rings with a question mark at the centre, and a blue arrow labelled analysis pointing at it." fig-align="center"}
+
 ::: {.notes}
 `f` flips. Later, `q` resets a quiz question and `x` checks it. Do not use `q` here. The expectation slide already named $\mu$; this card only asks them to say it.
 :::
@@ -668,6 +719,8 @@ The conditional mean: $g(\mu) = \mathbf{x}^{\top}\boldsymbol{\beta}$. It does no
 
 ::: {.notes}
 `f` to flip. The identity, log, and logit sketches already showed where $g$ acts. This catches people who still write $g(Y)$.
+
+**Going further.** Jensen's inequality gives $g\{\mathbb{E}(Y)\} \ne \mathbb{E}\{g(Y)\}$ for any non-linear $g$. A linear model on $\log Y$ therefore targets $\mathbb{E}(\log Y \mid \mathbf{x})$, the log of a geometric mean, whereas a log-link GLM targets $\log \mathbb{E}(Y \mid \mathbf{x})$. If $\log Y$ is normal with variance $\sigma^2$, the two differ by $\sigma^2/2$, the retransformation bias. The GLM also handles zeros, where $\log Y$ is undefined.
 :::
 
 ## What is the index $j$?
@@ -694,7 +747,9 @@ $$
 \mathrm{Var}(X), \quad \mathrm{Var}(\hat{\theta})
 $$
 
-Variance measures dispersion, not bias or distance to truth.
+Variance measures [dispersion]{.mark}, not bias or distance to truth.
+
+![](figures/generated/sketch-opening-variance.png){.sketch-sm fig-alt="Two targets. Left, red hits packed tightly but off the centre, labelled small variance, biased. Right, blue hits spread widely around the centre, labelled large variance, on target."}
 :::
 
 ::: {.column width="50%"}
@@ -711,6 +766,8 @@ The [standard deviation and the standard error](#sec-sd-se) are the two scales t
 
 ::: {.notes}
 Return to the histogram pair if the room conflates $s$ and SE. Bias versus variance is not on the strip; do not improvise a lecture here.
+
+**Going further.** Mean squared error splits as $\mathbb{E}(\hat\theta - \theta)^2 = \mathrm{Var}(\hat\theta) + \{\mathbb{E}(\hat\theta) - \theta\}^2$, so a low-variance estimator can still be far from the truth. Among unbiased estimators, the Cramér–Rao bound $\mathrm{Var}(\hat\theta) \ge 1/I(\theta)$ holds under regularity conditions: the support does not depend on $\theta$ and differentiation passes under the integral. Shrinkage, penalised smoothing, and priors trade a little bias for a larger cut in variance. Hogg, McKean and Craig state the bound [@hoggIntroductionMathematicalStatistics2019].
 :::
 
 ## Likelihood and optimisation
@@ -726,6 +783,8 @@ $$
 $$
 S(\theta) = \nabla_{\theta} \ell(\theta)
 $$
+
+![](figures/generated/sketch-opening-likelihood.png){.sketch-sm fig-alt="A blue hill-shaped log-likelihood curve against theta, with a flat red tangent at its peak labelled slope equals zero and the peak marked theta hat."}
 :::
 
 ::: {.column width="50%"}
@@ -735,12 +794,14 @@ $$
 - Model selection (AIC, BIC)
 - Estimation procedures
 
-**'Best' is defined relative to the assumed model and criterion.**
+**'Best' is defined relative to the assumed model and [criterion]{.mark}.**
 :::
 ::::
 
 ::: {.notes}
 AIC and BIC change the criterion, not the meaning of likelihood. Ask what “best” would mean if the mean were misspecified.
+
+**Going further.** Under regularity conditions (identifiable model, support free of $\theta$, true value in the interior of $\Theta$), the MLE is consistent, asymptotically normal with variance $I(\theta)^{-1}/n$, and invariant: the MLE of $h(\theta)$ is $h(\hat\theta)$. The conditions fail at a boundary, for instance when testing $\sigma_u^2 = 0$ in a mixed model, where the likelihood-ratio statistic follows a 50:50 mixture of $\chi^2_0$ and $\chi^2_1$. AIC, $-2\ell(\hat\theta) + 2p$, estimates expected Kullback–Leibler loss for prediction; BIC, with $p \log n$, approximates a log marginal likelihood. They answer different questions, which is why they can disagree.
 :::
 
 ## Geometry and linear algebra {.smaller}
@@ -765,7 +826,7 @@ $$
 - PCA
 - Dimensionality reduction
 
-**Estimation can be viewed as a projection in vector space.**
+**Estimation can be viewed as a [projection]{.mark} in vector space.**
 :::
 ::::
 
@@ -773,6 +834,8 @@ The [symbols for that projection](#sec-algebra) are on the earlier algebra panel
 
 ::: {.notes}
 Tie back to the hat-matrix slide. Orthogonality of residuals is the picture worth repeating.
+
+**Going further.** Orthogonality gives Pythagoras: $\|\mathbf{y} - \bar y \mathbf{1}\|^2 = \|\hat{\mathbf{y}} - \bar y \mathbf{1}\|^2 + \|\mathbf{y} - \hat{\mathbf{y}}\|^2$ when the model has an intercept, which is the ANOVA decomposition and the definition of $R^2$. Degrees of freedom are the dimensions of those subspaces, $p - 1$ and $n - p$. Nested models give nested subspaces, so the $F$-test compares squared lengths of projections. A GLM fit is a weighted projection repeated until the weights stop changing, which is what IRLS does.
 :::
 
 ## Tangent space and local models {.smaller visibility="hidden"}
@@ -815,6 +878,8 @@ $$
 $$
 \sqrt{n}(\hat{\theta} - \theta_0) \Rightarrow \mathcal{N}(0, V)
 $$
+
+![](figures/generated/sketch-opening-asymptotics.png){.sketch-sm fig-alt="Three bell curves that narrow as n grows, all centred to the right of a dashed green line marked theta zero, with a red arrow marking the gap as bias."}
 :::
 
 ::: {.column width="50%"}
@@ -825,7 +890,7 @@ $$
 - Bootstrap
 - Asymptotic theory
 
-**Large samples stabilise estimators but do not eliminate bias or misspecification.**
+**Large samples stabilise estimators but do not eliminate bias or [misspecification]{.mark}.**
 :::
 ::::
 
@@ -833,4 +898,6 @@ That limit is the [large-sample fallacy](#sec-large-n) in the pitfalls block.
 
 ::: {.notes}
 Close the map with the take-away in bold: big $n$ is not a substitute for a correct mean model. Thirty seconds unless you preview the pitfalls section.
+
+**Going further.** The Lindeberg–Lévy central limit theorem needs independent, identically distributed rows with finite variance; Lindeberg–Feller relaxes identical distribution. Under misspecification the MLE converges to the pseudo-true $\theta^*$, with $\sqrt{n}(\hat\theta - \theta^*) \Rightarrow \mathcal{N}(0, A^{-1} B A^{-1})$, where $A$ is the expected Hessian and $B$ the variance of the score: the sandwich of Huber (1967) and White (1982). The gap $\theta^* - \theta_0$ does not shrink with $n$, so a large sample gives a narrow interval around the wrong value. With clustered data the relevant $n$ is the number of clusters, not rows.
 :::

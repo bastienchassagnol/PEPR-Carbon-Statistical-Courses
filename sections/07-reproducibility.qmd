@@ -1,6 +1,8 @@
+## One source file {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d5eadf 100%)"}
+
 ## Copying the result is the slow path {#sec-repro-manual}
 
-Data and style updates are inevitable. Doing them by hand is slow, and it is where the numbers drift.
+Data and style updates are inevitable. Doing them by hand is slow, and it is where the numbers [drift]{.mark}.
 
 ![A hand-made report: analysis, then a copy into Word and into PowerPoint, and a loop back when the data or the style changes.](figures/sources/ryan-manual-update.svg){width="86%" fig-alt="A flowchart. Analyse in R or Excel, format tables and plots, copy them into Word and into PowerPoint, then write the content. A data update, a data error, or a style update sends the work back to the start."}
 
@@ -12,7 +14,7 @@ Start by asking how many people have copied a number from a console into a manus
 
 ## Quarto renders the report and the slides {#sec-repro-quarto-path}
 
-A data update or a data error changes the data source. A style update changes the tables, the plots, or the markdown. One render then writes the report and the presentation.
+A data update or a data error changes the data source. A style update changes the tables, the plots, or the markdown. [One render]{.mark} then writes the report and the presentation.
 
 ![A Quarto workflow in which one render produces both the report and the presentation.](figures/sources/ryan-quarto-update.svg){width="96%" fig-alt="A flowchart. Data update and data error feed an updated data source, then a Quarto document, tables and plots made in R, styling in markdown and Quarto, and a render of the report and the presentation. A style update feeds the tables and the styling. The data source also connects straight to the render."}
 
@@ -24,9 +26,12 @@ Compare the two diagrams side by side if you can. The number of arrows is simila
 
 A publishing system for more than one language and more than one output. The path, from the [Hello, Quarto](https://quarto.org/docs/get-started/) keynote:
 
-- []{.fragment fragment-index="1"} a `.qmd` file
-- []{.fragment fragment-index="2"} knitr, or Jupyter
-- []{.fragment fragment-index="3"} markdown, then Pandoc, then HTML, PDF, Word, or slides
+::: {.incremental}
+- a `.qmd` file
+- knitr, or Jupyter
+- markdown, then [Pandoc]{.mark}, then HTML, PDF, Word, or slides
+:::
+
 
 The artwork on the original slide is Allison Horst's, for Julia Lowndes and Mine Çetinkaya-Rundel, rstudio::conf 2022.
 
@@ -36,6 +41,8 @@ The middle step is the one people miss: the engine runs the code and produces pl
 
 ## One source, several outputs {#sec-repro-outputs}
 
+:::: {.columns}
+::: {.column width="58%"}
 A `.qmd` can be:
 
 - an article, a report, or a manuscript
@@ -44,12 +51,17 @@ A `.qmd` can be:
 - an interactive document
 
 The full lists are in the [format guide](https://quarto.org/docs/output-formats/all-formats.html), and the [gallery](https://quarto.org/docs/gallery/) holds the finished examples.
+:::
+::: {.column width="42%"}
+![](figures/generated/sketch-repro-outputs.png){.sketch fig-alt="Hand-drawn blue file labelled .qmd with four arrows fanning out to green boxes labelled HTML, PDF, Word and slides."}
+:::
+::::
 
 ## Three parts, in this order {#sec-repro-anatomy}
 
 The anatomy of a `.qmd`:
 
-1. a YAML header, for the metadata and the options
+1. a [YAML header]{.mark}, for the metadata and the options
 2. the narrative, in markdown
 3. the code chunks, which import, wrangle, and draw
 
@@ -57,7 +69,7 @@ The header does not compute. The chunks do. The narrative is what a reader sees 
 
 ## YAML is fussy about spaces {#sec-repro-yaml}
 
-The header sits between two lines of three dashes. Each option is `key: value`, and each nested level is two spaces.
+The header sits between two lines of three dashes. Each option is `key: value`, and each nested level is [two spaces]{.mark}.
 
 ```yaml
 ---
@@ -101,10 +113,20 @@ This is the house rule for the deck and the reason the GLM slides can show a cal
 
 ## A parameter is an input of the document {#sec-repro-params}
 
-A parameterised report is a function: one `.qmd`, several reports, and the thing that changes is a value in `params`.
+:::: {.columns}
+::: {.column width="60%"}
+A [parameterised report]{.mark} is a function: one `.qmd`, several reports, and the thing that changes is a value in `params`.
 
-- []{.fragment fragment-index="1"} A parameter is a string, a number, or a Boolean
-- []{.fragment fragment-index="2"} A data frame has to be serialised to travel in, then rebuilt inside the document. The pointers are [Dervieux](https://community.rstudio.com/t/param-converted-from-data-frame-to-list/155556/9) and [Helveston](https://www.jhelvy.com/blog/2023-02-28-parameterized-pdfs-with-quarto/)
+::: {.incremental}
+- A parameter is a string, a number, or a Boolean
+- A data frame has to be serialised to travel in, then rebuilt inside the document. The pointers are [Dervieux](https://community.rstudio.com/t/param-converted-from-data-frame-to-list/155556/9) and [Helveston](https://www.jhelvy.com/blog/2023-02-28-parameterized-pdfs-with-quarto/)
+:::
+:::
+::: {.column width="40%"}
+![](figures/generated/sketch-repro-params.png){.sketch fig-alt="Hand-drawn blue .qmd file with an orange params note on top, and three arrows to green report files labelled SD1, SD2 and SD3."}
+:::
+::::
+
 
 ::: {.notes}
 For this room the natural parameters are a site, a year, or a warming level: one report per SPRUCE plot, or one per cropping system, from a single source file. Say that a parameter is not a substitute for a function; the computation should still live in a script that the document calls.
@@ -163,6 +185,8 @@ The practices in the rest of this block are from Nathalie Lehmann and Quentin Bl
 Both shapes end in a result somebody has to be able to rerun. The difference is who carries the maintenance: in the left-hand shape it is somebody else's package, and in the right-hand one it is you. Most people in this room are in the left-hand column and still need the Git and dependency slides.
 :::
 
+## Version the work {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #f6e2c4 100%)"}
+
 ## `final_final` is not a history {#sec-repro-filenames}
 
 ![A project without version control: my_script.R, my_script2.R, my_script_version_martin.R, my_script_final.R, and my_script_final_final2.R, with the word PANIC across the middle and four unanswerable questions.](figures/sources/repro-filenames-panic.png){fig-alt="Flowchart of script filenames branching and converging, with the word PANIC in red, and questions about which file made a figure, what was deleted, which package versions were used, and why results changed." width="96%"}
@@ -175,12 +199,15 @@ Read the four red questions aloud; they are the real content of this figure. Eac
 
 ## Git answers the revision questions {#sec-repro-git-why}
 
-- []{.fragment fragment-index="1"} which file made the figure in the article
-- []{.fragment fragment-index="2"} what was deleted in the last version
-- []{.fragment fragment-index="3"} which package versions the code used
-- []{.fragment fragment-index="4"} why a small update for a revision changed the results
+::: {.incremental}
+- which file made the figure in the article
+- what was deleted in the last version
+- which package versions the code used
+- why a small update for a revision changed the results
+:::
 
-A commit is the answer to those four. A filename is not.
+
+A [commit]{.mark} is the answer to those four. A filename is not.
 
 ## The hub is the shared copy {#sec-repro-hub}
 
@@ -192,9 +219,12 @@ This deck's hub is the GitHub repository named in the footer. The history of a s
 
 A function nobody else can read has three obligations:
 
-- []{.fragment fragment-index="1"} a function name and argument names that say what they are
-- []{.fragment fragment-index="2"} the input types, and the values that are allowed
-- []{.fragment fragment-index="3"} a precise description of what comes back
+::: {.incremental}
+- a function name and argument names that say what they are
+- the input types, and the values that are allowed
+- a precise description of what comes back
+:::
+
 
 `data` and `x` fail the first test. So does a function whose only documentation is its body.
 
@@ -208,6 +238,8 @@ If you can, write the documentation as a site. The worked example is [gustaverou
 
 For an R package, [pkgdown](https://pkgdown.r-lib.org/) builds that site from the roxygen comments and the vignettes. GitHub Pages, or the `gh-pages` branch this deck already uses, is a place to put it.
 
+## Keep a rerun possible {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d6e2f5 100%)"}
+
 ## Dependencies move after you publish {#sec-repro-deps}
 
 ![A timeline of numpy, pandas and PyTorch versions, with a package published against the first column and the earlier columns marked deprecated.](figures/sources/repro-dependency-timeline.png){fig-alt="A timeline with five columns of library versions. A package is published against the first column, and the earliest versions are labelled deprecated." width="96%"}
@@ -220,7 +252,7 @@ This is the slide that explains why a five-year-old analysis script fails today 
 
 ## An unkept package goes stale {#sec-repro-deprecate}
 
-If you do not maintain the code, it becomes deprecated.
+If you do not maintain the code, it becomes [deprecated]{.mark}.
 
 Maintenance here is a decision about each new column of dependency versions:
 
@@ -257,7 +289,7 @@ The example is `v0.2.2`, marked `[0.2.2] - 2024-08-07`:
 - a minor line adds an argument
 - a fixed line names a bug
 
-The version number is the contract. The note is what the contract changed.
+The version number is the [contract]{.mark}. The note is what the contract changed.
 :::
 ::::
 
@@ -268,7 +300,13 @@ A version number is not enough if the dependency column is unnamed. Write down t
 - the numpy, pandas, and PyTorch numbers in the timeline
 - or `renv.lock` in an R project
 
-[The Posit::conf 2024 dev-ops materials](https://github.com/posit-conf-2024/dev-ops/tree/main/slides) keep that column in `renv.lock`. A later rerun then uses the lockfile, not today's default install.
+[The Posit::conf 2024 dev-ops materials](https://github.com/posit-conf-2024/dev-ops/tree/main/slides) keep that column in `renv.lock`. A later rerun then uses the [lockfile]{.mark}, not today's default install.
+
+::: {.notes}
+The lockfile is the dependency column made explicit. `renv::snapshot()` writes it and `renv::restore()` rebuilds the library from it on another machine.
+
+**Going further.** A lockfile fixes package versions, but a simulation or a resampling result also depends on the random-number generator. R changed the default `sample()` algorithm in version 3.6.0 (from "Rounding" to "Rejection"), so the same `set.seed()` gives different permutations, bootstrap samples and cross-validation folds before and after that release; `RNGkind()` records the generator, and `sessionInfo()` records the R version that a lockfile alone does not pin. Parallel code needs a stream-safe generator such as L'Ecuyer-CMRG, or the result depends on the number of workers. Floating-point reductions in a different order, for example in a multithreaded BLAS, can change the last digits of a fitted coefficient, so a reproducibility test should compare numbers to a stated tolerance rather than for exact equality. This deck's seed `20261005` is fixed in the figure scripts for that reason.
+:::
 
 ## A test is code that checks a use {#sec-repro-test}
 
@@ -280,7 +318,7 @@ A passing run is evidence about the cases you wrote down. It is the moment you c
 
 ![A grid of package versions across the top and use cases down the side, with ticks turning into crosses as the version advances.](figures/sources/repro-ci-matrix.png){fig-alt="Four columns labelled code 0.1.0 to 1.0.0, four rows of use cases, and a mix of green ticks and red crosses, with the question which change broke what, when, on which OS, and on which use case." width="96%"}
 
-That grid, run on every change, is continuous integration.
+That grid, run on every change, is [continuous integration]{.mark}.
 
 ::: {.notes}
 The grid is the argument for automation in one picture. One row is a use case, one column is a version, and the cell is a pass or a fail. Nobody fills that grid in by hand across operating systems and language versions, which is why the next slide is a workflow file. The question printed under the grid is the one CI exists to answer.
@@ -294,7 +332,7 @@ Open the log to see the failing case. Do not rerun the matrix by hand on a lapto
 
 ## A push to `main` can also publish {#sec-repro-cd}
 
-Continuous delivery is the same kind of file, with a deploy step at the end.
+[Continuous delivery]{.mark} is the same kind of file, with a deploy step at the end.
 
 This deck's `.github/workflows/publish.yml` runs on a push to `main`: it checks out the repository, installs Quarto, renders from the committed freeze, and publishes to `gh-pages`.
 
@@ -308,11 +346,16 @@ Worth being concrete about this deck, because it is the live example in the room
 
 Before that deploy, separate three layers:
 
-- []{.fragment fragment-index="1"} the **presentation** layer is what a person clicks
-- []{.fragment fragment-index="2"} the **processing** layer is the work those clicks cause
-- []{.fragment fragment-index="3"} the **data** layer is where the values are stored and read
+::: {.incremental}
+- the **presentation** layer is what a person clicks
+- the **processing** layer is the work those clicks cause
+- the **data** layer is where the values are stored and read
+:::
+
 
 A data update then changes the data layer. It does not require a new copy of the report, which is the Quarto path from the first slides.
+
+![](figures/generated/sketch-repro-layers.png){.sketch-sm fig-alt="Hand-drawn stack of three layers, presentation in blue on top, processing in yellow, data in green at the bottom, with a mouse cursor clicking the top layer and an arrow pointing down through the stack." fig-align="center"}
 
 ## The short list to take back {#sec-repro-close}
 
