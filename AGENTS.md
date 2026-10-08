@@ -73,7 +73,7 @@ Reveal.js does not collapse callouts. Keep each one to a few lines. The callout 
 
 ## Citations
 
-- Literature citations come from `Statistical classes.bib`, plus `references/p-value-fallacy.bib` for the Nature Methods exchange on the $P$ value, plus `references/multiple-tests.bib` for the multiplicity readings. Do not invent BibTeX entries, citation keys, or DOIs. Do not point the bibliography at `temp_rag_pvalue/`.
+- Literature citations come from `Statistical classes.bib`. Do not invent BibTeX entries, citation keys, or DOIs. Do not point the bibliography at `temp_rag_pvalue/`.
 - For a source that is not in that file, link the original page or DOI at the point of use.
 - Software that only draws a figure does not need a bibliography entry. Name the script instead.
 

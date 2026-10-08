@@ -6,7 +6,7 @@ Data and style updates are inevitable. Doing them by hand is slow, and it is whe
 
 ![A hand-made report: analysis, then a copy into Word and into PowerPoint, and a loop back when the data or the style changes.](figures/sources/ryan-manual-update.svg){width="86%" fig-alt="A flowchart. Analyse in R or Excel, format tables and plots, copy them into Word and into PowerPoint, then write the content. A data update, a data error, or a style update sends the work back to the start."}
 
-The diagrams in this block are from [Jadey Ryan](https://jadeyryan.quarto.pub/slc-rug-quarto/), Salt Lake City R Users Group, 1 July 2024.
+The diagrams in this block are from [Jadey Ryan](https://jadeyryan.quarto.pub/slc-rug-quarto/), Salt Lake City R Users Group, 1 July 2024. 📝 Lehmann and Blampey, [*Good practices*](references/reproducibility-practices.pdf).
 
 ::: {.notes}
 Start by asking how many people have copied a number from a console into a manuscript. Everyone has. The loop at the bottom of the figure is the cost: a data correction arriving after the copy means every downstream number has to be found again by hand, and the one you miss is the one that reaches the reader. This is the same argument as the derived-data script in the datasets block, applied to the report.

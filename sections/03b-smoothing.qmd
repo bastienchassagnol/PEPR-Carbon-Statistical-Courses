@@ -2,7 +2,7 @@
 
 ## Smooth $\mu(x)$, and say what you assumed {#sec-smooth}
 
-StatHarbor Analytics, *Smoothing and Nonparametric Methods*, uses "[nonparametric]{.mark}" for a curve that is not fixed in advance as a short formula. Complexity may grow with $n$. The structure that replaces the formula is smoothness, locality, or a penalty.
+📝 StatHarbor Analytics, [*Smoothing and nonparametric methods*](references/nonparametric-methods.pdf), uses "[nonparametric]{.mark}" for a curve that is not fixed in advance as a short formula. Complexity may grow with $n$. The structure that replaces the formula is smoothness, locality, or a penalty.
 
 ::: assumption
 $$
@@ -11,7 +11,7 @@ $$
 The course notes write $f(x)$ for this $\mu(x)$. A straight line $\mu(x) = \mathbf{x}^{\top}\boldsymbol{\beta}$ is efficient when it is close to the curve, and biased when the curve bends.
 :::
 
-[Angelino and Marcone](https://www.sib.swiss/training/course/20260907_ADDMG) make the same opening: a linear model is easy to interpret, and the straight line is often an approximation.
+[Angelino and Marcone](https://www.sib.swiss/training/course/20260907_ADDMG) make the same opening: a linear model is easy to interpret, and the straight line is often an approximation. 📝 [Day 1b, beyond linearity](references/day1b-beyond-linearity-2026.pdf).
 
 ::: {.notes}
 Start in the assumption callout: $\mu(x)$ is the object, not a transform of $Y$. Point at the sentence about the straight line being efficient only when the truth is nearly linear. A common slip is to treat "nonparametric" as "no assumptions"; locality and smoothness are assumptions, just not a single global polynomial degree.
@@ -262,7 +262,7 @@ The theorem is the bridge from calculus to computation: one knot per distinct $x
 
 ## Restricted cubics are the applied form of that constraint {#sec-rcs}
 
-[The BMJ guide](https://doi.org/10.1136/bmj-2024-082440) calls the natural spline a [restricted cubic spline]{.mark}: cubics between the inner knots, and a straight line before the first knot and after the last. The tails, where points are few and outliers bite, stay stable. With $k$ knots the model spends $k-1$ degrees of freedom. Three knots, their usual start, sit at the 10th, 50th, and 90th percentiles of $x$. Three to five knots is the range they recommend, and AIC can choose the number. The exact quantile locations rarely change the curve.
+[The BMJ guide](references/bmj-2024-082440.pdf) calls the natural spline a [restricted cubic spline]{.mark}: cubics between the inner knots, and a straight line before the first knot and after the last. The tails, where points are few and outliers bite, stay stable. With $k$ knots the model spends $k-1$ degrees of freedom. Three knots, their usual start, sit at the 10th, 50th, and 90th percentiles of $x$. Three to five knots is the range they recommend, and AIC can choose the number. The exact quantile locations rarely change the curve.
 
 Coefficients of a spline are not the summary. The [partial-effect plot]{.mark} is.
 

@@ -403,7 +403,7 @@ Count parameters on the board: intercept, warming slope, CO2, interaction, again
 
 ![Three observations labelled i inside one cluster labelled j.](figures/generated/design-nested.jpg){fig-alt="A rectangle marked j containing three circles, each marked i. The caption says i is not a new j." width="72%"}
 
-The box is the unit that was assigned. The circles are rows inside it. Counting circles as if they were boxes makes the interval too small.
+The box is the unit that was assigned. The circles are rows inside it. Counting circles as if they were boxes makes the interval too small. 📝 [Day 3, mixed effects and longitudinal data](references/day3-longitudinal-data-analysis-2026.pdf), Angelino and Marcone, September 2026.
 
 ::: {.notes}
 Point at the box first. For SPRUCE the box is the enclosure. For CA-SYS it is the plot. The circles are depths, dates, or sampling points.
@@ -500,7 +500,7 @@ Schielzeth and Nakagawa: unique labels let nested factors use crossed syntax, bu
 
 ![Four layouts: crossed, nested, randomised block, and split-plot. Schielzeth and Nakagawa, Figure 1.](figures/sources/schielzeth-fig1-designs.png){width="96%" fig-alt="Four schematics. Crossed: each level of one factor meets several levels of the other. Nested: each lower level belongs to one upper level. Randomised block: each treatment appears in each block. Split-plot: one treatment on the large unit, another inside it."}
 
-Schielzeth and Nakagawa, Figure 1. Solid lines are a partial cross. Dashed lines complete it. The SPRUCE reading of the same picture is [crossed, nested, or both](#sec-crossed-nested).
+Schielzeth and Nakagawa, Figure 1. Solid lines are a partial cross. Dashed lines complete it. The SPRUCE reading of the same picture is [crossed, nested, or both](#sec-crossed-nested). 📄 [The paper](references/schielzeth-nakagawa-2013.pdf).
 
 ::: {.notes}
 Four panels: crossed, nested, randomised block, split-plot. Point to solid versus dashed lines in the caption—partial versus completed cross. Map split-plot to large-unit versus within-unit factors without re-deriving the cookie-dough story. Link back to [#sec-crossed-nested] for the SPRUCE labels on the same picture.

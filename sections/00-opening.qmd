@@ -311,16 +311,16 @@ Point at $j$ first, then the three $i$s. Ask which index received the treatment 
 :::
 
 ## Inner product and norm {.algebra-panel}
-![Panel 1 of the StatHarbor algebra poster: the inner product, the Euclidean norm, and distance as the norm of a difference.](figures/generated/algebra-sketch-01.jpg){fig-alt="Formula for the inner product of x and y, the Euclidean norm, and a sketch of the angle between two vectors."}
+![Panel 1 of the StatHarbor algebra poster: the inner product, the Euclidean norm, and distance as the norm of a difference.](figures/sources/algebra-01.png){fig-alt="Formula for the inner product of x and y, the Euclidean norm, and a sketch of the angle between two vectors."}
 
-An inner product measures [alignment]{.mark}. The norm is a [length]{.mark}. The sketches follow the twelve panels [StatHarbor Analytics](https://www.linkedin.com/posts/statistics-linearalgebra-biostatistics-share-7484322853023154176-qHXd/) published; the originals stay in `figures/sources/`.
+An inner product measures [alignment]{.mark}. The norm is a [length]{.mark}. These twelve panels are the originals [StatHarbor Analytics](https://www.linkedin.com/posts/statistics-linearalgebra-biostatistics-share-7484322853023154176-qHXd/) published.
 
 ::: {.notes}
 Five panels are live. Name the object, not the proof. Panels from the spectral decomposition onward are in the file but hidden.
 :::
 
 ## Matrix multiplication {.algebra-panel}
-![Panel 2: eta equals X beta, with a schematic of a design matrix times a coefficient vector.](figures/generated/algebra-sketch-02.jpg){fig-alt="The equation eta equals X beta, and a small picture of a design matrix multiplying a coefficient vector."}
+![Panel 2: eta equals X beta, with a schematic of a design matrix times a coefficient vector.](figures/sources/algebra-02.png){fig-alt="The equation eta equals X beta, and a small picture of a design matrix multiplying a coefficient vector."}
 
 $\eta = X\beta$ is the [linear predictor]{.mark}. Each column of $X$ is a covariate. Each row is one observation.
 
@@ -329,7 +329,7 @@ Tie $X$ to a design matrix they will see in GLMs. One line on dimensions: $n$ ro
 :::
 
 ## Least squares {.algebra-panel}
-![Panel 3: the ordinary least-squares estimator and the orthogonality of residuals.](figures/generated/algebra-sketch-03.jpg){fig-alt="The formula for beta hat when X has full column rank, and the statement that residuals are orthogonal to the columns of X."}
+![Panel 3: the ordinary least-squares estimator and the orthogonality of residuals.](figures/sources/algebra-03.png){fig-alt="The formula for beta hat when X has full column rank, and the statement that residuals are orthogonal to the columns of X."}
 
 Least squares minimises $\|y - X\beta\|^2$. The residual is [orthogonal]{.mark} to the columns of $X$. That orthogonality is the [projection](#sec-algebra) from the notation block.
 
@@ -340,7 +340,7 @@ Stress orthogonality as geometry, not algebra trivia. It returns on the geometry
 :::
 
 ## The hat matrix {.algebra-panel #sec-hat}
-![Panel 4: the projection matrix onto the column space of X.](figures/generated/algebra-sketch-04.jpg){fig-alt="The formula for the hat matrix, and a sketch of y projected onto the column space with an orthogonal residual."}
+![Panel 4: the projection matrix onto the column space of X.](figures/sources/algebra-04.png){fig-alt="The formula for the hat matrix, and a sketch of y projected onto the column space with an orthogonal residual."}
 
 $P_X$ [projects]{.mark} $y$ onto the column space. When $X$ has full column rank, $P_X = X(X^{\mathsf T}X)^{-1}X^{\mathsf T}$, and $\hat y = P_X y$.
 
@@ -351,7 +351,7 @@ The hat matrix name is deliberate: $\hat y$ is a linear function of $y$. Mention
 :::
 
 ## A quadratic form {.algebra-panel}
-![Panel 5: the quadratic form x transpose A x, drawn as ellipses.](figures/generated/algebra-sketch-05.jpg){fig-alt="The quadratic form x transpose A x, with a sketch of elliptical level curves."}
+![Panel 5: the quadratic form x transpose A x, drawn as ellipses.](figures/sources/algebra-05.png){fig-alt="The quadratic form x transpose A x, with a sketch of elliptical level curves."}
 
 $x^{\mathsf T}Ax$ is a squared length that depends on $A$. A variance, and a [Mahalanobis distance]{.mark}, are this shape.
 
@@ -362,7 +362,7 @@ Ellipses on the panel are the picture to remember. The eigenvalue slide that use
 :::
 
 ## Spectral decomposition {.algebra-panel visibility="hidden"}
-![Panel 6: the eigenvalue decomposition of a symmetric matrix.](figures/generated/algebra-sketch-06.jpg){fig-alt="A equals Q Lambda Q transpose, with a note that the columns of Q are orthonormal eigenvectors."}
+![Panel 6: the eigenvalue decomposition of a symmetric matrix.](figures/sources/algebra-06.png){fig-alt="A equals Q Lambda Q transpose, with a note that the columns of Q are orthonormal eigenvectors."}
 
 A symmetric matrix rotates to principal axes and then scales by its eigenvalues. Principal components are this decomposition of a covariance.
 
@@ -371,7 +371,7 @@ One sentence on PCA if the room is mixed: rotation then stretch. Do not open a P
 :::
 
 ## Singular values {.algebra-panel visibility="hidden"}
-![Panel 7: the singular value decomposition of a rectangular matrix.](figures/generated/algebra-sketch-07.jpg){fig-alt="A equals U Sigma V transpose, with a note that this is the decomposition behind principal components for a rectangular matrix."}
+![Panel 7: the singular value decomposition of a rectangular matrix.](figures/sources/algebra-07.png){fig-alt="A equals U Sigma V transpose, with a note that this is the decomposition behind principal components for a rectangular matrix."}
 
 A singular value decomposition does not need $A$ to be square. It is the same geometry for a rectangular design matrix.
 
@@ -380,7 +380,7 @@ Rectangular $X$ is the link to regression. SVD is optional detail unless someone
 :::
 
 ## Positive semidefinite {.algebra-panel visibility="hidden"}
-![Panel 8: a positive semidefinite matrix and its Cholesky factor.](figures/generated/algebra-sketch-08.jpg){fig-alt="The definition that x transpose Sigma x is at least zero, and Sigma equals L L transpose."}
+![Panel 8: a positive semidefinite matrix and its Cholesky factor.](figures/sources/algebra-08.png){fig-alt="The definition that x transpose Sigma x is at least zero, and Sigma equals L L transpose."}
 
 A covariance is positive semidefinite: $x^{\mathsf T}\Sigma x \ge 0$. Cholesky writes $\Sigma = LL^{\mathsf T}$, which is how a simulation draws a correlated vector.
 
@@ -389,7 +389,7 @@ PSD is the guardrail for valid covariances. Cholesky is a one-line simulation tr
 :::
 
 ## Score and information {.algebra-panel visibility="hidden"}
-![Panel 9: the score as the gradient of the log-likelihood, and the Fisher information as its curvature.](figures/generated/algebra-sketch-09.jpg){fig-alt="The score U of theta and the Hessian, with a sketch of a curved log-likelihood."}
+![Panel 9: the score as the gradient of the log-likelihood, and the Fisher information as its curvature.](figures/sources/algebra-09.png){fig-alt="The score U of theta and the Hessian, with a sketch of a curved log-likelihood."}
 
 The score is the gradient of the log-likelihood. Observed information is the curvature. More curvature means a more precise estimate.
 
@@ -398,7 +398,7 @@ Bridge to MLE: score zero at the optimum. Fisher information reappears on Wald a
 :::
 
 ## A conditional covariance {.algebra-panel visibility="hidden"}
-![Panel 10: the Schur complement as a conditional covariance.](figures/generated/algebra-sketch-10.jpg){fig-alt="A two-by-two block covariance and the Schur complement for the covariance of one block given the other."}
+![Panel 10: the Schur complement as a conditional covariance.](figures/sources/algebra-10.png){fig-alt="A two-by-two block covariance and the Schur complement for the covariance of one block given the other."}
 
 The Schur complement is the covariance of one block after conditioning on the other. Conditioning on a covariate is this reduction.
 
@@ -407,7 +407,7 @@ Only for audiences comfortable with partitions. Otherwise say “partial out a b
 :::
 
 ## The identities the other panels use {.algebra-wide visibility="hidden"}
-![Panel 11: transpose, inverse, vectorisation, trace, and the derivative of a residual sum of squares.](figures/generated/algebra-sketch-11.jpg){fig-alt="A list of matrix identities: transpose of a product, inverse of a product, the trace cyclic property, and the derivative of the residual sum of squares."}
+![Panel 11: transpose, inverse, vectorisation, trace, and the derivative of a residual sum of squares.](figures/sources/algebra-11.png){fig-alt="A list of matrix identities: transpose of a product, inverse of a product, the trace cyclic property, and the derivative of the residual sum of squares."}
 
 Transpose, inverse, trace, and $\partial \|y-X\beta\|^2 / \partial \beta = -2X^{\mathsf T}(y-X\beta)$ are the working rules behind the estimator and the score.
 
@@ -416,7 +416,7 @@ Reference slide: people photograph this one. Read the derivative line only if so
 :::
 
 ## Mahalanobis distance {.algebra-wide visibility="hidden"}
-![Panel 12: Mahalanobis distance as a quadratic form in the inverse covariance, with elliptical contours.](figures/generated/algebra-sketch-12.jpg){fig-alt="The Mahalanobis distance formula and concentric ellipses around a mean."}
+![Panel 12: Mahalanobis distance as a quadratic form in the inverse covariance, with elliptical contours.](figures/sources/algebra-12.png){fig-alt="The Mahalanobis distance formula and concentric ellipses around a mean."}
 
 $d_M(x,\mu)^2 = (x-\mu)^{\mathsf T}\Sigma^{-1}(x-\mu)$ measures distance after scale and correlation. The level sets are ellipses. Outlier rules that ignore $\Sigma$ treat those ellipses as circles.
 

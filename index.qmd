@@ -9,13 +9,31 @@ date: today
 date-format: "D MMMM YYYY"
 bibliography:
   - "Statistical classes.bib"
-  - "references/p-value-fallacy.bib"
-  - "references/multiple-tests.bib"
-  - "Introductory books.bib"
-  - "Theory books.bib"
 resources:
   - references/burakov-logistic-regression.pdf
   - references/sampl-guidelines.pdf
+  - references/against-boxplots.pdf
+  - references/against-transformation.pdf
+  - references/anova-interpreation.pdf
+  - references/bmj-2024-082440.pdf
+  - references/chiquet-poisson-lognormal-2021.pdf
+  - references/count-data-models.pdf
+  - references/day1a-linear-regression-and-beyond-2026.pdf
+  - references/day1b-beyond-linearity-2026.pdf
+  - references/day2-logistic-regression-and-glm-2026.pdf
+  - references/day3-longitudinal-data-analysis-2026.pdf
+  - references/econometrie-panels.pdf
+  - references/egu26-how-to-feed-machine-learning.pdf
+  - references/large-sample-size-fallacy.pdf
+  - references/multiple-testing-model.pdf
+  - references/nonparametric-methods.pdf
+  - references/on-the-ubiquity-of-skewness.pdf
+  - references/qin-ma-ad-hoc-post-hoc-and-intrinsic-hoc-in.pdf
+  - references/random-versus-systematic-error.pdf
+  - references/reproducibility-practices.pdf
+  - references/sarkar-measurement-and-expression-2021.pdf
+  - references/schielzeth-nakagawa-2013.pdf
+  - references/townes-count-distributions-2020.pdf
   - scripts/prepare-teaching-data.R
   - scripts/generate-data-figures.R
   - scripts/generate-slide-figures.R

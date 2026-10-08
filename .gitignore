@@ -48,6 +48,9 @@ docs/
 # Local retrieval dumps, not part of the deck
 temp_rag*
 
+# Raw phyloseq object. The teaching script reads casys_phyloseq_clean.rds.
+data/16s_RNA_sequencing/casys_phyloseq_raw.rds
+
 # translation temp files
 po/*~
 

@@ -2,7 +2,7 @@
 
 ![A machine-learning pipeline from data collection through feature transformation, selection, dimension reduction, and modelling, with model evaluation and tuning circled.](figures/sources/egu-feature-pipeline.png){fig-alt="Flow chart. Data collection and a feature database feed preparation, then feature extraction and transformation, feature selection, and dimension reduction, then modelling. Model evaluation and tuning is circled and feeds back." width="78%"}
 
-[Hartmann and Rudolph](https://github.com/soga-lab/EGU2026_SC), EGU 2026 short course SC2.28, draw the usual order. The circled step is where the score is judged. A rewrite of the column that changes the mean shows up there as a number you cannot interpret. This hour is about that rewrite.
+[Hartmann and Rudolph](https://github.com/soga-lab/EGU2026_SC), EGU 2026 short course SC2.28, draw the usual order. The circled step is where the score is judged. A rewrite of the column that changes the mean shows up there as a number you cannot interpret. This hour is about that rewrite. 📝 [Their short-course notes](references/egu26-how-to-feed-machine-learning.pdf). 📄 Sarkar and Stephens separate a measurement model from an expression model in single-cell counts ([the perspective](references/sarkar-measurement-and-expression-2021.pdf)).
 
 ::: {.notes}
 Trace the pipeline left to right and linger on the circled evaluation box. Ask what happens if a log or library-size normalisation is applied before the model is chosen—the metric still looks fine while the estimand changed. This slide sets the stake for everything that follows about transforms versus links.
@@ -41,7 +41,7 @@ The classical central limit theorem is a statement about a **sum**, and it needs
 :::
 ::::
 
-Species abundance and environmental concentrations are on the product side ([Limpert, Stahel, and Abbt, 2001](https://doi.org/10.1641/0006-3568(2001)051[0341:LNDATS]2.0.CO;2); [Andersson, 2021](https://doi.org/10.1038/s41598-021-96010-6)). More rows do not turn a product into a sum.
+Species abundance and environmental concentrations are on the product side ([Limpert, Stahel, and Abbt, 2001](https://doi.org/10.1641/0006-3568(2001)051[0341:LNDATS]2.0.CO;2); [Andersson, 2021](https://doi.org/10.1038/s41598-021-96010-6)). More rows do not turn a product into a sum. 📄 Olszewski's longer note is [*On the ubiquity of skewness in nature*](references/on-the-ubiquity-of-skewness.pdf) (2023).
 
 ::: {.notes}
 Contrast sum versus product in one sentence each; Cauchy and Pareto are the "finite variance fails" examples. The carbon examples at the bottom are the punchline—bigger $n$ does not Gaussianise a multiplicative process. Ask whether read counts feel more like sums or products.
@@ -114,7 +114,7 @@ Pair with the previous code slide: left panel is the sanity check, right panel i
 
 [Rodrigue](https://www.linkedin.com/pulse/normality-tests-q-q-plots-natalie-rodrigue-qxlqc/): the horizontal axis is the quantile under the reference distribution. The vertical axis is the observed quantile. A straight line, with extra scatter at the ends, is the reference. [Order statistics]{.mark} are noisier in the tails. A systematic curve is the departure. The named shapes are the [shape figures](#sec-qq-shapes).
 
-![](figures/generated/sketch-nongauss-a-qq-wander.png){.sketch fig-alt="Two hand-drawn QQ plots. Left, green points follow the grey line with the two end points a little off it, marked fine. Right, red points curve away from the line in a systematic bend, marked wrong." fig-align="center"}
+![How to read a normal QQ plot: scatter at the ends is allowed, and a systematic curve is the departure.](figures/sources/qq-interpretation.svg){fig-alt="A guide to a normal QQ plot. Points may wander at the two ends. A systematic curve away from the reference line is the departure." width="78%"}
 
 ::: {.notes}
 Axes first: theoretical quantile horizontal, sample quantile vertical. Distinguish tail scatter (allowed) from a systematic bend (signal). Link to the four-shape figure before students memorise test names. Thirty seconds unless someone asks about order statistics.
@@ -237,7 +237,7 @@ List what a box plot hides: bimodality, ties, tail mass. Carbon responses often 
 
 ![Five panels from Ho and colleagues: a bar chart, a box plot, a scatter with means, a null distribution of the difference, and a Gardner–Altman plot of the mean difference with an interval.](figures/sources/gardner-altman-figure-1.png){fig-alt="Figure 1 of Ho and colleagues. Panels a to c summarise two groups. Panel d shows a permutation null for the mean difference and a p-value. Panel e shows the mean difference, its bootstrap distribution, and a 95 percent interval on a difference axis." width="86%"}
 
-[Ho and colleagues](https://doi.org/10.1038/s41592-019-0470-3). Panel e is the graphic this workshop keeps: $\Delta$ and an interval.
+[Ho and colleagues](https://doi.org/10.1038/s41592-019-0470-3). Panel e is the graphic this workshop keeps: $\Delta$ and an interval. 📄 [The paper](references/against-boxplots.pdf).
 
 ::: {.notes}
 Scan panels a–c as what not to stop at, then land on panel e: mean difference $\Delta$ with an interval on a difference axis. Contrast with a lone star or $p$-value. This is the reporting standard the pitfalls section keeps returning to.
@@ -385,7 +385,7 @@ Write two answers, and keep them.
 1. Why is transforming the response usually a bad default?
 2. What do you do instead when a Gaussian model for $Y$ does not fit?
 
-[Olszewski's](https://www.linkedin.com/pulse/why-transforming-response-regression-analysis-testing-olszewski/) answers, from the 2022 note, follow the variance-stabilising case. A multiplicative process is the case he keeps. A skewed histogram is not.
+[Olszewski's](https://www.linkedin.com/pulse/why-transforming-response-regression-analysis-testing-olszewski/) answers, from the 2022 note, follow the variance-stabilising case. A multiplicative process is the case he keeps. A skewed histogram is not. 📄 [The note](references/against-transformation.pdf).
 
 ::: {.notes}
 Pause on the two numbered questions—let someone answer before you advance. Olszewski's "bad default" is about rewriting the estimand without science; the alternative is a model matched to $Y$. Skew alone is not on his justification list.
@@ -870,7 +870,7 @@ Four bullets: GLS, GEE, GLM, GAM—each names what breaks in OLS. This hour stay
 
 ![A warning that aov() in R is Type I ANOVA, so the test of treatment depends on whether baseline or treatment is entered first.](figures/sources/ancova-type-i-order.jpeg){fig-alt="Four rows. lm, car::Anova with type 2, and permuco are marked safe. aov is marked not safe, because the order of baseline and treatment changes the sums of squares." width="78%"}
 
-[Olszewski](https://www.linkedin.com/feed/update/urn:li:activity:7444337265641684992/): `aov()` is [Type I]{.mark}, so the treatment $F$ in his sketch is 16.6 or 38.7 depending on order. `car::Anova(type = 2)` does not inherit that order.
+[Olszewski](https://www.linkedin.com/feed/update/urn:li:activity:7444337265641684992/): `aov()` is [Type I]{.mark}, so the treatment $F$ in his sketch is 16.6 or 38.7 depending on order. `car::Anova(type = 2)` does not inherit that order. 📝 [His longer ANOVA note](references/anova-interpreation.pdf) asks whether the name is a test or a model.
 
 ::: {.notes}
 Treatment $F$ is 16.6 or 38.7 depending on entry order in Olszewski's sketch. `car::Anova(type=2)` is marked safe on the figure. Ask what happens if baseline and treatment are swapped in `aov()`.
@@ -906,7 +906,7 @@ flowchart LR
 
 A [pretest]{.mark} that switches you from a $t$-test to a rank test still does not estimate $\mu = \mathbb{E}(Y \mid x)$. Rank tests answer a different contrast, and they have assumptions of their own.
 
-The teaching sequence for the three models follows the SIB day on logistic regression and GLMs ([slides](https://github.com/sib-swiss/advanced-statistics/blob/master/docs/assets/pdf/Day2-LogisticregressionandGLM-2026.pdf), [course](https://www.sib.swiss/training/course/20260907_ADDMG)).
+The teaching sequence for the three models follows the SIB day on logistic regression and GLMs ([course](https://www.sib.swiss/training/course/20260907_ADDMG)). 📝 [Day 2, logistic regression and GLMs](references/day2-logistic-regression-and-glm-2026.pdf). 📝 [Day 1a, linear models](references/day1a-linear-regression-and-beyond-2026.pdf), is the hour before that sequence.
 
 ::: {.notes}
 Walk the Mermaid: question → support → family → residual plot → estimate. Pretest switching $t$ to ranks still misses $\mu$. SIB day link is for students who want the full logistic/GLM course—optional aside.
@@ -1287,7 +1287,7 @@ flowchart LR
   mu --> y["$$Y \mid x \sim \mathrm{Poisson}(\mu)$$"]
 ```
 
-Four working assumptions: $Y$ is a count per unit of time or space; $\log \mu$ is linear in $x$; the observations are independent; and $\mathrm{Var}(Y \mid x) = \mu$.
+Four working assumptions: $Y$ is a count per unit of time or space; $\log \mu$ is linear in $x$; the observations are independent; and $\mathrm{Var}(Y \mid x) = \mu$. 📝 StatHarbor, [*Count data models*](references/count-data-models.pdf).
 
 ::: {.notes}
 $\lambda$ on the slide is $\mu$ here; $\exp(\beta_1)$ multiplies mean count. Four assumptions at the bottom—especially $\mathrm{Var}(Y\mid x)=\mu$—are what CA-SYS will break.
@@ -1484,7 +1484,7 @@ $$
 $$
 :::
 
-This is the `MASS::glm.nb` parameterisation: large $\theta$ means "close to Poisson". Agresti writes the same quadratic variance with a different symbol for the extra term [@agrestiFoundationsLinearGeneralized2015]. On these reads $\hat\theta = 29.3$.
+This is the `MASS::glm.nb` parameterisation: large $\theta$ means "close to Poisson". Agresti writes the same quadratic variance with a different symbol for the extra term [@agrestiFoundationsLinearGeneralized2015]. On these reads $\hat\theta = 29.3$. 📄 Townes reviews the count families in [*Review of probability distributions for modeling count data*](references/townes-count-distributions-2020.pdf).
 
 ::: {.notes}
 Two readings of theta. Algebraically it is the inverse of the extra variance per unit of mean squared. Mechanistically it is a gamma-distributed latent rate, integrated out, which is the derivation on the Poisson-gamma slide. Stress that theta is not a second scientific effect to interpret.
@@ -2353,7 +2353,7 @@ The likelihood has no closed form once $\mathbf{Z}$ is integrated out. The paper
 - a continuous flux: often a positive continuous distribution, or a Gaussian model on a scale you can defend
 - dependence in space or in time: the design block is next
 
-Quasi-Poisson is a [variance fix]{.mark}, not a full likelihood. Use it only if you can say what the interval means.
+Quasi-Poisson is a [variance fix]{.mark}, not a full likelihood. Use it only if you can say what the interval means. 📄 A joint model for many species is the Poisson log-normal of Chiquet, Mariadassou, and Robin ([the paper](references/chiquet-poisson-lognormal-2021.pdf)).
 
 ::: {.notes}
 Bullet list: ZI mixture, composition conditioning, continuous flux, space-time design next. Quasi-Poisson variance fix only if you can interpret the interval—closing honesty slide.

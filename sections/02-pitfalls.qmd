@@ -327,7 +327,7 @@ The commonest error in the room will be to read p as the probability that the nu
 
 ## 2 · A p-value is about the data {#sec-pvalue}
 
-Under identical replicates of this experiment, with the effect set to zero, $p$ is the probability of a result [more extreme]{.mark} than the one in hand ([Harrell, ch. 22](https://hbiostat.org/bbr/alpha)).
+Under identical replicates of this experiment, with the effect set to zero, $p$ is the probability of a result [more extreme]{.mark} than the one in hand ([Harrell, ch. 22](https://hbiostat.org/bbr/alpha)). 📄 Thiese, Ronna, and Ott collect the same reading in [*P value interpretations and considerations*](references/random-versus-systematic-error.pdf).
 
 A $p$ of 0.06 says that, under the model and the null, a replicate would be more extreme about 6 times in 100. It does not say that the null has probability 0.06.
 
@@ -405,7 +405,7 @@ Huber called the exchange a clash of cultures [@huberClashCulturesDiscussions201
 - A [craftsman]{.mark} reports one $P$ for one question written in advance.
 - An [industrialist]{.mark} uses $P$ to screen thousands of hypotheses; the histogram of all of them is part of the evidence.
 - One $P$ can fall anywhere in $(0,1)$ when the null is true; the distribution of many $P$ values is a different object.
-- Both sides agree that $P$ alone is an insufficient report.
+- Both sides agree that $P$ alone is an insufficient report. 📝 StatHarbor, [*Multiple testing correction*](references/multiple-testing-model.pdf). 📄 Qin Ma and colleagues, [*Ad hoc, post hoc and intrinsic-hoc in bioinformatics*](references/qin-ma-ad-hoc-post-hoc-and-intrinsic-hoc-in.pdf).
 :::
 ::: {.column width="38%"}
 ![](figures/generated/sketch-pitfalls-screen.png){.sketch fig-alt="Hand-drawn sketch: on the left, a stick figure holding one P for a planned question; on the right, a histogram of ten thousand P values between 0 and 1 with a peak near 0, labelled screen."}
@@ -420,7 +420,7 @@ Genomics and high-throughput ecology are the industrialist case. Ask whether any
 
 ## 2 · The same p, a shrinking effect {#sec-large-n}
 
-[Lantz](https://doi.org/10.1111/j.1471-6712.2012.01052.x) keeps $p = 0.0253$ while a preference for treatment X shrinks toward a coin toss. These are the two ends of his table.
+[Lantz](references/large-sample-size-fallacy.pdf) keeps $p = 0.0253$ while a preference for treatment X shrinks toward a coin toss. These are the two ends of his table.
 
 | $n$ | Prefer X | Cohen's $h$ |
 | --- | --- | --- |
@@ -889,7 +889,7 @@ This is the card's ecological-bias warning in an equation. The 60 percent is ari
 
 ## 7 · One level deeper: a hierarchical error
 
-![Nested samples and cell types, with a hierarchical model for a true proportion and its replicates, and three sketches of residual error.](figures/generated/hierarchical-rmse.png){fig-alt="Two panels. Left: three replicate samples, each with cell types, and a table of true proportions beside estimates. Right: a hierarchical mean plus sample and residual terms, and three plots in which the gap between true proportions and replicates grows." width="100%"}
+![Nested samples and cell types, with a hierarchical model for a true proportion and its replicates, and three sketches of residual error.](figures/sources/hierarchical_rmse.svg){fig-alt="Two panels. Left: three replicate samples, each with cell types, and a table of true proportions beside estimates. Right: a hierarchical mean plus sample and residual terms, and three plots in which the gap between true proportions and replicates grows." width="100%"}
 
 A deconvolution sketch, not a soil survey. Hierarchical RMSE grows when the residual variance is large beside the biological signal. Click it to read the indices.
 
@@ -1006,7 +1006,7 @@ flowchart TD
 
 $$Y_{ij} = \beta_0 + u_j + \beta^\top \mathbf{x}_{ij} + \epsilon_{ij}, \qquad u_j \sim N(0,\sigma_u^2), \qquad \rho = \frac{\sigma_u^2}{\sigma_u^2 + \sigma^2}$$
 
-Ignoring the [cluster]{.mark} pretends that rows in the same enclosure are as different as rows in different enclosures [@riley12thDayChristmas2022]. The model is a [random intercept](#sec-random-intercept).
+Ignoring the [cluster]{.mark} pretends that rows in the same enclosure are as different as rows in different enclosures [@riley12thDayChristmas2022]. The model is a [random intercept](#sec-random-intercept). 📝 Godechot's panel notes use the same nesting for repeated observations of one unit ([the slides](references/econometrie-panels.pdf)).
 
 ::: {.notes}
 Index $j$ is the unit that received the treatment; $i$ is the repeated measure or sub-sample. Ask them to name both indices for their dataset before you show the row count slide.
