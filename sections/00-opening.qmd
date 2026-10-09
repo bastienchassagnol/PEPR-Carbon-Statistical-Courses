@@ -5,7 +5,7 @@
 - **50 min.** The question, a PICO exercise, and twelve reporting pitfalls
 - **70 min.** Non-Gaussian responses: QQ plots, then Poisson, negative binomial, and logit
 - **20 min.** Experimental design and hierarchical models
-- **20 min.** Bayesian regression and causal estimands
+- **20 min.** An introduction to causal inference
 - **50 min.** Quiz and the SAMPL draft, then reproducibility and the close
 :::
 
@@ -106,20 +106,6 @@ One minute. The point is the contribution the ecosystems are being asked to make
 Let the page sit for a few seconds. If the frame is blank, say the URL aloud and move on. Do not read the navigation menu.
 :::
 
-## Three scientific objectives
-
-From the [programme objectives](https://www.pepr-faircarbon.fr/objectifs-organisation/objectifs-scientifiques):
-
-1. The processes that govern the carbon cycle, its coupling with nitrogen, phosphorus, and water, and the ecological, agronomic, and socio-economic levers for climate neutrality
-2. Open data, and a new generation of models of carbon stocks and fluxes in soils and vegetation
-3. Land-use and management pathways, built with stakeholders and tested from the territory to the national scale
-
-The next slide is the [objectives page](https://www.pepr-faircarbon.fr/objectifs-organisation/objectifs-scientifiques).
-
-::: {.notes}
-Read the three lines. Do not open the project list yet.
-:::
-
 ## Four scientific axes
 
 The same questions are grouped on the [axes page](https://www.pepr-faircarbon.fr/objectifs-organisation/axes-scientifiques):
@@ -176,7 +162,9 @@ This is the pedagogical aim from the course plan. About one minute.
 
 ```{r}
 #| echo: false
-math <- function(tex) gt::html(sprintf('<span class="math inline">\\(%s\\)</span>', tex))
+math <- function(tex) {
+  gt::html(sprintf('<span class="math inline">\\(%s\\)</span>', tex))
+}
 
 algebra <- data.frame(
   Symbol = I(c(
@@ -193,7 +181,7 @@ algebra <- data.frame(
     "Scalar, or the entry in row i and column j",
     "Inner product",
     "Cross product, in three dimensions",
-    "Matrix–vector product"
+    "Matrix<U+2013>vector product"
   ),
   stringsAsFactors = FALSE
 )
@@ -214,7 +202,7 @@ A scalar stays in italics. A vector is not a matrix with one row unless we say s
 Thirty seconds. The grouped rows are the only new layout; do not re-teach matrix algebra. If the table feels small, tell people speaker view zooms.
 :::
 
-## Notation {.smaller #sec-notation}
+## Statistics and probability notation {.smaller #sec-notation}
 
 | Symbol | Meaning |
 | --- | --- |
