@@ -465,4 +465,391 @@ if (requireNamespace("lme4", quietly = TRUE)) {
   save_fig(p_longi, "longitudinal-random-slope.png", width = 9, height = 5)
 }
 
+# Adult height by sex. Illustrative Gaussians, not a survey.
+# Pooled Y is a two-component mixture. Each component is Gaussian.
+set.seed(seed)
+n_height <- 2000L
+mu_f <- 163
+mu_h <- 177
+sd_f <- 6.5
+sd_h <- 7
+height <- data.frame(
+  sex = rep(c("F", "H"), each = n_height / 2),
+  Y = c(
+    rnorm(n_height / 2, mu_f, sd_f),
+    rnorm(n_height / 2, mu_h, sd_h)
+  )
+)
+height_grid <- seq(140, 200, length.out = 400)
+height_curves <- rbind(
+  data.frame(
+    sex = "F",
+    Y = height_grid,
+    density = 0.5 * dnorm(height_grid, mu_f, sd_f)
+  ),
+  data.frame(
+    sex = "H",
+    Y = height_grid,
+    density = 0.5 * dnorm(height_grid, mu_h, sd_h)
+  )
+)
+p_height <- ggplot(height, aes(Y)) +
+  geom_histogram(
+    aes(y = after_stat(density)),
+    bins = 32,
+    fill = "#d9d3c7",
+    colour = "white",
+    linewidth = 0.2
+  ) +
+  geom_line(
+    data = height_curves,
+    aes(y = density, colour = sex),
+    linewidth = 1.15
+  ) +
+  geom_vline(
+    xintercept = c(mu_f, mu_h),
+    linetype = "dashed",
+    linewidth = 0.6,
+    colour = "#1c2b24"
+  ) +
+  annotate(
+    "text",
+    x = c(mu_f - 1.2, mu_h + 1.2),
+    y = 0.034,
+    label = c("mu[F]", "mu[H]"),
+    parse = TRUE,
+    size = 4.5,
+    hjust = c(1, 0),
+    colour = "#1c2b24"
+  ) +
+  scale_colour_manual(values = c(F = "#1d4e89", H = "#c45c26")) +
+  labs(
+    subtitle = "Illustrative. Seed 20261005. Grey bars pool both sexes.",
+    x = "Height Y (cm)",
+    y = "Density",
+    colour = "Sex x"
+  ) +
+  theme_slide()
+save_fig(p_height, "height-by-sex.png", width = 9.2, height = 4.4)
+
+# Four functions of one standard normal. The 0.05 quantile is exact.
+x_norm <- seq(-4, 4, length.out = 401)
+q05 <- qnorm(0.05)
+shade <- data.frame(
+  x = c(-4, seq(-4, q05, length.out = 80), q05),
+  y = c(0, dnorm(seq(-4, q05, length.out = 80)), 0)
+)
+panel_theme <- function() {
+  theme_slide() +
+    theme(
+      plot.title = element_text(size = 15),
+      plot.subtitle = element_text(size = 11),
+      axis.title = element_text(size = 12),
+      axis.text = element_text(size = 10)
+    )
+}
+p_dnorm <- ggplot(data.frame(x = x_norm, y = dnorm(x_norm)), aes(x, y)) +
+  geom_line(colour = "#1d4e89", linewidth = 1.1) +
+  labs(title = "Density, dnorm", x = "z", y = "f(z)") +
+  panel_theme()
+p_qnorm <- ggplot(data.frame(x = x_norm, y = dnorm(x_norm)), aes(x, y)) +
+  geom_polygon(data = shade, fill = "#1d4e89", alpha = 0.28) +
+  geom_line(colour = "#1d4e89", linewidth = 1.1) +
+  geom_vline(xintercept = q05, linetype = "dashed", colour = "#1c2b24") +
+  annotate(
+    "text", x = -3.15, y = 0.28,
+    label = "area = 0.05", size = 3.6, colour = "#1c2b24"
+  ) +
+  labs(
+    title = "Quantile, qnorm(0.05)",
+    subtitle = sprintf("z = %.2f", q05),
+    x = "z", y = "f(z)"
+  ) +
+  panel_theme()
+p_pnorm <- ggplot(data.frame(x = x_norm, y = pnorm(x_norm)), aes(x, y)) +
+  geom_line(colour = "#1d4e89", linewidth = 1.1) +
+  annotate(
+    "segment",
+    x = q05, xend = q05, y = 0, yend = 0.05,
+    linetype = "dashed", colour = "#1c2b24"
+  ) +
+  annotate(
+    "segment",
+    x = -4, xend = q05, y = 0.05, yend = 0.05,
+    linetype = "dashed", colour = "#1c2b24"
+  ) +
+  annotate(
+    "point", x = q05, y = 0.05, colour = "#c45c26", size = 2.4
+  ) +
+  labs(title = "Cumulative distribution, pnorm", x = "z", y = "F(z)") +
+  panel_theme()
+set.seed(seed)
+sample_z <- data.frame(z = rnorm(400))
+p_rnorm <- ggplot(sample_z, aes(z)) +
+  geom_histogram(
+    aes(y = after_stat(density)),
+    bins = 24,
+    fill = "#d9d3c7",
+    colour = "white",
+    linewidth = 0.2
+  ) +
+  geom_line(
+    data = data.frame(z = x_norm, y = dnorm(x_norm)),
+    aes(y = y),
+    colour = "#1d4e89",
+    linewidth = 1.1
+  ) +
+  labs(
+    title = "Sample, rnorm",
+    subtitle = "n = 400. Seed 20261005.",
+    x = "z", y = "Density"
+  ) +
+  panel_theme()
+ragg::agg_png(
+  file.path(out_dir, "normal-four-functions.png"),
+  width = 10.4, height = 7.2, units = "in", res = 180
+)
+grid::grid.newpage()
+grid::pushViewport(grid::viewport(layout = grid::grid.layout(2, 2)))
+print(p_dnorm, vp = grid::viewport(layout.pos.row = 1, layout.pos.col = 1))
+print(p_qnorm, vp = grid::viewport(layout.pos.row = 1, layout.pos.col = 2))
+print(p_pnorm, vp = grid::viewport(layout.pos.row = 2, layout.pos.col = 1))
+print(p_rnorm, vp = grid::viewport(layout.pos.row = 2, layout.pos.col = 2))
+grDevices::dev.off()
+
+
+# Opening block: one figure per notion, in the order the slides introduce
+# them. All illustrative; seed 20261005 is reset before each draw.
+col_a <- "#1d4e89"
+col_b <- "#c45c26"
+col_c <- "#0e4d3a"
+col_ink <- "#1c2b24"
+
+# Mean and variance: the mean moves the curve, sigma widens it.
+y_grid <- seq(-6, 9, length.out = 600)
+mv <- rbind(
+  data.frame(panel = "Same σ = 1, different μ", curve = "μ = 0",
+             y = y_grid, d = dnorm(y_grid, 0, 1)),
+  data.frame(panel = "Same σ = 1, different μ", curve = "μ = 3",
+             y = y_grid, d = dnorm(y_grid, 3, 1)),
+  data.frame(panel = "Same μ = 1, different σ", curve = "σ = 1",
+             y = y_grid, d = dnorm(y_grid, 1, 1)),
+  data.frame(panel = "Same μ = 1, different σ", curve = "σ = 2.5",
+             y = y_grid, d = dnorm(y_grid, 1, 2.5))
+)
+mv$panel <- factor(mv$panel, levels = unique(mv$panel))
+mv_labels <- data.frame(
+  panel = factor(c("Same σ = 1, different μ", "Same σ = 1, different μ",
+                   "Same μ = 1, different σ", "Same μ = 1, different σ"),
+                 levels = levels(mv$panel)),
+  curve = c("μ = 0", "μ = 3", "σ = 1", "σ = 2.5"),
+  x = c(-1.6, 4.6, 2.9, 5.2), y = c(0.33, 0.33, 0.33, 0.12)
+)
+mv_marks <- data.frame(
+  panel = c("Same σ = 1, different μ", "Same σ = 1, different μ",
+            "Same μ = 1, different σ"),
+  x = c(0, 3, 1)
+)
+mv_sd <- data.frame(
+  panel = "Same μ = 1, different σ",
+  x = c(1, 1), xend = c(2, 3.5), y = c(0.2, 0.07),
+  curve = c("σ = 1", "σ = 2.5")
+)
+mv_marks$panel <- factor(mv_marks$panel, levels = levels(mv$panel))
+mv_sd$panel <- factor(mv_sd$panel, levels = levels(mv$panel))
+p_mean_var <- ggplot(mv, aes(y, d, colour = curve)) +
+  geom_line(linewidth = 1.2) +
+  geom_vline(data = mv_marks, aes(xintercept = x), linetype = "dashed",
+             colour = col_ink, linewidth = 0.5) +
+  geom_segment(data = mv_sd, aes(x = x, xend = xend, y = y, yend = y),
+               arrow = grid::arrow(length = grid::unit(0.15, "cm")),
+               linewidth = 0.9, inherit.aes = FALSE,
+               colour = c(col_a, col_b)) +
+  geom_text(data = mv_labels, aes(x, y, label = curve), size = 5.5) +
+  facet_wrap(~panel) +
+  scale_colour_manual(values = c(`μ = 0` = col_a, `μ = 3` = col_b,
+                                 `σ = 1` = col_a, `σ = 2.5` = col_b),
+                      guide = "none") +
+  labs(x = "Y", y = "Density",
+       subtitle = "Gaussian densities. Dashed line: μ. Arrow: one σ.") +
+  theme_slide()
+save_fig(p_mean_var, "opening-mean-variance.png", width = 10, height = 4.2)
+
+# A skewed response: the mean is the balance point, not the middle value.
+set.seed(seed)
+skew <- data.frame(Y = rgamma(300, shape = 2, rate = 0.5))
+skew_grid <- data.frame(Y = seq(0, 20, length.out = 400))
+skew_grid$d <- dgamma(skew_grid$Y, shape = 2, rate = 0.5)
+skew_lines <- data.frame(
+  what = c("Mean E(Y) = 4", sprintf("Median = %.1f", qgamma(0.5, 2, 0.5))),
+  x = c(4, qgamma(0.5, 2, 0.5))
+)
+p_skew <- ggplot(skew, aes(Y)) +
+  geom_histogram(aes(y = after_stat(density)), bins = 30,
+                 fill = "#d9d3c7", colour = "white", linewidth = 0.2) +
+  geom_line(data = skew_grid, aes(Y, d), colour = col_c, linewidth = 1.1) +
+  geom_vline(data = skew_lines, aes(xintercept = x, colour = what),
+             linewidth = 1, linetype = "dashed") +
+  scale_colour_manual(values = c(col_b, col_a)) +
+  labs(x = "Y", y = "Density", colour = NULL,
+       subtitle = sprintf(
+         "Gamma draw, n = 300, seed 20261005. Sample mean %.2f.",
+         mean(skew$Y)
+       )) +
+  theme_slide()
+save_fig(p_skew, "opening-skew-mean.png", width = 9, height = 4.2)
+
+# Bias and variance: two ways to estimate the same mean, 2,000 repeats.
+set.seed(seed)
+reps <- replicate(2000, {
+  s <- rnorm(10, mean = 5, sd = 3)
+  c(mean(s), 0.6 * mean(s) + 1)
+})
+est <- data.frame(
+  estimator = rep(c("Sample mean: centred, wide",
+                    "Shrunk mean: narrow, off target"), each = 2000),
+  value = c(reps[1, ], reps[2, ])
+)
+p_bias_var <- ggplot(est, aes(value, fill = estimator)) +
+  geom_density(alpha = 0.45, colour = NA) +
+  geom_vline(xintercept = 5, linetype = "dashed", colour = col_ink) +
+  annotate("text", x = 5.1, y = 0, label = "true μ = 5", hjust = 0,
+           vjust = -0.5, size = 5, colour = col_ink) +
+  scale_fill_manual(values = c(col_a, col_b)) +
+  labs(x = "Estimate of μ", y = "Density", fill = NULL,
+       subtitle = "2,000 samples of n = 10. Seed 20261005.") +
+  theme_slide()
+save_fig(p_bias_var, "opening-bias-variance.png", width = 9, height = 4.2)
+
+# The conditional mean as a line: a distribution of Y at every x.
+set.seed(seed)
+cm <- data.frame(x = runif(150, 0, 10))
+cm$Y <- 2 + 0.8 * cm$x + rnorm(150, sd = 1.3)
+slices <- do.call(rbind, lapply(c(2, 5, 8), function(x0) {
+  yy <- seq(-3.5, 3.5, length.out = 100)
+  data.frame(x0 = x0, Y = 2 + 0.8 * x0 + yy,
+             x = x0 + 1.6 * dnorm(yy, sd = 1.3) / dnorm(0, sd = 1.3))
+}))
+p_cond_line <- ggplot(cm, aes(x, Y)) +
+  geom_point(colour = "#9aa39d", size = 1.6) +
+  geom_abline(intercept = 2, slope = 0.8, colour = col_b, linewidth = 1.2) +
+  geom_vline(xintercept = c(2, 5, 8), colour = "#e6e1d8") +
+  geom_path(data = slices, aes(x, Y, group = x0), colour = col_a,
+            linewidth = 1.1) +
+  annotate("text", x = 0.2, y = 11,
+           label = "mu(x) == beta[0] + beta[1] * x", parse = TRUE,
+           colour = col_b, size = 6, hjust = 0) +
+  labs(x = "x", y = "Y",
+       subtitle = "Simulated, seed 20261005. Blue: the distribution of Y at one x.") +
+  theme_slide()
+save_fig(p_cond_line, "opening-conditional-line.png", width = 9, height = 4.4)
+
+# The link: a straight line on the scale of eta, a curve that stays in range.
+x_link <- seq(-4, 4, length.out = 300)
+links <- rbind(
+  data.frame(panel = "Count: log link, μ = exp(η)", x = x_link,
+             value = exp(0.4 + 0.45 * x_link), what = "μ with the link"),
+  data.frame(panel = "Count: log link, μ = exp(η)", x = x_link,
+             value = 1.5 + 0.9 * x_link, what = "straight line, no link"),
+  data.frame(panel = "Binary: logit link, π = 1/(1 + exp(−η))", x = x_link,
+             value = plogis(1.1 * x_link), what = "μ with the link"),
+  data.frame(panel = "Binary: logit link, π = 1/(1 + exp(−η))", x = x_link,
+             value = 0.5 + 0.17 * x_link, what = "straight line, no link")
+)
+links$panel <- factor(links$panel, levels = unique(links$panel))
+bounds <- data.frame(
+  panel = c("Count: log link, μ = exp(η)",
+            "Binary: logit link, π = 1/(1 + exp(−η))",
+            "Binary: logit link, π = 1/(1 + exp(−η))"),
+  y = c(0, 0, 1)
+)
+p_links <- ggplot(links, aes(x, value, colour = what, linetype = what)) +
+  geom_hline(data = bounds, aes(yintercept = y), colour = col_ink,
+             linewidth = 0.5) +
+  geom_line(linewidth = 1.2) +
+  facet_wrap(~panel, scales = "free_y") +
+  scale_colour_manual(values = c(`μ with the link` = col_a,
+                                 `straight line, no link` = "#9a3412")) +
+  scale_linetype_manual(values = c(`μ with the link` = "solid",
+                                   `straight line, no link` = "dashed")) +
+  labs(x = "x", y = "Mean of Y", colour = NULL, linetype = NULL,
+       subtitle = "The dashed line leaves the allowed range. The link keeps μ inside it.") +
+  theme_slide()
+save_fig(p_links, "opening-link-functions.png", width = 10, height = 4.2)
+
+# Likelihood: the same Poisson mean, two sample sizes.
+set.seed(seed)
+y10 <- rpois(10, 4)
+y100 <- rpois(100, 4)
+theta <- seq(2, 7, length.out = 400)
+rel_ll <- function(y) {
+  ll <- sapply(theta, function(t) sum(dpois(y, t, log = TRUE)))
+  ll - max(ll)
+}
+lik <- rbind(
+  data.frame(sample = "n = 10", theta = theta, ll = rel_ll(y10)),
+  data.frame(sample = "n = 100", theta = theta, ll = rel_ll(y100))
+)
+mle <- data.frame(sample = c("n = 10", "n = 100"),
+                  theta = c(mean(y10), mean(y100)))
+p_lik <- ggplot(lik, aes(theta, ll, colour = sample)) +
+  geom_hline(yintercept = -1.92, linetype = "dotted", colour = col_ink) +
+  geom_line(linewidth = 1.2) +
+  geom_point(data = mle, aes(theta, 0), size = 3) +
+  annotate("text", x = 2.05, y = -1.92, label = "95% interval cut",
+           vjust = -0.5, hjust = 0, size = 4.5, colour = col_ink) +
+  coord_cartesian(ylim = c(-8, 0.3)) +
+  scale_colour_manual(values = c(col_b, col_a)) +
+  labs(x = "θ, the Poisson mean", y = "ℓ(θ) − ℓ(θ̂)", colour = NULL,
+       subtitle = "Poisson draws, true θ = 4, seed 20261005. Dot: the maximum.") +
+  theme_slide()
+save_fig(p_lik, "opening-likelihood.png", width = 9, height = 4.2)
+
+# Central limit theorem: means of a skewed variable become Gaussian.
+set.seed(seed)
+clt <- do.call(rbind, lapply(c(1, 5, 30), function(n_i) {
+  data.frame(n = sprintf("n = %d", n_i),
+             mean = replicate(3000, mean(rexp(n_i, rate = 1))))
+}))
+clt$n <- factor(clt$n, levels = c("n = 1", "n = 5", "n = 30"))
+clt_curve <- do.call(rbind, lapply(c(1, 5, 30), function(n_i) {
+  g <- seq(0, 4, length.out = 300)
+  data.frame(n = sprintf("n = %d", n_i), mean = g,
+             d = dnorm(g, 1, 1 / sqrt(n_i)))
+}))
+clt_curve$n <- factor(clt_curve$n, levels = levels(clt$n))
+p_clt <- ggplot(clt, aes(mean)) +
+  geom_histogram(aes(y = after_stat(density)), bins = 40,
+                 fill = "#d9d3c7", colour = "white", linewidth = 0.2) +
+  geom_line(data = clt_curve, aes(mean, d), colour = col_a,
+            linewidth = 1.1) +
+  facet_wrap(~n, scales = "free_y") +
+  coord_cartesian(xlim = c(0, 4)) +
+  labs(x = expression(bar(Y)), y = "Density",
+       subtitle = "3,000 means of exponential draws, seed 20261005. Blue: N(1, 1/n).") +
+  theme_slide()
+save_fig(p_clt, "opening-clt.png", width = 10, height = 4)
+
+# Pearson correlation is the cosine of the angle between centred vectors.
+set.seed(seed)
+cors <- do.call(rbind, lapply(c(-0.8, 0, 0.5, 0.9), function(rho) {
+  z <- MASS::mvrnorm(60, c(0, 0), matrix(c(1, rho, rho, 1), 2))
+  r <- cor(z[, 1], z[, 2])
+  data.frame(
+    panel = sprintf("r = %.2f, θ = %.0f°", r, acos(r) * 180 / pi),
+    rho = rho, x = z[, 1], Y = z[, 2]
+  )
+}))
+cors$panel <- factor(cors$panel, levels = unique(cors$panel))
+p_cor <- ggplot(cors, aes(x, Y)) +
+  geom_point(colour = col_a, size = 1.6, alpha = 0.8) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE,
+              colour = col_b, linewidth = 0.9) +
+  facet_wrap(~panel, nrow = 1) +
+  labs(x = "x", y = "Y",
+       subtitle = "Simulated pairs, n = 60, seed 20261005.") +
+  theme_slide() +
+  theme(axis.text = element_blank())
+save_fig(p_cor, "opening-correlation.png", width = 11, height = 3.6)
+
 message("Wrote figures to ", out_dir)

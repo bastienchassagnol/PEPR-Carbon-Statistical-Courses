@@ -226,3 +226,12 @@ $presentation-h3-font-size: 1.02em;
   max-height: 180px !important;
   border-radius: 6px;
 }
+
+// Opening notation slides: one display equation, one R figure, one sentence.
+.reveal .slides section.eq-fig img {
+  max-height: 245px !important;
+}
+
+.reveal .slides section.eq-fig .math.display {
+  font-size: 0.9em;
+}

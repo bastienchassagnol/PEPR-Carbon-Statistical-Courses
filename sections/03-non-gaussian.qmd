@@ -498,7 +498,7 @@ $$
 f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
 $$ {#eq-jensen}
 
-The two sides meet when $f$ is linear. A confidence interval, a moment, or a test computed on $f(Y)$ is not the same object on the original scale after $f^{-1}$. The log case is the [estimand slide](#sec-log-estimand). @eq-jensen is why. 🔗 [@eulerism_](https://www.instagram.com/p/DeMUUNSiNKu/), [carousel PDF](references/eulerism-cauchy-schwarz-and-jensen-instagram.pdf) (Jensen, slides 8–14).
+The two sides meet when $f$ is linear. A confidence interval, a moment, or a test computed on $f(Y)$ is not the same object on the original scale after $f^{-1}$. The log case is the [estimand slide](#sec-log-estimand). @eq-jensen is why. 🔗 [eulerism_](https://www.instagram.com/p/DeMUUNSiNKu/), [carousel PDF](references/eulerism-cauchy-schwarz-and-jensen-instagram.pdf) (Jensen, slides 8–14).
 
 ::: {.notes}
 Read @eq-jensen once. The next slide draws the gap. A common misread is to invert a CI on $f(Y)$ and call it a CI for $\mathbb{E}(Y)$.
@@ -946,7 +946,7 @@ $$
 Y_i = \beta_0 + \beta_1 x_{i1} + \cdots + \beta_{p-1} x_{i,p-1} + \varepsilon_i.
 $$
 
-Stacked, that is $\mathbf{Y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\varepsilon}$. The first column of $\mathbf{X}$ is 1 when the model has an intercept. Least squares chooses $\boldsymbol{\beta}$ to minimise the sum of squared vertical residuals. The fitted values are $\hat{\mathbf{Y}} = \mathbf{H}\mathbf{Y}$, and $\mathbf{H}$ is the [hat matrix](#sec-hat).
+Stacked, that is $\mathbf{Y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\varepsilon}$. The first column of $\mathbf{X}$ is 1 when the model has an intercept. Least squares chooses $\boldsymbol{\beta}$ to minimise the sum of squared vertical residuals. The fitted values are $\hat{\mathbf{Y}} = \mathbf{H}\mathbf{Y}$, and $\mathbf{H}$ is the hat matrix.
 
 ![](figures/generated/sketch-nongauss-a-matrix.png){.sketch-sm fig-alt="Block picture of Y equals X beta plus epsilon: a green column Y, a grey matrix X whose first column of ones is yellow, a red column beta, and a grey column epsilon, with one blue row i across Y and X." fig-align="center"}
 

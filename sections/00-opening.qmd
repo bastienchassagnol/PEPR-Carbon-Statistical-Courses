@@ -158,7 +158,297 @@ Not a catalogue of tests. A sequence you can reuse:
 This is the pedagogical aim from the course plan. About one minute.
 :::
 
-## Linear algebra, before the statistics {#sec-algebra}
+## $Y$ is the response, $x$ is the covariate {#sec-yx}
+
+![One observational row: a covariate cell marked x beside a response cell marked Y.](figures/generated/notation-yx.jpg){fig-alt="Two boxes on one row. The left box is the covariate x. The right box is the response Y." width="70%"}
+
+One row of the table holds both. $Y$ is the [response]{.mark}: what we measure and want to describe. $x$ is the [covariate]{.mark}: what we compare or condition on.
+
+::: {.notes}
+Every later symbol is built from these two. Ask which column in their own table is $Y$. The answer should be the measurement, not the treatment or the depth. About one minute.
+:::
+
+## A distribution says how often each value occurs {.eq-fig #sec-distribution}
+
+$$
+\Pr(a \le Y \le b) = \int_a^b f(y)\,dy
+$$
+
+![Four panels of a standard normal. Top left, the density. Top right, the same density with the left tail shaded up to the 0.05 quantile. Bottom left, the cumulative distribution, with the 0.05 quantile marked. Bottom right, a histogram of 400 draws with the density overlaid.](figures/generated/normal-four-functions.png){fig-alt="A two-by-two figure for a standard normal. The density is a blue bell curve. The quantile panel shades the left tail, whose area is 0.05, up to about minus 1.64. The cumulative distribution rises from 0 to 1 and passes through that same point at height 0.05. The sample panel is a histogram of 400 draws with the density overlaid." width="62%"}
+
+$Y$ is [random]{.mark}: a new core gives a new value. The [density]{.mark} $f$ says which values are likely. R names its four tools `d`, `q`, `p`, and `r`.
+
+::: {.notes}
+Read the panels left to right, then down. `dnorm` is the height of the curve. The shaded tail is `qnorm(0.05)`, about $-1.64$, and its area is 0.05; `pnorm` adds that area from the left. `rnorm` draws 400 values, seed 20261005, so the histogram wobbles around the curve. A count has a probability for each integer instead of a density; the same four tools exist (`dpois`, `ppois`, ...).
+
+**Going further.** Kolmogorov's axioms define $\Pr$ as a non-negative, countably additive measure with total mass one. The density is the derivative of $\Pr$ with respect to a reference measure: Lebesgue measure for a continuous $Y$, counting measure for a count. That is why a Poisson probability mass function and a Gaussian density sit in the same likelihood machinery. The four functions are linked by inversion: $F(q_\alpha) = \alpha$, and a draw is $F^{-1}(U)$ for $U$ uniform on $(0, 1)$.
+:::
+
+## Mean and variance: the centre and the spread {.eq-fig #sec-mean-variance}
+
+$$
+\mu = \mathbb{E}(Y), \qquad \sigma^2 = \mathrm{Var}(Y) = \mathbb{E}\{(Y - \mu)^2\}
+$$
+
+![Left: two Gaussian curves with the same spread and centres 0 and 3. Right: two Gaussian curves with the same centre 1 and spreads 1 and 2.5.](figures/generated/opening-mean-variance.png){fig-alt="Two panels of Gaussian densities. Left, same sigma equal to 1: a blue curve centred at 0 and an orange curve centred at 3, with dashed lines at each mean. Right, same mu equal to 1: a tall blue curve with sigma 1 and a flat orange curve with sigma 2.5, with arrows showing one standard deviation." width="92%"}
+
+The [mean]{.mark} $\mu$ moves the curve. The [standard deviation]{.mark} $\sigma$ widens it. The two numbers are separate.
+
+::: {.notes}
+Point at the left panel: same shape, shifted. Then the right panel: same centre, flatter. Ask which of the two a treatment usually targets. The answer is $\mu$; a change in $\sigma$ is a different question. Illustrative density functions, no data.
+
+**Going further.** For a Gaussian, $\mu$ and $\sigma^2$ are free of each other, which is why a linear model can describe the mean and treat the variance as one nuisance number. For a Poisson count $\mathrm{Var}(Y) = \mu$, and for a binary response $\mathrm{Var}(Y) = \pi(1 - \pi)$: the spread is tied to the centre. That tie is the variance function $V(\mu)$ of a GLM, and it is why the non-Gaussian block starts from the family rather than the transformation.
+:::
+
+## The average estimates the mean {.eq-fig #sec-average}
+
+$$
+\bar Y = \frac{1}{n}\sum_{i=1}^{n} Y_i \quad \text{estimates} \quad \mu = \mathbb{E}(Y)
+$$
+
+![A right-skewed histogram of 300 gamma draws with the density curve, a dashed line at the mean 4 and another at the median 3.4.](figures/generated/opening-skew-mean.png){fig-alt="Histogram of 300 skewed values with a green density curve. An orange dashed line marks the mean at 4 and a blue dashed line marks the median at 3.4, to its left." width="80%"}
+
+$i$ numbers the rows, from 1 to $n$. The [average]{.mark} $\bar Y$ is computed from the sample; the [expectation]{.mark} $\mu$ belongs to the distribution. On a skewed $Y$, the mean sits to the right of the median.
+
+::: {.notes}
+Two words for two objects: the average is a number from your rows, the expectation is a property of the distribution that produced them. Here the sample average is 4.01 and $\mu = 4$. The long right tail pulls the mean above the median, which is why a skewed carbon stock is often summarised by its median too. Gamma draw, $n = 300$, seed 20261005.
+
+**Going further.** $\bar Y$ is the plug-in estimator: replace the distribution by the empirical distribution of the rows and take its mean. It is unbiased, and by the law of large numbers it converges to $\mu$ whenever $\mathbb{E}|Y| < \infty$. Changing the loss changes the target: squared error gives the mean, absolute error the median, and the check loss a quantile. Rice covers plug-in estimation [@riceMathematicalStatisticsData].
+:::
+
+## Two spreads, not one {#sec-sd-se}
+
+:::: {.columns}
+::: {.column width="50%"}
+**Empirical**
+
+$$
+s = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n}(Y_i - \bar Y)^2}
+$$
+
+$s$ is the spread of the observations around $\bar Y$. The empirical [standard error of the mean]{.mark} replaces the unknown scale with that $s$:
+
+$$
+\frac{s}{\sqrt{n}}
+$$
+:::
+
+::: {.column width="50%"}
+**Theoretical**
+
+The target here is $\mu$. The [sampling variance]{.mark} is $\sigma^2/n$, so
+
+$$
+\mathrm{SE}(\bar Y) = \frac{\sigma}{\sqrt{n}}.
+$$
+
+In the draw on the next slide, $\sigma = 15$ and $n = 50$, so $15/\sqrt{50} = 2.12$. The standard deviation of the 1,000 means is 2.11.
+:::
+::::
+
+::: {.notes}
+Read both formulas once. The common mistake is reporting $s$ where the reader expects an uncertainty for $\bar Y$. Ask the room which number would go in an error bar for the mean.
+
+**Going further.** $\mathrm{Var}(\bar Y) = \sigma^2/n$ needs the $Y_i$ to be uncorrelated with a common variance; with clustered rows it is multiplied by the design effect. $s^2$ is unbiased for $\sigma^2$, but $s$ is slightly biased for $\sigma$ (Jensen's inequality). Under normality $(\bar Y - \mu)/(s/\sqrt{n})$ follows a $t_{n-1}$ distribution exactly; otherwise the central limit theorem makes it approximately standard normal for large $n$, at a rate that worsens with skewness. See Hogg, McKean and Craig [@hoggIntroductionMathematicalStatistics2019].
+:::
+
+## One sample, then a thousand means {visibility="hidden"}
+
+The draw is [M. Fatih Tüzen's](https://www.r-bloggers.com/2025/07/standard-deviation-vs-standard-error-meaning-misuse-and-the-math-behind-the-confusion/): $Y \sim N(100, 15)$, $n = 50$, then 1,000 independent means. Seed 42 is his. It is not the workshop seed, and it is not a carbon series.
+
+```{r}
+#| echo: true
+#| eval: false
+set.seed(42)
+sd_sample <- rnorm(50, mean = 100, sd = 15)
+sd_means <- replicate(1000, mean(rnorm(50, mean = 100, sd = 15)))
+```
+
+::: {.notes}
+Credit Tüzen for the seed and the blog post. Say explicitly that this draw is illustrative, not workshop data. You do not need to run the chunk live.
+:::
+
+## The mean moves less than the observations do
+
+![Two histograms from an illustrative normal draw. Left: one sample of 50 observations. Right: 1,000 sample means.](figures/generated/sd-versus-se.png){fig-alt="Left histogram: fifty observations spread widely around 100. Right histogram: one thousand sample means packed tightly around 100." width="92%"}
+
+The left-hand spread is $s$. The right-hand spread is the standard error. The draw is [M. Fatih Tüzen's](https://www.r-bloggers.com/2025/07/standard-deviation-vs-standard-error-meaning-misuse-and-the-math-behind-the-confusion/), seed 42, not a carbon series.
+
+::: {.notes}
+Point at the two histograms, not the code. The right panel should look visibly narrower; that is the whole lesson. Forty-five seconds.
+:::
+
+## Precise is not the same as right {.eq-fig #sec-math-variance}
+
+$$
+\underbrace{\mathbb{E}\{(\hat\mu - \mu)^2\}}_{\text{error}} = \underbrace{\mathrm{Var}(\hat\mu)}_{\text{spread}} + \underbrace{\{\mathbb{E}(\hat\mu) - \mu\}^2}_{\text{bias}^2}
+$$
+
+![Two sampling distributions of estimates of a mean of 5. The blue one is centred on 5 and wide. The orange one is narrow and centred near 4.](figures/generated/opening-bias-variance.png){fig-alt="Density curves of 2,000 estimates each. The blue sample mean is centred on the dashed line at the true value 5 and is wide. The orange shrunk mean is tall and narrow but centred near 4, to the left of the true value." width="80%"}
+
+A hat marks an estimate: $\hat\mu$ is computed from the rows, $\mu$ is the target. A small [variance]{.mark} means repeat samples agree. It does not mean they agree with the truth: that is [bias]{.mark}.
+
+::: {.notes}
+Repeat the experiment 2,000 times, $n = 10$ each, seed 20261005. The orange estimator is precise and wrong; the blue one is right on average and noisy. The standard error measures only the width. A large sample, a narrow interval, and a biased design can all go together.
+
+**Going further.** The decomposition is the mean squared error identity. Among unbiased estimators, the Cramér–Rao bound $\mathrm{Var}(\hat\theta) \ge 1/I(\theta)$ holds under regularity conditions: the support does not depend on $\theta$ and differentiation passes under the integral. Shrinkage, penalised smoothing, and priors deliberately trade a little bias for a larger cut in variance, as the orange curve does. Hogg, McKean and Craig state the bound [@hoggIntroductionMathematicalStatistics2019].
+:::
+
+## $\mu$ is the conditional mean {.smaller #sec-cond-mean}
+
+![Illustrative adult heights. Grey bars pool both sexes and show two modes. A blue curve is the Gaussian for sex F and an orange curve is the Gaussian for sex H, each at half weight, with dashed lines at the two conditional means.](figures/generated/height-by-sex.png){fig-alt="Histogram of illustrative adult heights in centimetres. The pooled bars have two modes. A blue Gaussian curve for sex F is centred at 163 centimetres and an orange Gaussian curve for sex H is centred at 177 centimetres. Dashed lines mark those two conditional means." width="82%"}
+
+::: model
+$\mu = \mathbb{E}(Y \mid x)$
+:::
+
+Read $\mid$ as "given". Sex is $x$, height is $Y$. Pooled, the histogram has [two modes]{.mark}. Given sex, each curve is a Gaussian, and the [conditional mean]{.mark} $\mu$ is its centre. Illustrative draw, seed 20261005: 163 cm for F, 177 cm for H.
+
+::: {.notes}
+Point at the grey bars first: one sample, two humps, not one Gaussian. Then one colour: given sex, the curve is Gaussian and the dashed line is its mean. The curves are drawn at half weight so that they add up to the pooled histogram. These centimetres are a teaching draw, not a census.
+
+**Going further.** $\mu(\mathbf{x}) = \mathbb{E}(Y \mid \mathbf{x})$ is the function $m$ that minimises the expected squared error $\mathbb{E}\{(Y - m(\mathbf{x}))^2\}$; geometrically it is the $L^2$ projection of $Y$ onto functions of $\mathbf{x}$. Change the loss and the target changes: absolute error gives the conditional median, the check loss a conditional quantile. That is why "regression" without a named target is ambiguous for a skewed response. A standard treatment is in Rice, *Mathematical Statistics and Data Analysis* [@riceMathematicalStatisticsData].
+:::
+
+## A mean that changes with $x$ {.eq-fig #sec-cond-line}
+
+$$
+\mu(x) = \mathbb{E}(Y \mid x) = \beta_0 + \beta_1 x
+$$
+
+![Scatter of simulated points around a rising orange line, with three blue bell curves drawn sideways at x equal to 2, 5, and 8.](figures/generated/opening-conditional-line.png){fig-alt="Grey points scattered around a rising orange line labelled mu of x equals beta zero plus beta one x. At x equal to 2, 5 and 8, a blue Gaussian curve is drawn sideways, centred on the line." width="78%"}
+
+$\beta_0$ is the [intercept]{.mark}; $\beta_1$ is the change in $\mu$ per unit of $x$. We call $\eta = \beta_0 + \beta_1 x$ the [linear predictor]{.mark}. The model describes a whole distribution of $Y$ at each $x$, not only a line.
+
+::: {.notes}
+The sideways curves are the point: at each $x$ the model says how $Y$ scatters, and the line joins their centres. Simulated, seed 20261005. With several covariates the same sentence holds for the row $\mathbf{x}$: $\eta = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots$.
+
+**Going further.** A parametric model is a family $\{P_\theta\}$ of conditional distributions of $Y$ given $\mathbf{x}$. When the truth is not in the family, the maximum-likelihood estimate still converges, to the $\theta^*$ closest to the truth in Kullback–Leibler divergence (White, 📄 *Maximum likelihood estimation of misspecified models*, Econometrica, 1982). The fitted line is then the best approximation in that family, and its standard errors need the sandwich form.
+:::
+
+## The link $g$ keeps $\mu$ in range {.eq-fig #sec-link-intro}
+
+$$
+g(\mu) = \eta = \beta_0 + \beta_1 x
+$$
+
+![Two panels. A logit curve stays between 0 and 1 while a straight dashed line crosses both bounds. A log-link curve stays above 0 while a straight dashed line goes negative.](figures/generated/opening-link-functions.png){fig-alt="Left, binary response: a blue S-shaped curve stays between horizontal lines at 0 and 1, and a red dashed straight line goes below 0 and above 1. Right, count response: a blue exponential curve stays above 0, and a red dashed straight line goes below 0." width="88%"}
+
+A count mean cannot be negative; a probability stays between 0 and 1. The [link]{.mark} $g$ lets $\eta$ be a straight line while $\mu$ stays possible. When $Y$ is 0 or 1, $\mu = \pi = \Pr(Y = 1 \mid x)$.
+
+::: {.notes}
+Read the dashed lines first: a straight line on the scale of $\mu$ predicts negative counts and probabilities above 1. The link bends the line into the allowed range. The log link gives $\mu = \exp(\eta)$; the logit gives $\pi = 1/\{1 + \exp(-\eta)\}$. $g$ acts on $\mu$, never on $Y$: this is not a transformation of the data.
+
+**Going further.** A GLM has three parts: a family from the exponential dispersion class, the linear predictor $\eta = \mathbf{x}^{\top}\boldsymbol\beta$, and a monotone, differentiable link $g$ with $g(\mu) = \eta$. The canonical link makes $\eta$ equal to the natural parameter: log for the Poisson, logit for the Bernoulli, identity for the Gaussian. It gives $\mathbf{X}^{\top}\mathbf{y}$ as sufficient statistic and makes observed and expected information coincide. Agresti covers the construction [@agrestiFoundationsLinearGeneralized2015].
+:::
+
+## Notation, all together {.smaller #sec-notation}
+
+| Symbol | Meaning |
+| --- | --- |
+| $Y$ | Response on one row |
+| $x$, $\mathbf{x}$ | A covariate, or the row of covariates |
+| $\mu = \mathbb{E}(Y \mid \mathbf{x})$ | Conditional mean, the usual target |
+| $\pi$ | $\mu$ when $Y$ is 0 or 1 |
+| $\eta = \beta_0 + \beta_1 x$ | Linear predictor |
+| $g(\mu) = \eta$ | Link |
+| $\hat\mu$, $\hat\beta$ | Estimates from the rows |
+| $i$ | Row index (a core, a date, a collar) |
+| $j$ | Group index: the unit that received the treatment (a site, an enclosure, a batch) |
+
+::: {.notes}
+Everything here except $j$ has already appeared. $j$ is new: rows that share a site or an enclosure are not independent, and the design block counts $j$, not $i$. Later slides reuse these letters and do not switch.
+:::
+
+## What is an estimand? :black_joker:
+
+Press `f` to turn the card.
+
+::: {.flashcard-front}
+In one sentence: what is an estimand?
+:::
+
+::: {.flashcard-back}
+The quantity the analysis is trying to learn: $\mu$, the unit it belongs to, and the contrast.
+:::
+
+::: {.notes}
+`f` flips. Later, `q` resets a quiz question and `x` checks it. Do not use `q` here. The notation table has just named $\mu$ and $j$; this card asks them to say both.
+:::
+
+## Likelihood: which value fits the rows best? {.eq-fig #sec-likelihood}
+
+$$
+\ell(\theta) = \sum_{i=1}^{n} \log f(Y_i; \theta), \qquad \hat\theta = \arg\max_{\theta} \ell(\theta)
+$$
+
+![Two log-likelihood curves for a Poisson mean. The curve for n equal to 100 is much narrower than the curve for n equal to 10. Both peak near 4.](figures/generated/opening-likelihood.png){fig-alt="Relative log-likelihood against theta. An orange curve for n equal to 10 is wide and peaks at about 4.3. A blue curve for n equal to 100 is narrow and peaks at about 4.2. A dotted horizontal line marks the 95 percent interval cut." width="78%"}
+
+$\theta$ is any unknown number in the model, such as $\mu$. The [likelihood]{.mark} scores each value of $\theta$ by how probable it makes the observed rows. More rows give a sharper peak, so a narrower interval.
+
+::: {.notes}
+Point at the dots: the best value. Then the width where each curve crosses the dotted line: that is a 95% likelihood interval, wide for 10 rows and narrow for 100. Poisson draws with true mean 4, seed 20261005. Every GLM in the afternoon is fitted this way.
+
+**Going further.** Under regularity conditions (identifiable model, support free of $\theta$, true value inside the parameter space), the maximum-likelihood estimator is consistent, asymptotically normal with variance $I(\theta)^{-1}/n$, and invariant: the estimate of $h(\theta)$ is $h(\hat\theta)$. The dotted line is $-\chi^2_{1, 0.95}/2 \approx -1.92$, from Wilks' theorem. The conditions fail at a boundary, for instance testing $\sigma_u^2 = 0$ in a mixed model, where the likelihood-ratio statistic is a 50:50 mixture of $\chi^2_0$ and $\chi^2_1$. AIC, $-2\ell(\hat\theta) + 2p$, estimates prediction loss; BIC, with $p \log n$, approximates a log marginal likelihood.
+:::
+
+## Large samples make the average Gaussian {.eq-fig #sec-asymptotics}
+
+$$
+\bar Y \approx \mathcal{N}\!\left(\mu, \frac{\sigma^2}{n}\right) \quad \text{for large } n
+$$
+
+![Three histograms of 3,000 sample means of skewed exponential draws, for n equal to 1, 5, and 30, with the Gaussian approximation overlaid.](figures/generated/opening-clt.png){fig-alt="Three panels. For n equal to 1 the histogram is strongly skewed and the blue Gaussian curve fits badly. For n equal to 5 it is closer. For n equal to 30 the histogram is narrow, symmetric, and matches the blue curve." width="88%"}
+
+Even when $Y$ is skewed, the [central limit theorem]{.mark} makes $\bar Y$ close to Gaussian as $n$ grows. A large $n$ shrinks the spread. It does not remove a bias or a wrong model: that is the [large-sample fallacy](#sec-large-n).
+
+::: {.notes}
+Left to right: one skewed draw, then means of 5, then means of 30. The blue curve is $\mathcal{N}(1, 1/n)$. This is why intervals for a mean work without a Gaussian $Y$, and why they fail when the rows are not independent. Exponential draws, seed 20261005.
+
+**Going further.** The Lindeberg–Lévy central limit theorem needs independent, identically distributed rows with finite variance; Lindeberg–Feller relaxes identical distribution. Under misspecification the maximum-likelihood estimator converges to the pseudo-true $\theta^*$, with $\sqrt{n}(\hat\theta - \theta^*) \Rightarrow \mathcal{N}(0, A^{-1} B A^{-1})$, where $A$ is the expected Hessian and $B$ the variance of the score: the sandwich of Huber (1967) and White (1982). The gap $\theta^* - \theta_0$ does not shrink with $n$. With clustered data the relevant $n$ is the number of clusters $j$, not rows.
+:::
+
+## Correlation is a cosine {.eq-fig #sec-correlation}
+
+$$
+r = \frac{\sum_{i}(x_i - \bar x)(Y_i - \bar Y)}{\sqrt{\sum_{i}(x_i - \bar x)^2}\,\sqrt{\sum_{i}(Y_i - \bar Y)^2}} = \cos\theta
+$$
+
+![Four scatter plots with Pearson correlations of about minus 0.75, 0, 0.54, and 0.93, each with a fitted line and the matching angle.](figures/generated/opening-correlation.png){fig-alt="Four scatter plots of 60 simulated pairs. From left to right: a falling cloud with r equal to minus 0.75 and angle 139 degrees; a round cloud with r near 0 and angle 88 degrees; a rising cloud with r 0.54 and angle 57 degrees; a tight rising cloud with r 0.93 and angle 22 degrees." width="84%"}
+
+The [Pearson correlation]{.mark} $r$ is the cosine of the angle $\theta$ between centred $x$ and $Y$: 0° gives $r = 1$, 90° gives $r = 0$. It measures a straight-line association only.
+
+::: {.notes}
+This is the one piece of linear algebra the afternoon needs. Read the titles: angle and correlation move together. A curved relation can have $r$ near 0, so plot before you quote $r$. Simulated pairs, seed 20261005.
+
+**Going further.** With centred vectors $\tilde{\mathbf{x}}$ and $\tilde{\mathbf{y}}$, $r = \tilde{\mathbf{x}}^{\top}\tilde{\mathbf{y}} / (\|\tilde{\mathbf{x}}\|\,\|\tilde{\mathbf{y}}\|)$, which is the cosine of their angle in $\mathbb{R}^n$. The least-squares slope is $\hat\beta_1 = r\, s_Y / s_x$, and in simple regression $R^2 = r^2$. Under bivariate normality, Fisher's $z = \operatorname{artanh}(r)$ is approximately normal with variance $1/(n - 3)$, which gives an interval for the population correlation. For ranks, the same cosine on ranked data is Spearman's $\rho$.
+:::
+
+## Multivariable is not multivariate {#sec-multivariable}
+
+![Diagram contrasting multivariable regression, one outcome with several predictors, and multivariate analysis, several outcomes modelled jointly.](figures/sources/multivariable-versus-multivariate.jpeg){fig-alt="Two panels. Left: age, sex, BMI, and smoking point to one outcome. Right: the same predictors point to three outcomes that are correlated." width="78%"}
+
+::: {.notes}
+One $Y$ versus several correlated outcomes: let the diagram do the work. Ask who has seen “multivariate logistic” in a paper title when the authors meant several predictors.
+:::
+
+## Say the precise word {#sec-words}
+
+| Prefer | Avoid, unless you mean it |
+| --- | --- |
+| Median and quartiles, when $Y$ is skewed | Mean and SD as the only summary |
+| [Multivariable]{.mark}: several covariates | [Multivariate]{.mark}: several responses |
+| [Association]{.mark}, for an observational coefficient | [Effect]{.mark}, when nobody assigned $x$ |
+| The estimate and the interval | "Significant" as the whole result |
+| [Quantile]{.mark}: the cut point | Quantile: the group the cut creates |
+
+The multivariable row is the figure already on [multivariable is not multivariate](#sec-multivariable).
+
+::: {.notes}
+Do not redraw the multivariable figure. Read the association row. Ask for one sentence from the room that uses effect when nobody assigned $x$.
+:::
+
+## Linear algebra, before the statistics {#sec-algebra visibility="hidden"}
 
 ```{r}
 #| echo: false
@@ -202,103 +492,7 @@ A scalar stays in italics. A vector is not a matrix with one row unless we say s
 Thirty seconds. The grouped rows are the only new layout; do not re-teach matrix algebra. If the table feels small, tell people speaker view zooms.
 :::
 
-## Statistics and probability notation {.smaller #sec-notation}
-
-| Symbol | Meaning |
-| --- | --- |
-| $Y$ | Response on one observational row |
-| $x$, $\mathbf{x}$ | A covariate, or the covariate row |
-| $\mu = \mathbb{E}(Y \mid \mathbf{x})$ | Conditional mean, the usual target |
-| $g(\mu) = \beta_0 + \beta_1 x$ | Link and linear predictor |
-| $i$ | Observational index (a core, a date, a collar) |
-| $j$ | Cluster index (a site, an enclosure, a batch) |
-
-When $Y$ is binary, $\mu = \pi = \Pr(Y = 1 \mid \mathbf{x})$.
-
-::: {.notes}
-Say the table aloud once. Later slides reuse these symbols and do not switch to other letters for the response. The three GLMs share [one skeleton](#sec-skeleton). Five sketches come next, then the algebra panels, then the spread of $Y$ versus the spread of $\bar Y$.
-:::
-
-## $Y$ is the response, $x$ is the covariate {#sec-yx}
-
-![One observational row: a covariate cell marked x beside a response cell marked Y.](figures/generated/notation-yx.jpg){fig-alt="Two boxes on one row. The left box is the covariate x. The right box is the response Y." width="78%"}
-
-One row of the data holds both. $Y$ is what the model describes. $x$ is what it conditions on.
-
-::: {.notes}
-Point at the two cells, not at a dataset yet. Ask which column in their own table is $Y$. The answer should be the measurement, not the treatment or the depth.
-:::
-
-## $\mu$ is the conditional mean {.smaller #sec-cond-mean}
-
-![At one value of x, several responses Y scatter around a mark labelled mu.](figures/generated/notation-mean.jpg){fig-alt="A vertical slice labelled x, with several Y marks scattered around a central tick labelled mu." width="52%"}
-
-::: model
-$\mu = \mathbb{E}(Y \mid x)$
-:::
-
-The dots are possible values of $Y$ at that $x$. $\mu$ is their mean, not one of the dots.
-
-::: {.notes}
-The slice is one $x$. $\mu$ sits in the middle of the $Y$s. The usual misreading is to treat $\mu$ as a fitted line already; the line comes on the next slide.
-
-**Going further.** $\mu(\mathbf{x}) = \mathbb{E}(Y \mid \mathbf{x})$ is the function $m$ that minimises the expected squared error $\mathbb{E}\{(Y - m(\mathbf{x}))^2\}$; geometrically it is the $L^2$ projection of $Y$ onto functions of $\mathbf{x}$. Change the loss and the target changes: absolute error gives the conditional median, and the check loss gives a conditional quantile. That is why "regression" without a named target is ambiguous for skewed responses. The conditional mean exists only when $\mathbb{E}|Y| < \infty$. A standard treatment is in Rice, *Mathematical Statistics and Data Analysis* [@riceMathematicalStatisticsData].
-:::
-
-## The identity link leaves $\mu$ on its own scale {.smaller #sec-identity-link}
-
-![A straight line of mu against x.](figures/generated/notation-identity.jpg){fig-alt="A rising straight line with mu on the vertical axis and x on the horizontal axis." width="58%"}
-
-::: model
-$g(\mu) = \mu = \beta_0 + \beta_1 x$
-:::
-
-A [Gaussian linear model]{.mark} is this case. $\beta_1$ is a change in the mean of $Y$, in the units of $Y$.
-
-::: {.notes}
-The line is $\mu$, not a cloud of observations. Identity means $g$ does nothing. $\beta_1$ keeps the units of $Y$.
-
-**Going further.** The identity is the canonical link of the Gaussian family, so ordinary least squares and maximum likelihood coincide when $Y \mid \mathbf{x} \sim \mathcal{N}(\mu, \sigma^2)$. Normality is not needed for the point estimate: the Gauss–Markov theorem makes $\hat{\boldsymbol\beta}$ the best linear unbiased estimator as soon as the errors have mean zero, constant variance, and no correlation. Normality buys exact $t$ and $F$ distributions in small samples. The identity link can predict a negative mean, which is the first warning sign for counts and concentrations. See Agresti, *Foundations of Linear and Generalized Linear Models* [@agrestiFoundationsLinearGeneralized2015].
-:::
-
-## Log and logit move $\mu$ first {.smaller #sec-log-logit}
-
-![A log-mean curve of mu against x, and a logit curve of pi against x.](figures/generated/notation-links.jpg){fig-alt="Left, a curve rising from near zero, labelled log, with mu on the vertical axis. Right, a sigmoid labelled logit, with pi on the vertical axis." width="72%"}
-
-:::: {.columns}
-::: {.column width="50%"}
-::: model
-$\log \mu = \beta_0 + \beta_1 x$
-:::
-:::
-::: {.column width="50%"}
-::: model
-$\mathrm{logit}(\pi) = \beta_0 + \beta_1 x$
-:::
-:::
-::::
-
-On the log link, a step of 1 in $x$ multiplies $\mu$ by $\exp(\beta_1)$. On the logit, $Y$ is binary, so $\mu = \pi$, and the same step multiplies the [odds]{.mark} by $\exp(\beta_1)$.
-
-::: {.notes}
-Left curve is a count mean, right curve is a probability. Both still have the same linear predictor. Ask which of their responses is a count and which is a detection.
-
-**Going further.** Log and logit are the canonical links of the Poisson and Bernoulli families: writing the density in exponential-family form, the natural parameter is $g(\mu)$, so $\mathbf{X}^{\top}\mathbf{y}$ is sufficient and the score equations reduce to $\mathbf{X}^{\top}(\mathbf{y} - \boldsymbol\mu) = 0$. The fit uses iteratively reweighted least squares. $\exp(\beta_1)$ is a rate ratio on the log link and an odds ratio on the logit. The odds ratio is non-collapsible: adding a covariate that is unrelated to $x$ still changes $\beta_1$, unlike a risk difference. Agresti's *Foundations of Linear and Generalized Linear Models* covers both links [@agrestiFoundationsLinearGeneralized2015].
-:::
-
-## $i$ sits inside $j$ {#sec-index-j}
-
-![Three observations labelled i inside one cluster labelled j.](figures/generated/notation-cluster.jpg){fig-alt="A rectangle marked j containing three circles, each marked i." width="78%"}
-
-$j$ is the cluster the treatment sits on: a site, an enclosure, a batch. $i$ is one row inside it: a core, a date, a collar. Rows that share a $j$ are not [independent replicates]{.mark}.
-
-::: {.notes}
-Point at $j$ first, then the three $i$s. Ask which index received the treatment in their design. If they say the core, the enclosure is the $j$ they have skipped.
-
-**Going further.** With a cluster effect $u_j \sim \mathcal{N}(0, \sigma_u^2)$ and residual variance $\sigma^2$, two rows in the same $j$ have intraclass correlation $\rho = \sigma_u^2 / (\sigma_u^2 + \sigma^2)$. For a cluster-level treatment with $m$ rows per cluster, the variance of a mean is inflated by the design effect $1 + (m - 1)\rho$, so the effective sample size is $n / \{1 + (m-1)\rho\}$. As $\rho \to 1$, it tends to the number of clusters. Treating the $i$ as independent is what Hurlbert named pseudoreplication (📄 *Pseudoreplication and the design of ecological field experiments*, Ecological Monographs, 1984).
-:::
-
-## Inner product and norm {.algebra-panel}
+## Inner product and norm {.algebra-panel visibility="hidden"}
 ![Panel 1 of the StatHarbor algebra poster: the inner product, the Euclidean norm, and distance as the norm of a difference.](figures/sources/algebra-01.png){fig-alt="Formula for the inner product of x and y, the Euclidean norm, and a sketch of the angle between two vectors."}
 
 An inner product measures [alignment]{.mark}. The norm is a [length]{.mark}. These twelve panels are the originals [StatHarbor Analytics](https://www.linkedin.com/posts/statistics-linearalgebra-biostatistics-share-7484322853023154176-qHXd/) published.
@@ -307,7 +501,7 @@ An inner product measures [alignment]{.mark}. The norm is a [length]{.mark}. The
 Five panels are live. Name the object, not the proof. Panels from the spectral decomposition onward are in the file but hidden.
 :::
 
-## Matrix multiplication {.algebra-panel}
+## Matrix multiplication {.algebra-panel visibility="hidden"}
 ![Panel 2: eta equals X beta, with a schematic of a design matrix times a coefficient vector.](figures/sources/algebra-02.png){fig-alt="The equation eta equals X beta, and a small picture of a design matrix multiplying a coefficient vector."}
 
 $\eta = X\beta$ is the [linear predictor]{.mark}. Each column of $X$ is a covariate. Each row is one observation.
@@ -316,7 +510,7 @@ $\eta = X\beta$ is the [linear predictor]{.mark}. Each column of $X$ is a covari
 Tie $X$ to a design matrix they will see in GLMs. One line on dimensions: $n$ rows, $p$ columns.
 :::
 
-## Least squares {.algebra-panel}
+## Least squares {.algebra-panel visibility="hidden"}
 ![Panel 3: the ordinary least-squares estimator and the orthogonality of residuals.](figures/sources/algebra-03.png){fig-alt="The formula for beta hat when X has full column rank, and the statement that residuals are orthogonal to the columns of X."}
 
 Least squares minimises $\|y - X\beta\|^2$. The residual is [orthogonal]{.mark} to the columns of $X$. That orthogonality is the [projection](#sec-algebra) from the notation block.
@@ -327,7 +521,7 @@ Stress orthogonality as geometry, not algebra trivia. It returns on the geometry
 **Going further.** Setting the gradient of $\|\mathbf{y} - \mathbf{X}\boldsymbol\beta\|^2$ to zero gives the normal equations $\mathbf{X}^{\top}\mathbf{X}\hat{\boldsymbol\beta} = \mathbf{X}^{\top}\mathbf{y}$, which are exactly the orthogonality statement. The Gauss–Markov theorem: if $\mathbb{E}(\boldsymbol\varepsilon) = 0$, $\mathrm{Var}(\boldsymbol\varepsilon) = \sigma^2 \mathbf{I}$, and $\mathbf{X}$ has full column rank, then $\hat{\boldsymbol\beta}$ has the smallest variance among linear unbiased estimators. It fails when the errors are heteroscedastic or correlated; generalised least squares with weights $\boldsymbol\Sigma^{-1}$ then restores optimality. Under collinearity $\mathbf{X}^{\top}\mathbf{X}$ is near-singular and the variance of $\hat{\boldsymbol\beta}$ explodes.
 :::
 
-## The hat matrix {.algebra-panel #sec-hat}
+## The hat matrix {.algebra-panel #sec-hat visibility="hidden"}
 ![Panel 4: the projection matrix onto the column space of X.](figures/sources/algebra-04.png){fig-alt="The formula for the hat matrix, and a sketch of y projected onto the column space with an orthogonal residual."}
 
 $P_X$ [projects]{.mark} $y$ onto the column space. When $X$ has full column rank, $P_X = X(X^{\mathsf T}X)^{-1}X^{\mathsf T}$, and $\hat y = P_X y$.
@@ -338,7 +532,7 @@ The hat matrix name is deliberate: $\hat y$ is a linear function of $y$. Mention
 **Going further.** $P_X$ is symmetric and idempotent, with trace equal to its rank $p$, the number of columns. Its diagonal $h_{ii}$ is the leverage of row $i$: it averages $p/n$, and $\mathrm{Var}(y_i - \hat y_i) = \sigma^2 (1 - h_{ii})$, which is why raw residuals are studentised before they are compared. Cook's distance combines $h_{ii}$ with the residual. In a GLM the same role is played by $\mathbf{W}^{1/2}\mathbf{X}(\mathbf{X}^{\top}\mathbf{W}\mathbf{X})^{-1}\mathbf{X}^{\top}\mathbf{W}^{1/2}$, with $\mathbf{W}$ the IRLS weights at convergence.
 :::
 
-## A quadratic form {.algebra-panel}
+## A quadratic form {.algebra-panel visibility="hidden"}
 ![Panel 5: the quadratic form x transpose A x, drawn as ellipses.](figures/sources/algebra-05.png){fig-alt="The quadratic form x transpose A x, with a sketch of elliptical level curves."}
 
 $x^{\mathsf T}Ax$ is a squared length that depends on $A$. A variance, and a [Mahalanobis distance]{.mark}, are this shape.
@@ -412,79 +606,7 @@ $d_M(x,\mu)^2 = (x-\mu)^{\mathsf T}\Sigma^{-1}(x-\mu)$ measures distance after s
 Mahalanobis is the multivariate cousin of a $z$-score. Ellipses versus circles is the misuse to flag.
 :::
 
-## Two spreads, not one {#sec-sd-se}
-
-:::: {.columns}
-::: {.column width="50%"}
-**Empirical**
-
-$$
-s = \sqrt{\frac{1}{n-1}\sum_{i=1}^{n}(Y_i - \bar Y)^2}
-$$
-
-$s$ is the spread of the observations around $\bar Y$. The empirical [standard error of the mean]{.mark} replaces the unknown scale with that $s$:
-
-$$
-\frac{s}{\sqrt{n}}
-$$
-:::
-
-::: {.column width="50%"}
-**Theoretical**
-
-The estimand here is the mean. Its [sampling variance]{.mark} is $\sigma^2/n$, so
-
-$$
-\mathrm{SE}(\bar Y) = \frac{\sigma}{\sqrt{n}}.
-$$
-
-In the draw on the next slides, $\sigma = 15$ and $n = 50$, so $15/\sqrt{50} = 2.12$. The standard deviation of the 1,000 means is 2.11.
-:::
-::::
-
-::: {.notes}
-Read both formulas once. The common mistake is reporting $s$ where the reader expects an uncertainty for $\bar Y$. Ask the room which number would go in an error bar for the mean.
-
-**Going further.** $\mathrm{Var}(\bar Y) = \sigma^2/n$ needs the $Y_i$ to be uncorrelated with a common variance; with clustered rows it is multiplied by the design effect. $s^2$ is unbiased for $\sigma^2$, but $s$ is slightly biased for $\sigma$ (Jensen's inequality). Under normality $(\bar Y - \mu)/(s/\sqrt{n})$ follows a $t_{n-1}$ distribution exactly; otherwise the central limit theorem makes it approximately standard normal for large $n$, at a rate that worsens with skewness. See Hogg, McKean and Craig [@hoggIntroductionMathematicalStatistics2019].
-:::
-
-## One sample, then a thousand means
-
-The draw is [M. Fatih Tüzen's](https://www.r-bloggers.com/2025/07/standard-deviation-vs-standard-error-meaning-misuse-and-the-math-behind-the-confusion/): $Y \sim N(100, 15)$, $n = 50$, then 1,000 independent means. Seed 42 is his. It is not the workshop seed, and it is not a carbon series.
-
-```{r}
-#| echo: true
-#| eval: false
-set.seed(42)
-sd_sample <- rnorm(50, mean = 100, sd = 15)
-sd_means <- replicate(1000, mean(rnorm(50, mean = 100, sd = 15)))
-```
-
-::: {.notes}
-Credit Tüzen for the seed and the blog post. Say explicitly that this draw is illustrative, not workshop data. You do not need to run the chunk live.
-:::
-
-## The mean moves less than the observations do
-
-![Two histograms from an illustrative normal draw. Left: one sample of 50 observations. Right: 1,000 sample means.](figures/generated/sd-versus-se.png){fig-alt="Left histogram: fifty observations spread widely around 100. Right histogram: one thousand sample means packed tightly around 100." width="92%"}
-
-The left-hand spread is $s$. The right-hand spread is the standard error. [Variance, later on the map](#sec-math-variance), is the same distinction.
-
-::: {.notes}
-Point at the two histograms, not the code. The right panel should look visibly narrower; that is the whole lesson. Forty-five seconds.
-:::
-
-## Multivariable is not multivariate {#sec-multivariable}
-
-![Diagram contrasting multivariable regression, one outcome with several predictors, and multivariate analysis, several outcomes modelled jointly.](figures/sources/multivariable-versus-multivariate.jpeg){fig-alt="Two panels. Left: age, sex, BMI, and smoking point to one outcome. Right: the same predictors point to three outcomes that are correlated." width="78%"}
-
-[Timothy Achala](https://www.linkedin.com/feed/update/urn:li:activity:7479203625551065088/) drew the distinction this way. Click the figure if the type is small. The wording we will police is [say the precise word](#sec-words).
-
-::: {.notes}
-One $Y$ versus several correlated outcomes: let the diagram do the work. Ask who has seen “multivariate logistic” in a paper title when the authors meant several predictors.
-:::
-
-## One outcome, or several
+## One outcome, or several {visibility="hidden"}
 
 **Multivariable:** one $Y$, several predictors. A logistic regression of detection on age, sex, body mass, and smoking is multivariable. It is not multivariate.
 
@@ -501,298 +623,7 @@ Thirty seconds. The misuse is in the adjective, not the link function. Invite on
 **Going further.** A genuinely multivariate model specifies the joint distribution of a response vector $\mathbf{Y}_i = (Y_{i1}, \dots, Y_{iK})$, for example a multivariate normal with an unstructured covariance, or a GLMM with correlated random effects across outcomes. Generalised estimating equations (Liang and Zeger, 📄 *Longitudinal data analysis using generalized linear models*, Biometrika, 1986) model only the marginal means and a working correlation, and still give consistent $\hat{\boldsymbol\beta}$ with a sandwich standard error if that working correlation is wrong. The gain over separate fits is efficiency when outcomes are correlated and a joint test across outcomes.
 :::
 
-## Functions and models
-
-:::: {.columns}
-::: {.column width="50%"}
-How do we represent relationships under uncertainty?
-
-$$
-f(x), \quad P(Y \mid X)
-$$
-
-A model specifies a [conditional distribution]{.mark}, not just a rule.
-
-![](figures/generated/sketch-opening-function-model.png){.sketch-sm fig-alt="A rising blue line labelled f of x, with three green sideways bell curves along it labelled P of Y given x."}
-:::
-
-::: {.column width="50%"}
-- Regression
-- Prediction
-- Structural models
-- Machine learning
-
-**Models are approximations of the data-generating process, not reality.**
-:::
-::::
-
-[StatHarbor Analytics](https://www.linkedin.com/feed/update/urn:li:activity:7453946688710377472/) drew the ten rows of this poster.
-
-::: {.notes}
-Open the map: ten rows, one idea each. Read the take-away aloud; it sets the tone for the afternoon. The next nine slides are the rest of the same poster. About two minutes for the full set if you do not stop on every row.
-
-**Going further.** A parametric model is a family $\{P_\theta : \theta \in \Theta\}$ of conditional distributions of $Y$ given $\mathbf{x}$. When the truth is not in the family, the maximum-likelihood estimate still converges, to the $\theta^*$ that minimises the Kullback–Leibler divergence from the truth (White, 📄 *Maximum likelihood estimation of misspecified models*, Econometrica, 1982). The model is then a projection, and its standard errors need the sandwich form. Box's aphorism that all models are wrong but some are useful is the informal version of that result.
-:::
-
-## Derivatives, local change
-
-:::: {.columns}
-::: {.column width="50%"}
-How does a quantity change locally?
-
-$$
-f'(x), \quad \nabla_{\theta} \ell(\theta)
-$$
-
-First-order derivatives define [local linear approximations]{.mark}.
-
-![](figures/generated/sketch-opening-derivative.png){.sketch-sm fig-alt="A black rising curve with a red point on it and a short red tangent line through that point, labelled f prime of x."}
-:::
-
-::: {.column width="50%"}
-- Score functions
-- Marginal effects
-- Influence functions
-- Optimisation
-- Gradients
-
-**Small perturbations reveal the local structure of estimators.**
-:::
-::::
-
-::: {.notes}
-Link the score to MLE on the next rows. A common misread is to treat a derivative as a causal effect without defining the perturbation.
-
-**Going further.** A first-order Taylor expansion $g(\hat\theta) \approx g(\theta) + g'(\theta)(\hat\theta - \theta)$ gives the delta method: $\mathrm{Var}\{g(\hat\theta)\} \approx g'(\theta)^2 \mathrm{Var}(\hat\theta)$, which is how a standard error moves from the link scale to the response scale. The score $\nabla_\theta \ell$ has mean zero at the true $\theta$ and variance equal to the Fisher information. The influence function is the derivative of a functional $\psi(P)$ in the direction of a point mass, and its variance gives the asymptotic variance of the plug-in estimator. All three fail where $g$ or $\ell$ is not differentiable, for example at a parameter boundary.
-:::
-
-## Integrals and sums
-
-:::: {.columns}
-::: {.column width="50%"}
-How do we aggregate quantities over uncertainty?
-
-$$
-\int f(x)\,dx, \quad \sum_x x\,P(X = x)
-$$
-
-Integration = [aggregation]{.mark} over a measure.
-:::
-
-::: {.column width="50%"}
-- Expectation
-- Risk
-- Total probability
-- Marginalisation
-- Likelihood integration
-
-**Global quantities arise from aggregation of infinitesimal contributions.**
-:::
-::::
-
-::: {.notes}
-Expectation is the row the workshop lives on. Ask where they last marginalised a nuisance parameter; keep the answer to one sentence.
-
-**Going further.** The law of total expectation, $\mathbb{E}(Y) = \mathbb{E}\{\mathbb{E}(Y \mid \mathbf{x})\}$, and the law of total variance, $\mathrm{Var}(Y) = \mathbb{E}\{\mathrm{Var}(Y \mid \mathbf{x})\} + \mathrm{Var}\{\mathbb{E}(Y \mid \mathbf{x})\}$, are the two integrals the deck uses most. In a mixed model the likelihood is $\prod_j \int \prod_i p(y_{ij} \mid u_j)\, p(u_j)\, du_j$; it is closed-form for the Gaussian case and needs a Laplace or Gauss–Hermite approximation for a GLMM. A Bayesian marginal likelihood is the same integral over $\theta$, which is why it is sensitive to the prior.
-:::
-
-## Probability and distributions
-
-:::: {.columns}
-::: {.column width="50%"}
-How do we formalise uncertainty?
-
-$$
-P, \quad f(x), \quad P(X \in A)
-$$
-
-Probability defines a [measure]{.mark} over possible outcomes.
-:::
-
-::: {.column width="50%"}
-- Random variables
-- Joint distributions
-- Conditioning
-- Independence
-- Bayes' rule
-
-**Probability is a model for uncertainty (interpretation depends on framework).**
-:::
-::::
-
-::: {.notes}
-Do not open a philosophy debate. Note that the same symbol $P$ carries different readings in different frameworks.
-
-**Going further.** Kolmogorov's axioms define $P$ as a non-negative, countably additive measure with total mass one. A density is a derivative of $P$ with respect to a reference measure (Radon–Nikodym): Lebesgue measure for a continuous $Y$, counting measure for a count. That is why a Poisson probability mass function and a Gaussian density sit in the same likelihood machinery. Frequentist and Bayesian readings share the axioms and differ in what $P$ may be placed on: the data only, or the parameters too.
-:::
-
-## Expectation
-
-:::: {.columns}
-::: {.column width="50%"}
-What functional of the distribution summarises behaviour?
-
-$$
-\mathbb{E}_P[X], \quad \psi(P), \quad \mu
-$$
-
-Statistics targets [functionals]{.mark} of distributions, not raw data.
-
-![](figures/generated/sketch-opening-expectation.png){.sketch-sm fig-alt="A right-skewed blue density resting on a beam, balanced on a red triangle marked mu, labelled E of X balances."}
-:::
-
-::: {.column width="50%"}
-- Means
-- Risks
-- ATE
-- Prediction error
-- Utility
-- Other targets $\psi(P)$
-
-**We learn about targets $\psi(P)$, not individual observations.**
-:::
-::::
-
-In this workshop that functional is usually $\mu = \mathbb{E}(Y \mid \mathbf{x})$, [the conditional mean](#sec-notation), not the raw rows.
-
-::: {.notes}
-Stress estimand language: $\psi(P)$ is the object inference targets. Point to $\mu$ on the notation slide if anyone looks lost. The next card asks them to say that quantity; do not re-derive the expectation.
-
-**Going further.** An estimand is a functional $\psi(P)$; the plug-in estimator replaces $P$ by the empirical distribution $\hat P_n$, so the sample mean estimates $\mathbb{E}_P(Y)$. ICH E9(R1) names its attributes: population, variable, handling of intercurrent events, and population-level summary. The conditional mean $\mathbb{E}(Y \mid \mathbf{x})$ and the marginal mean $\mathbb{E}(Y)$ are different functionals, and on a non-identity link averaging the conditional effect over $\mathbf{x}$ does not give the marginal effect. Rice covers plug-in estimation [@riceMathematicalStatisticsData].
-:::
-
-## Say the precise word {#sec-words}
-
-| Prefer | Avoid, unless you mean it |
-| --- | --- |
-| Median and quartiles, when $Y$ is skewed | Mean and SD as the only summary |
-| [Multivariable]{.mark}: several covariates | [Multivariate]{.mark}: several responses |
-| [Association]{.mark}, for an observational coefficient | [Effect]{.mark}, when nobody assigned $x$ |
-| The estimate and the interval | "Significant" as the whole result |
-| [Quantile]{.mark}: the cut point | Quantile: the group the cut creates |
-
-The multivariable row is the figure already on [multivariable is not multivariate](#sec-multivariable). This table is the short list, not a second explanation.
-
-::: {.notes}
-Do not redraw the multivariable figure. Read the association row. Ask for one sentence from the room that uses effect when nobody assigned $x$.
-:::
-
-## What is an estimand? :black_joker:
-
-Press `f` to turn the card.
-
-::: {.flashcard-front}
-In one sentence: what is an estimand?
-:::
-
-::: {.flashcard-back}
-The quantity the analysis is trying to learn: $\mu$, the unit it belongs to, and the contrast. The software is not the estimand.
-:::
-
-![](figures/generated/sketch-opening-estimand.png){.sketch-sm fig-alt="A target of three rings with a question mark at the centre, and a blue arrow labelled analysis pointing at it." fig-align="center"}
-
-::: {.notes}
-`f` flips. Later, `q` resets a quiz question and `x` checks it. Do not use `q` here. The expectation slide already named $\mu$; this card only asks them to say it.
-:::
-
-## Where does the link act?
-
-::: {.flashcard-front}
-In a generalised linear model, what does $g$ transform?
-:::
-
-::: {.flashcard-back}
-The conditional mean: $g(\mu) = \mathbf{x}^{\top}\boldsymbol{\beta}$. It does not rewrite the raw response $Y$.
-:::
-
-::: {.notes}
-`f` to flip. The identity, log, and logit sketches already showed where $g$ acts. This catches people who still write $g(Y)$.
-
-**Going further.** Jensen's inequality gives $g\{\mathbb{E}(Y)\} \ne \mathbb{E}\{g(Y)\}$ for any non-linear $g$. A linear model on $\log Y$ therefore targets $\mathbb{E}(\log Y \mid \mathbf{x})$, the log of a geometric mean, whereas a log-link GLM targets $\log \mathbb{E}(Y \mid \mathbf{x})$. If $\log Y$ is normal with variance $\sigma^2$, the two differ by $\sigma^2/2$, the retransformation bias. The GLM also handles zeros, where $\log Y$ is undefined.
-:::
-
-## What is the index $j$?
-
-::: {.flashcard-front}
-In this deck, what does $j$ index?
-:::
-
-::: {.flashcard-back}
-The cluster or experimental unit, when the treatment sits on that unit. $i$ indexes the observation inside it.
-:::
-
-::: {.notes}
-The cluster sketch already drew $i$ inside $j$. If they answer "the observation", send them back to that picture.
-:::
-
-## Variance and uncertainty {#sec-math-variance}
-
-:::: {.columns}
-::: {.column width="50%"}
-How variable is a quantity or estimator?
-
-$$
-\mathrm{Var}(X), \quad \mathrm{Var}(\hat{\theta})
-$$
-
-Variance measures [dispersion]{.mark}, not bias or distance to truth.
-
-![](figures/generated/sketch-opening-variance.png){.sketch-sm fig-alt="Two targets. Left, red hits packed tightly but off the centre, labelled small variance, biased. Right, blue hits spread widely around the centre, labelled large variance, on target."}
-:::
-
-::: {.column width="50%"}
-- Standard errors
-- Confidence intervals
-- Hypothesis tests
-- Uncertainty quantification
-
-**Uncertainty is information about precision, not a problem to eliminate.**
-:::
-::::
-
-The [standard deviation and the standard error](#sec-sd-se) are the two scales that sentence has to keep apart.
-
-::: {.notes}
-Return to the histogram pair if the room conflates $s$ and SE. Bias versus variance is not on the strip; do not improvise a lecture here.
-
-**Going further.** Mean squared error splits as $\mathbb{E}(\hat\theta - \theta)^2 = \mathrm{Var}(\hat\theta) + \{\mathbb{E}(\hat\theta) - \theta\}^2$, so a low-variance estimator can still be far from the truth. Among unbiased estimators, the Cramér–Rao bound $\mathrm{Var}(\hat\theta) \ge 1/I(\theta)$ holds under regularity conditions: the support does not depend on $\theta$ and differentiation passes under the integral. Shrinkage, penalised smoothing, and priors trade a little bias for a larger cut in variance. Hogg, McKean and Craig state the bound [@hoggIntroductionMathematicalStatistics2019].
-:::
-
-## Likelihood and optimisation
-
-:::: {.columns}
-::: {.column width="50%"}
-Which parameter best fits the observed data under a model?
-
-$$
-\hat{\theta} = \arg\max_{\theta} \ell(\theta)
-$$
-
-$$
-S(\theta) = \nabla_{\theta} \ell(\theta)
-$$
-
-![](figures/generated/sketch-opening-likelihood.png){.sketch-sm fig-alt="A blue hill-shaped log-likelihood curve against theta, with a flat red tangent at its peak labelled slope equals zero and the peak marked theta hat."}
-:::
-
-::: {.column width="50%"}
-- MLE
-- GLM
-- Regularisation
-- Model selection (AIC, BIC)
-- Estimation procedures
-
-**'Best' is defined relative to the assumed model and [criterion]{.mark}.**
-:::
-::::
-
-::: {.notes}
-AIC and BIC change the criterion, not the meaning of likelihood. Ask what “best” would mean if the mean were misspecified.
-
-**Going further.** Under regularity conditions (identifiable model, support free of $\theta$, true value in the interior of $\Theta$), the MLE is consistent, asymptotically normal with variance $I(\theta)^{-1}/n$, and invariant: the MLE of $h(\theta)$ is $h(\hat\theta)$. The conditions fail at a boundary, for instance when testing $\sigma_u^2 = 0$ in a mixed model, where the likelihood-ratio statistic follows a 50:50 mixture of $\chi^2_0$ and $\chi^2_1$. AIC, $-2\ell(\hat\theta) + 2p$, estimates expected Kullback–Leibler loss for prediction; BIC, with $p \log n$, approximates a log marginal likelihood. They answer different questions, which is why they can disagree.
-:::
-
-## Geometry and linear algebra {.smaller}
+## Geometry and linear algebra {.smaller visibility="hidden"}
 
 :::: {.columns}
 ::: {.column width="50%"}
@@ -851,41 +682,4 @@ Scores span the tangent space.
 
 ::: {.notes}
 This row is optional depth for a mixed room. One line: standard errors come from how the model can wiggle locally. Skip double robustness unless someone asks.
-:::
-
-## Asymptotics
-
-:::: {.columns}
-::: {.column width="50%"}
-What happens as sample size grows?
-
-$$
-\hat{X}_n \xrightarrow{p} \mu
-$$
-
-$$
-\sqrt{n}(\hat{\theta} - \theta_0) \Rightarrow \mathcal{N}(0, V)
-$$
-
-![](figures/generated/sketch-opening-asymptotics.png){.sketch-sm fig-alt="Three bell curves that narrow as n grows, all centred to the right of a dashed green line marked theta zero, with a red arrow marking the gap as bias."}
-:::
-
-::: {.column width="50%"}
-- LLN
-- CLT
-- Delta method
-- Wald inference
-- Bootstrap
-- Asymptotic theory
-
-**Large samples stabilise estimators but do not eliminate bias or [misspecification]{.mark}.**
-:::
-::::
-
-That limit is the [large-sample fallacy](#sec-large-n) in the pitfalls block.
-
-::: {.notes}
-Close the map with the take-away in bold: big $n$ is not a substitute for a correct mean model. Thirty seconds unless you preview the pitfalls section.
-
-**Going further.** The Lindeberg–Lévy central limit theorem needs independent, identically distributed rows with finite variance; Lindeberg–Feller relaxes identical distribution. Under misspecification the MLE converges to the pseudo-true $\theta^*$, with $\sqrt{n}(\hat\theta - \theta^*) \Rightarrow \mathcal{N}(0, A^{-1} B A^{-1})$, where $A$ is the expected Hessian and $B$ the variance of the score: the sandwich of Huber (1967) and White (1982). The gap $\theta^* - \theta_0$ does not shrink with $n$, so a large sample gives a narrow interval around the wrong value. With clustered data the relevant $n$ is the number of clusters, not rows.
 :::

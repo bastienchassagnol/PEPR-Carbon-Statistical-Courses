@@ -37,7 +37,9 @@ The poster numbers are the workshop numbers. The BMJ article uses the same twelv
 Read the left column down, then the right. These numbers are the roadmap for the next hour. Thirty seconds.
 :::
 
-## Six purposes, six different $\mu$ {#sec-purposes}
+## 1 · Start from the question {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d6e2f5 100%)"}
+
+## 1 · Six purposes, six different $\mu$ {#sec-purposes}
 
 ::: {.columns}
 ::: {.column width="50%"}
@@ -65,8 +67,6 @@ A significant coefficient does not say which of these you did. The three we will
 ::: {.notes}
 Riley and colleagues ask authors to say whether the work is descriptive or causal, prognostic or predictive, exploratory or confirmatory. One minute.
 :::
-
-## 1 · Start from the question {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d6e2f5 100%)"}
 
 ## 1 · From a slogan to a statistical question
 
@@ -237,7 +237,7 @@ The coefficients are the explanatory object, and here they also predicted better
 Say the seeds once. Pause on 2.40 versus 1.01. Someone will say forests always predict better; this draw is the counter-example, because the mean really is linear. The forest is not bad software. It is the wrong tool for an explanatory coefficient.
 :::
 
-## 1 · A hold-out score does not certify the coefficient {#sec-holdout}
+## 1 · A hold-out score does not certify the coefficient {#sec-holdout visibility="hidden"}
 
 :::: {.columns}
 ::: {.column width="62%"}
@@ -281,7 +281,7 @@ Two intervals, two different failures. The narrow one is precise and small: dete
 
 :::: {.columns}
 ::: {.column width="38%"}
-![Infographic contrasting a statistically detectable effect with an effect that also exceeds a minimal clinically important difference.](figures/sources/mcid.jpeg){fig-alt="Infographic contrasting statistical significance with an effect large enough to pass a minimal clinically important difference." width="100%"}
+![Infographic contrasting a statistically detectable effect with an effect that also exceeds a minimal clinically important difference.](figures/sources/mcid.jpg){fig-alt="Infographic contrasting statistical significance with an effect large enough to pass a minimal clinically important difference." width="100%"}
 :::
 
 ::: {.column width="62%"}
@@ -351,34 +351,6 @@ $\alpha$ is chosen before data; $p$ is computed after. The Fisher quote is the B
 **Going further.** The probability that a positive result is false is the false discovery proportion among assertions. With a prior share $\pi_0$ of true nulls, $P(H_0 \mid \text{assert}) = \alpha\pi_0 / \{\alpha\pi_0 + (1-\beta)(1-\pi_0)\}$. With $\alpha = 0.05$, power $0.8$ and $\pi_0 = 0.9$, that is $0.045 / (0.045 + 0.08) \approx 0.36$, far above $5\%$; Ioannidis ("Why most published research findings are false", PLoS Medicine, 2005) and Colquhoun (Royal Society Open Science, 2014) work this arithmetic. It is the same quantity that the Benjamini–Hochberg procedure controls in expectation over many tests [@farcomeniReviewModernMultiple2008].
 :::
 
-## 2 · The tail belongs to a model {#sec-pwrong}
-
-[Guillaume Rousselet](https://garstats.wordpress.com/2026/02/27/pwrong/) takes a one-sample, one-sided $t$ test: $n = 50$, $t = 1.52$, $p = 0.0670$ when the imaginary experiments are normal, independent, of fixed size, and always analysed with that $t$ test.
-
-Sampling the same tail from the beta distribution the scores actually follow moves the simulated $p$ from 0.0675 to 0.0804. Change the [model]{.mark} and the number moves [@garstatsAllYourPvalues2026].
-
-![](figures/generated/sketch-pitfalls-model-tail.png){.sketch-sm fig-alt="Hand-drawn sketch: two different null curves, blue for model A and orange for model B, cut by the same vertical line for the same data, so their tails beyond the line differ." fig-align="center"}
-
-::: {.notes}
-This is the "same $t$, different likelihood" slide. You are not asking them to abandon $t$ tests; you are showing that $p$ is computed under a story. If they only remember one line: the tail belongs to the model.
-
-**Going further.** The $t$ test is exact only when the observations are independent and Gaussian; otherwise its level relies on the central limit theorem, and the error in the tail probability is of order $n^{-1/2}$ for skewed data (an Edgeworth expansion). Far tails converge slowest, so small $p$ values are the least trustworthy. A parametric bootstrap or a permutation test computes the tail under a different, sometimes weaker, model; a permutation test is exact under exchangeability of the units under the null. Bounded scores, such as those in Rousselet's example, are not Gaussian at any $n$, which is why the simulated tail moved.
-:::
-
-## 2 · Surprise, on a bit scale
-
-$-\log_2(0.05) = 4.32$. A $p$ of 0.05 is the surprise of four heads in a row ([Greenland, 2019](https://doi.org/10.1080/00031305.2018.1529625)).
-
-Read $p$ as [compatibility]{.mark} between the model and the data, from 0 to 1, not as a verdict ([Greenland et al., 2016](https://doi.org/10.1007/s10654-016-0149-3)).
-
-![](figures/generated/sketch-pitfalls-coins.png){.sketch fig-alt="Hand-drawn sketch: four coins, each showing H for heads, above the text p = 0.05 is about 4 bits." fig-align="center"}
-
-::: {.notes}
-The coin analogy lands with non-statisticians. Follow with: compatibility is not "probability the null is true". Keep it short — the Halsey exchange is next.
-
-**Going further.** The $S$-value $s = -\log_2 p$ is the Shannon information, in bits, that the data supply against the test model; it is additive across independent tests, unlike $p$. Fisher's method of combining $k$ independent $p$ values uses $-2\sum \log p_k \sim \chi^2_{2k}$ under the joint null, which is the same logarithm. Greenland's 2019 paper (The American Statistician) and Rafi and Greenland (BMC Medical Research Methodology, 2020) recommend reporting $p$ against several hypotheses, not only zero, which traces the compatibility, or confidence, curve.
-:::
-
 ## 2 · One P, or a screen of them
 
 ::: {.incremental}
@@ -418,7 +390,7 @@ Genomics and high-throughput ecology are the industrialist case. Ask whether any
 **Going further.** With $m$ tests the histogram of $p$ is a mixture $\pi_0\,\mathrm{U}(0,1) + (1-\pi_0) f_1$, so its flat part estimates the share of true nulls $\pi_0$ (Storey's $q$-value method). Bonferroni controls the family-wise error rate, the chance of even one false rejection, by testing each hypothesis at $\alpha/m$; Benjamini and Hochberg control the expected false discovery proportion by comparing the ordered $p_{(k)}$ with $k\alpha/m$, which is valid under independence or positive dependence [@farcomeniReviewModernMultiple2008]. Closed testing and gatekeeping procedures for structured confirmatory families are in Bretz, Hothorn and Westfall [@bretzMultipleComparisonsUsing2016a].
 :::
 
-## 2 · The same p, a shrinking effect {#sec-large-n}
+## 2 · The same p, a shrinking effect {#sec-large-n visibility="hidden"}
 
 [Lantz](references/large-sample-size-fallacy.pdf) keeps $p = 0.0253$ while a preference for treatment X shrinks toward a coin toss. These are the two ends of his table.
 
@@ -666,67 +638,89 @@ Use fens and bogs from the slide text. Ask what estimand the interaction coeffic
 
 ## 7 · Read heterogeneity carefully {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #e3efc8 100%)"}
 
-## 7 · $I^2$ is not the size of the heterogeneity {#sec-i2}
+## 7 · Two spreads in every pooled table {#sec-i2}
 
-| Quantity | Read as |
+Each site, or study, reports one estimate. Its scatter around the pooled mean has two sources:
+
+- the true effects differ between sites: their spread is [$\tau^2$]{.mark}
+- each estimate is noisy: its [sampling variance]{.mark} is $s^2$, and it shrinks as the site collects more cores
+
+$I^2$ mixes the two. $\tau^2$ does not.
+
+::: {.notes}
+This is the whole block in one slide. Keep the two words apart: heterogeneity is about the true effects, noise is about how well each site measured its own. In this block one row is a site, not a core. About one minute.
+
+**Going further.** The working model is $y_i = \theta_i + \varepsilon_i$ with $\varepsilon_i \sim N(0, s_i^2)$ and $\theta_i \sim N(\mu, \tau^2)$, where $y_i$ is the reported site estimate. In a meta-analysis $s_i^2$ is treated as known, although it is itself estimated; this is harmless with large within-site samples but biases small-study meta-analyses, especially log odds ratios with few events. Borenstein and colleagues' *Introduction to Meta-Analysis* is the readable reference for the whole block.
+:::
+
+## 7 · $\tau^2$ is how far the true effects spread
+
+:::: {.columns}
+::: {.column width="62%"}
+$\tau^2$ is an [absolute]{.mark} spread, on the squared scale of the effect. It is not a percentage.
+
+Arithmetic, not a carbon dataset: $\tau^2 = 0.09$ on a log risk ratio gives $\tau = 0.30$. A rough band for the site effects is the mean $\pm 1.96\tau \approx \pm 0.59$. Call that large or small only after you name the scale.
+:::
+::: {.column width="38%"}
+![](figures/generated/sketch-pitfalls-tau-spread.png){.sketch fig-alt="Hand-drawn sketch: a violet bell curve centred on mu, with red dots for the true site effects theta spread under it and a blue double arrow marking plus or minus 1.96 tau."}
+:::
+::::
+
+::: {.notes}
+Stress the units. If someone quotes $I^2 = 25\%$ as "low heterogeneity", ask for $\tau^2$ in the effect's units.
+
+**Going further.** $\tau^2$ is usually estimated by REML or Paule–Mandel; the DerSimonian–Laird moment estimator is the historical default. With few sites every estimator is imprecise, and the Hartung–Knapp–Sidik–Jonkman adjustment gives better coverage for the pooled mean. A proper prediction interval for a new site is $\hat\mu \pm t_{k-2}\sqrt{\hat\tau^2 + \mathrm{SE}(\hat\mu)^2}$ (Higgins, Thompson and Spiegelhalter, Journal of the Royal Statistical Society A, 2009).
+:::
+
+## 7 · $I^2$ is a share, relative to the noise
+
+$$
+I^2 \approx \frac{\tau^2}{\tau^2 + s^2}
+$$
+
+Keep $\tau^2 = 0.04$:
+
+- noisy sites, $s^2 = 0.16$: $I^2 = 0.04/0.20 = 20\%$
+- precise sites, $s^2 = 0.0025$: $I^2 = 0.04/0.0425 \approx 94\%$
+
+The true effects did not move. The measurements got sharper, so heterogeneity is a larger [share]{.mark} of what you see.
+
+::: {.notes}
+Same $\tau^2$, different $I^2$: that sentence is worth repeating. The approximation holds when the sites have similar sampling variances.
+
+**Going further.** In practice $I^2$ comes from Cochran's $Q = \sum_i (y_i - \hat\mu_{\mathrm{FE}})^2 / s_i^2$ as $I^2 = \max\{0, (Q - (k-1))/Q\}$; under homogeneity $Q \sim \chi^2_{k-1}$. Higgins and Thompson (Statistics in Medicine, 2002) introduced $I^2$; Rücker and colleagues (BMC Medical Research Methodology, 2008) show that it tends to 100% as study sizes grow, for any fixed $\tau^2 > 0$. Its uncertainty interval is usually wide and should be reported.
+:::
+
+## 7 · The soils did not move
+
+![Sketch of three soil cores at 40, 55, and 70 grams per kilogram. Wide red error bars give a small I-squared. Narrow green error bars give a large I-squared. The true stocks do not change.](figures/generated/heterogeneity-soil-analogy.jpg){fig-alt="Teaching sketch. The same three soil-carbon stocks appear twice. Noisy cores, drawn in red, are labelled about 20 percent I-squared. Precise cores, drawn in green, are labelled about 94 percent. The caption says the soils did not become more different." width="88%"}
+
+The drawing is the arithmetic on the previous slide. Sharper cores raise $I^2$ because the sampling bars shrink.
+
+::: {.notes}
+Point at the error bars, not at the cylinders. The 20 and 94 percent are the previous slide's numbers.
+:::
+
+## 7 · Report $\tau^2$, and say what $I^2$ is relative to
+
+| Quantity | Question |
 | --- | --- |
-| $\tau^2$ | Absolute spread of true site effects |
-| $I^2$ | Share of scatter that is heterogeneity **relative to** sampling noise |
-| Study-level regression on proportions | Not the same as a within-site slope ([ecological bias]{.mark}) |
+| $\tau^2$ | How far do the true site effects spread? |
+| $I^2$ | How large is that spread beside the sampling noise? |
 
-$I^2$ is a **relative** share of variance. Small studies can show a small $I^2$ while the between-site variance is large. Report that variance. A regression on site means is not the core-level slope. The arithmetic starts at [one site, one estimate](#sec-one-site). Sampling noise shrinks with $n$; a bias does not ([random and systematic error](#sec-random-error)).
-
-::: {.notes}
-This slide is the warning label; the next ten minutes are the arithmetic. If someone quotes $I^2 = 25\%$ as "low heterogeneity", ask for $\tau^2$ in the effect's units.
-
-**Going further.** Higgins and Thompson (Statistics in Medicine, 2002) introduced $I^2$ as the proportion of total variation due to heterogeneity rather than chance; it depends on the precision of the studies and therefore on their size, while $\tau^2$ does not. Rücker and colleagues (BMC Medical Research Methodology, 2008) show that $I^2$ tends to 100% as the study sizes grow, for any fixed $\tau^2 > 0$. Ecological bias, or aggregation bias, arises because a regression across site means estimates the between-site association, which mixes the within-site slope with between-site confounding (Greenland and Morgenstern, International Journal of Epidemiology, 1989).
-:::
-
-## 7 · One site, one estimate {#sec-one-site}
-
-In this block $i$ is a study or a site, and $y_i$ is that site's estimated effect. It is not the core-level response $Y$.
-
-$$
-y_i = \theta_i + \varepsilon_i, \qquad \varepsilon_i \sim N(0, s_i^2)
-$$
-
-- $y_i$: the estimate you observe
-- $\theta_i$: the true effect at that site
-- $s_i^2$: the [sampling variance]{.mark} of the estimate
-
-Two sites with the same $\theta$ can still disagree, because of $\varepsilon_i$.
+Do not use 25%, 50%, and 75% as cut-offs. The same $\tau^2$ gave both 20% and 94%.
 
 ::: {.notes}
-Say the change of index once. Here i is the site, which is the cluster. The core-level response is still Y, and it is not on this slide. About one minute. The next two slides separate that sampling noise from a bias that more rows will not remove.
+Close the arithmetic on the table. A regression on site means is a separate trap: it is not the core-level slope (ecological bias).
 
-**Going further.** In a meta-analysis $s_i^2$ is treated as known, although it is itself estimated; this is harmless when the within-site samples are large but biases small-study meta-analyses, especially for log odds ratios with few events. The normal approximation $y_i \sim N(\theta_i, s_i^2)$ rests on the asymptotic normality of the site estimator, for example a maximum-likelihood estimator with variance from the inverse Fisher information. Borenstein and colleagues' Introduction to Meta-Analysis is the readable reference for the whole block.
+**Going further.** Ecological, or aggregation, bias arises because a regression across site means estimates the between-site association, which mixes the within-site slope with between-site confounding (Greenland and Morgenstern, International Journal of Epidemiology, 1989).
 :::
 
-## 7 · Random error shrinks {#sec-random-error}
-
-[Thiese, Ronna, and Ott](https://doi.org/10.21037/jtd.2016.08.16) define [random error]{.mark} as noise around the true value, above and below it. It is not a [bias]{.mark}. On the previous slide it is $\varepsilon_i$, with variance $s_i^2$. A larger sample at that site makes $s_i$ smaller, which is the same move as the [standard error](#sec-sd-se).
-
-Selection, a misread instrument, and a confounder are not this noise. They shift every row the same way.
-
-::: {.notes}
-Connect $\varepsilon_i$ to the standard error they already know. Random error is what replication within a site would average down; confounding is not that.
-:::
-
-## 7 · A larger sample does not shrink a bias
-
-![Two curves against sample size. Random error of the estimate falls. Systematic error stays flat.](figures/generated/random-versus-systematic-error.png){fig-alt="Line chart. A green curve of random error falls as sample size grows. A clay line of systematic error stays flat." width="72%"}
-
-Their example is a scale that adds the same offset to every person. More people do not remove it. Figure 1 in that paper, adapted from Rothman, is this shape. The curves are illustrative, from [generate-slide-figures.R](scripts/generate-slide-figures.R).
-
-::: {.notes}
-The flat line is the punchline for observational carbon work too: more cores do not fix a wrong unit or a confounder. Pair with the missing-data MNAR message later if needed.
-:::
-
-## 7 · Fixed effect, or random effects {.smaller #sec-fixed-random-meta}
+## 7 · Perspective: fixed effect or random effects {.smaller #sec-fixed-random-meta}
 
 :::: {.columns}
 ::: {.column width="50%"}
-**Fixed effect.** One $\mu$. The $y_i$ differ only by sampling.
+**Fixed effect.** One true effect. Sites differ only by noise, so $\tau^2 = 0$.
 
 ```{mermaid}
 %%| fig-height: 2.3
@@ -744,12 +738,10 @@ flowchart TD
   class mu,th fixed
   class y observed
 ```
-
-$$\theta_i = \mu, \qquad w_i^{\mathrm{FE}} = 1/s_i^2, \qquad \tau^2 = 0$$
 :::
 
 ::: {.column width="50%"}
-**Random effects.** Each $\theta_i$ is a draw. $\mu$ and $\tau^2$ stay fixed.
+**Random effects.** Each site has its own true effect, drawn around $\mu$ with spread $\tau^2$.
 
 ```{mermaid}
 %%| fig-height: 2.3
@@ -771,145 +763,15 @@ flowchart TD
   class th latent
   class y observed
 ```
-
-$$\theta_i = \mu + u_i, \quad u_i \sim N(0, \tau^2)$$
 :::
 ::::
 
-Green is observed. Red is latent. A rectangle is fixed. The plate is the index $i$. The same two lines are a hierarchical model: [fixed and random name the target](#sec-fixed-random-target).
+The [random-effects]{.mark} model is how $\tau^2$ enters a pooled analysis. A site-level covariate can then explain part of $\tau^2$. The same two-level structure returns in the design block: [fixed and random name the target](#sec-fixed-random-target).
 
 ::: {.notes}
-Left plate: $\theta_i$ is fixed at $\mu$, and only $y_i$ is random. Right plate: $\theta_i$ is red because it is not seen. Do not say the random-effects mean is automatically the causal effect. One minute on each column.
-:::
+Green is observed, red is latent, a rectangle is fixed, and the plate is the site index $i$. Do not say the random-effects mean is automatically the causal effect. One minute on each column.
 
-## 7 · $\tau^2$ is how far the true effects spread
-
-:::: {.columns}
-::: {.column width="62%"}
-$$
-\theta_i \sim N(\mu, \tau^2)
-$$
-
-$\tau^2$ is on the squared [scale]{.mark} of the effect. It is not a percentage.
-
-Arithmetic, not a carbon dataset: $\tau^2 = 0.09$ on a log risk ratio gives $\tau = 0.30$, so a rough band for the site effects is $\mu \pm 1.96\tau \approx \mu \pm 0.59$. Call that large or small only after you name the scale.
-
-A precise site with $s_i^2 = 0.01$ has fixed-effect weight $100$. With $\tau^2 = 0.09$ the random-effects weight is $1/(0.01+0.09) = 10$. That site no longer dominates the pool.
-:::
-::: {.column width="38%"}
-![](figures/generated/sketch-pitfalls-tau-spread.png){.sketch fig-alt="Hand-drawn sketch: a violet bell curve centred on mu, with red dots for the true site effects theta spread under it and a blue double arrow marking plus or minus 1.96 tau."}
-:::
-::::
-
-::: {.notes}
-Stress the units. Then the weight: heterogeneity stops the most precise site from deciding the mean alone.
-
-**Going further.** The random-effects estimate is $\hat\mu = \sum_i w_i y_i / \sum_i w_i$ with $w_i = 1/(s_i^2 + \hat\tau^2)$. $\tau^2$ is estimated by the DerSimonian–Laird moment estimator $\max\{0, (Q - (k-1))/(\sum w_i - \sum w_i^2/\sum w_i)\}$, or better by REML or Paule–Mandel; with few sites all are imprecise, and the Hartung–Knapp–Sidik–Jonkman adjustment gives better coverage for $\mu$. A proper prediction interval for a new site's $\theta$ is $\hat\mu \pm t_{k-2}\sqrt{\hat\tau^2 + \mathrm{SE}(\hat\mu)^2}$ (Higgins, Thompson and Spiegelhalter, Journal of the Royal Statistical Society A, 2009).
-:::
-
-## 7 · $I^2$ compares that spread with the noise
-
-If the sampling variances are similar,
-
-$$
-I^2 \approx \frac{\tau^2}{\tau^2 + s^2}.
-$$
-
-The usual estimator starts from Cochran's $Q$, the weighted sum of squared departures from the fixed-effect mean:
-
-$$
-Q = \sum_i \frac{1}{s_i^2}\,(y_i - \hat\mu_{\mathrm{FE}})^2, \qquad I^2 = \max\left(0,\, \frac{Q - (k-1)}{Q}\right).
-$$
-
-Arithmetic: $Q = 40$ and $k = 11$ studies give $I^2 = (40-10)/40 = 75\%$. $Q$ asks whether the scatter exceeds sampling error. $I^2$ turns the excess into a share of $Q$. Neither replaces $\tau^2$.
-
-::: {.notes}
-Write Q, then I-squared, on the board if someone treats 75 percent as a large tau. Under no heterogeneity, Q is about k minus 1.
-
-**Going further.** Under homogeneity and known $s_i^2$, $Q \sim \chi^2_{k-1}$, so $\mathbb{E}(Q) = k-1$ and $I^2$ is the share of $Q$ in excess of its null expectation. The $Q$ test has low power with few studies and near-certain rejection with many large ones, the same consistency problem as any test. $I^2 \approx \tau^2/(\tau^2 + \tilde{s}^2)$ holds exactly with a "typical" within-study variance $\tilde{s}^2$ defined by Higgins and Thompson (2002); its uncertainty interval is usually wide and should be reported.
-:::
-
-## 7 · The same $\tau^2$ can produce either $I^2$
-
-Keep $\tau^2 = 0.04$.
-
-- Noisy sites, $s^2 = 0.16$: $I^2 = 0.04/0.20 = 20\%$
-- Precise sites, $s^2 = 0.0025$: $I^2 = 0.04/0.0425 \approx 94\%$
-
-The true effects did not move. The measurements got sharper, so heterogeneity is a larger share of what you see.
-
-::: {.notes}
-Work the arithmetic aloud with a calculator if needed. Same $\tau^2$, different $I^2$ — that sentence is worth repeating.
-:::
-
-## 7 · The soils did not move
-
-![Sketch of three soil cores at 40, 55, and 70 grams per kilogram. Wide red error bars give a small I-squared. Narrow green error bars give a large I-squared. The true stocks do not change.](figures/generated/heterogeneity-soil-analogy.jpg){fig-alt="Teaching sketch. The same three soil-carbon stocks appear twice. Noisy cores, drawn in red, are labelled about 20 percent I-squared. Precise cores, drawn in green, are labelled about 94 percent. The caption says the soils did not become more different." width="88%"}
-
-The cylinders are a drawing of the arithmetic above. Sharper cores raise $I^2$ because the sampling bars shrink.
-
-::: {.notes}
-The drawing is the exam analogy rewritten for cores. Point at the error bars, not at the cylinders. The 20 and 94 percent are the arithmetic on the previous lines.
-:::
-
-## 7 · Random effects are already hierarchical
-
-```{mermaid}
-%%| fig-height: 3.2
-flowchart TD
-  pop["mu, tau squared"] --> t1["theta 1"]
-  pop --> t2["theta 2"]
-  pop --> tk["theta k"]
-  t1 --> y1["y 1"]
-  t2 --> y2["y 2"]
-  tk --> yk["y k"]
-```
-
-$\mu, \tau^2 \rightarrow \theta_i \rightarrow y_i$. The $\theta_i$ are the site-level random effects. Their variance is $\tau^2$.
-
-::: {.notes}
-This diagram is the same hierarchy as the tabset, drawn for the whole room at once. $j$ is the site here; $y_i$ is the published site estimate, not a core.
-:::
-
-## 7 · A moderator leaves a residual $\tau^2$
-
-A [moderator]{.mark} $x_i$, such as mean stand age, moves into the site effect:
-
-$$
-\theta_i = \beta_0 + \beta_1 x_i + u_i, \qquad u_i \sim N(0, \tau^2).
-$$
-
-$\tau^2$ is then what is left between sites. Arithmetic: $0.20$ before age and $0.08$ after is $(0.20-0.08)/0.20 = 0.60$ of the between-site variance. That is not the core-level slope. The path diagram is [three arrows](#sec-arrows).
-
-::: {.notes}
-This is the card's ecological-bias warning in an equation. The 60 percent is arithmetic on two tau-squared values, not a published meta-regression.
-
-**Going further.** This is a mixed-effects meta-regression, fitted by weighted least squares with weights $1/(s_i^2 + \hat\tau^2_{\mathrm{res}})$ and $\tau^2_{\mathrm{res}}$ by REML (the metafor package of Viechtbauer). The proportion of heterogeneity explained, $R^2 = (\hat\tau^2_0 - \hat\tau^2_{\mathrm{res}})/\hat\tau^2_0$, is imprecise with fewer than about 40 studies and can be negative before truncation. Thompson and Higgins (Statistics in Medicine, 2002) warn that study-level moderators are observational even when every study is a randomised trial, and that searching many moderators has the multiplicity of any subgroup analysis.
-:::
-
-## 7 · One level deeper: a hierarchical error
-
-![Nested samples and cell types, with a hierarchical model for a true proportion and its replicates, and three sketches of residual error.](figures/sources/hierarchical_rmse.svg){fig-alt="Two panels. Left: three replicate samples, each with cell types, and a table of true proportions beside estimates. Right: a hierarchical mean plus sample and residual terms, and three plots in which the gap between true proportions and replicates grows." width="100%"}
-
-A deconvolution sketch, not a soil survey. Hierarchical RMSE grows when the residual variance is large beside the biological signal. Click it to read the indices.
-
-::: {.notes}
-Do not reassign the workshop's i and j to this figure. Say the picture is the speaker's deconvolution layout: samples, then cell types, then a true proportion and an estimate. The right-hand plots are the teaching point: hrRMSE tracks the residual gap. Twenty seconds, then back to sites.
-:::
-
-## 7 · Report $\tau^2$, and say what $I^2$ is relative to
-
-| Quantity | Question |
-| --- | --- |
-| $\tau^2$ | How far do the true site effects spread? |
-| $I^2$ | How large is that spread beside the sampling noise? |
-| $\mu$ | What is the average true effect? |
-| $\mu \pm 1.96\tau$ | A rough band for a new site, before uncertainty in $\hat\mu$ and $\hat\tau$ |
-
-Do not use 25%, 50%, and 75% as cut-offs. The same $\tau^2$ produced both 20% and 94% above.
-
-::: {.notes}
-Close the block on the table. If asked for a prediction interval, say the band on the last row is not yet a full interval: it treats mu and tau as known.
+**Going further.** Random-effects weights are $1/(s_i^2 + \hat\tau^2)$ instead of $1/s_i^2$, so heterogeneity stops the most precise site from deciding the pooled mean alone: with $s_i^2 = 0.01$ and $\tau^2 = 0.09$ the weight falls from 100 to 10. Adding a moderator gives a mixed-effects meta-regression, $\theta_i = \beta_0 + \beta_1 x_i + u_i$, with the residual $\tau^2$ fitted by REML (the metafor package of Viechtbauer). Thompson and Higgins (Statistics in Medicine, 2002) warn that study-level moderators are observational even when every study is a randomised trial.
 :::
 
 ## 8 · Check a prediction in three ways {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d4f0f6 100%)"}
