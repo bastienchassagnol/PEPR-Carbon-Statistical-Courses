@@ -498,7 +498,7 @@ $$
 f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
 $$ {#eq-jensen}
 
-The two sides meet when $f$ is linear. A confidence interval, a moment, or a test computed on $f(Y)$ is not the same object on the original scale after $f^{-1}$. The log case is the [estimand slide](#sec-log-estimand). @eq-jensen is why.
+The two sides meet when $f$ is linear. A confidence interval, a moment, or a test computed on $f(Y)$ is not the same object on the original scale after $f^{-1}$. The log case is the [estimand slide](#sec-log-estimand). @eq-jensen is why. 🔗 [@eulerism_](https://www.instagram.com/p/DeMUUNSiNKu/), [carousel PDF](references/eulerism-cauchy-schwarz-and-jensen-instagram.pdf) (Jensen, slides 8–14).
 
 ::: {.notes}
 Read @eq-jensen once. The next slide draws the gap. A common misread is to invert a CI on $f(Y)$ and call it a CI for $\mathbb{E}(Y)$.

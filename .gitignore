@@ -40,6 +40,9 @@ vignettes/*.pdf
 .Renviron
 .env
 
+# Instagram carousel fetch helper
+.venv-instagram/
+
 # Rendered Quarto site (published by GitHub Actions, not committed)
 docs/
 .quarto/
