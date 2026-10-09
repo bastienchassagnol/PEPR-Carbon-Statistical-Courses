@@ -23,7 +23,7 @@
   <meta name="generator" content="quarto-1.10.19">
 
   <meta name="author" content="Bastien Chassagnol">
-  <meta name="dcterms.date" content="2026-10-08">
+  <meta name="dcterms.date" content="2026-10-09">
   <title>From the question to the model</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -253,16 +253,6 @@
     content: 'μ';
     background-image: none;
   }
-  .reveal div.callout-assumption.callout {
-    border-left-color: #8a5a00;
-  }
-  .reveal div.callout-assumption.callout-style-default .callout-title {
-    background-color: rgba(138, 90, 0, 0.13);
-  }
-  .reveal div.callout-assumption.callout-style-default .callout-icon::before, .reveal div.callout-assumption.callout-titled .callout-icon::before {
-    content: '⚖';
-    background-image: none;
-  }
   .reveal div.callout-theorem.callout {
     border-left-color: #5c3d7a;
   }
@@ -271,6 +261,16 @@
   }
   .reveal div.callout-theorem.callout-style-default .callout-icon::before, .reveal div.callout-theorem.callout-titled .callout-icon::before {
     content: '⊢';
+    background-image: none;
+  }
+  .reveal div.callout-assumption.callout {
+    border-left-color: #8a5a00;
+  }
+  .reveal div.callout-assumption.callout-style-default .callout-title {
+    background-color: rgba(138, 90, 0, 0.13);
+  }
+  .reveal div.callout-assumption.callout-style-default .callout-icon::before, .reveal div.callout-assumption.callout-titled .callout-icon::before {
+    content: '⚖';
     background-image: none;
   }
   </style>
@@ -294,7 +294,7 @@ Bastien Chassagnol
     </div>
 </div>
 
-  <p class="date">8 October 2026</p>
+  <p class="date">9 October 2026</p>
 </section>
 <section class="slide level2">
 <h2>How the four hours are split <span class="emoji" data-emoji="hourglass_flowing_sand">⏳</span></h2>
@@ -303,7 +303,7 @@ Bastien Chassagnol
 <li class="fragment"><strong>50 min.</strong> The question, a PICO exercise, and twelve reporting pitfalls</li>
 <li class="fragment"><strong>70 min.</strong> Non-Gaussian responses: QQ plots, then Poisson, negative binomial, and logit</li>
 <li class="fragment"><strong>20 min.</strong> Experimental design and hierarchical models</li>
-<li class="fragment"><strong>20 min.</strong> Bayesian regression and causal estimands</li>
+<li class="fragment"><strong>20 min.</strong> An introduction to causal inference</li>
 <li class="fragment"><strong>50 min.</strong> Quiz and the SAMPL draft, then reproducibility and the close</li>
 </ul>
 <div class="quarto-figure quarto-figure-center">
@@ -430,29 +430,6 @@ Faculté de Médecine de La Timone<br>
       }</style></aside>
 </section>
 <section class="slide level2">
-<h2>Three scientific objectives</h2>
-<p>From the <a href="https://www.pepr-faircarbon.fr/objectifs-organisation/objectifs-scientifiques">programme objectives</a>:</p>
-<ol type="1">
-<li>The processes that govern the carbon cycle, its coupling with nitrogen, phosphorus, and water, and the ecological, agronomic, and socio-economic levers for climate neutrality</li>
-<li>Open data, and a new generation of models of carbon stocks and fluxes in soils and vegetation</li>
-<li>Land-use and management pathways, built with stakeholders and tested from the territory to the national scale</li>
-</ol>
-<p>The next slide is the <a href="https://www.pepr-faircarbon.fr/objectifs-organisation/objectifs-scientifiques">objectives page</a>.</p>
-<aside class="notes">
-<p>Read the three lines. Do not open the project list yet.</p>
-<style type="text/css">
-        span.MJX_Assistive_MathML {
-          position:absolute!important;
-          clip: rect(1px, 1px, 1px, 1px);
-          padding: 1px 0 0 0!important;
-          border: 0!important;
-          height: 1px!important;
-          width: 1px!important;
-          overflow: hidden!important;
-          display:block!important;
-      }</style></aside>
-</section>
-<section class="slide level2">
 <h2>Four scientific axes</h2>
 <p>The same questions are grouped on the <a href="https://www.pepr-faircarbon.fr/objectifs-organisation/axes-scientifiques">axes page</a>:</p>
 <ol type="1">
@@ -544,23 +521,23 @@ Faculté de Médecine de La Timone<br>
 <h2>Linear algebra, before the statistics</h2>
 <div class="cell">
 <div class="cell-output-display">
-<div id="veglmtlrej" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#veglmtlrej table {
+<div id="shklfdyrwk" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#shklfdyrwk table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#veglmtlrej thead, #veglmtlrej tbody, #veglmtlrej tfoot, #veglmtlrej tr, #veglmtlrej td, #veglmtlrej th {
+#shklfdyrwk thead, #shklfdyrwk tbody, #shklfdyrwk tfoot, #shklfdyrwk tr, #shklfdyrwk td, #shklfdyrwk th {
   border-style: none;
 }
 
-#veglmtlrej p {
+#shklfdyrwk p {
   margin: 0;
   padding: 0;
 }
 
-#veglmtlrej .gt_table {
+#shklfdyrwk .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -586,12 +563,12 @@ Faculté de Médecine de La Timone<br>
   border-left-color: #D3D3D3;
 }
 
-#veglmtlrej .gt_caption {
+#shklfdyrwk .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#veglmtlrej .gt_title {
+#shklfdyrwk .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -603,7 +580,7 @@ Faculté de Médecine de La Timone<br>
   border-bottom-width: 0;
 }
 
-#veglmtlrej .gt_subtitle {
+#shklfdyrwk .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -615,7 +592,7 @@ Faculté de Médecine de La Timone<br>
   border-top-width: 0;
 }
 
-#veglmtlrej .gt_heading {
+#shklfdyrwk .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -627,13 +604,13 @@ Faculté de Médecine de La Timone<br>
   border-right-color: #D3D3D3;
 }
 
-#veglmtlrej .gt_bottom_border {
+#shklfdyrwk .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#veglmtlrej .gt_col_headings {
+#shklfdyrwk .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -648,7 +625,7 @@ Faculté de Médecine de La Timone<br>
   border-right-color: #D3D3D3;
 }
 
-#veglmtlrej .gt_col_heading {
+#shklfdyrwk .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -668,7 +645,7 @@ Faculté de Médecine de La Timone<br>
   overflow-x: hidden;
 }
 
-#veglmtlrej .gt_column_spanner_outer {
+#shklfdyrwk .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -680,15 +657,15 @@ Faculté de Médecine de La Timone<br>
   padding-right: 4px;
 }
 
-#veglmtlrej .gt_column_spanner_outer:first-child {
+#shklfdyrwk .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#veglmtlrej .gt_column_spanner_outer:last-child {
+#shklfdyrwk .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#veglmtlrej .gt_column_spanner {
+#shklfdyrwk .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -700,11 +677,11 @@ Faculté de Médecine de La Timone<br>
   width: 100%;
 }
 
-#veglmtlrej .gt_spanner_row {
+#shklfdyrwk .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#veglmtlrej .gt_group_heading {
+#shklfdyrwk .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -730,7 +707,7 @@ Faculté de Médecine de La Timone<br>
   text-align: left;
 }
 
-#veglmtlrej .gt_empty_group_heading {
+#shklfdyrwk .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -745,15 +722,15 @@ Faculté de Médecine de La Timone<br>
   vertical-align: middle;
 }
 
-#veglmtlrej .gt_from_md > :first-child {
+#shklfdyrwk .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#veglmtlrej .gt_from_md > :last-child {
+#shklfdyrwk .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#veglmtlrej .gt_row {
+#shklfdyrwk .gt_row {
   padding-top: 3px;
   padding-bottom: 3px;
   padding-left: 5px;
@@ -772,7 +749,7 @@ Faculté de Médecine de La Timone<br>
   overflow-x: hidden;
 }
 
-#veglmtlrej .gt_stub {
+#shklfdyrwk .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -785,7 +762,7 @@ Faculté de Médecine de La Timone<br>
   padding-right: 5px;
 }
 
-#veglmtlrej .gt_stub_row_group {
+#shklfdyrwk .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -799,15 +776,15 @@ Faculté de Médecine de La Timone<br>
   vertical-align: top;
 }
 
-#veglmtlrej .gt_row_group_first td {
+#shklfdyrwk .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#veglmtlrej .gt_row_group_first th {
+#shklfdyrwk .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#veglmtlrej .gt_summary_row {
+#shklfdyrwk .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -817,16 +794,16 @@ Faculté de Médecine de La Timone<br>
   padding-right: 5px;
 }
 
-#veglmtlrej .gt_first_summary_row {
+#shklfdyrwk .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#veglmtlrej .gt_first_summary_row.thick {
+#shklfdyrwk .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#veglmtlrej .gt_last_summary_row {
+#shklfdyrwk .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -836,7 +813,7 @@ Faculté de Médecine de La Timone<br>
   border-bottom-color: #D3D3D3;
 }
 
-#veglmtlrej .gt_grand_summary_row {
+#shklfdyrwk .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -846,7 +823,7 @@ Faculté de Médecine de La Timone<br>
   padding-right: 5px;
 }
 
-#veglmtlrej .gt_first_grand_summary_row {
+#shklfdyrwk .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -856,7 +833,7 @@ Faculté de Médecine de La Timone<br>
   border-top-color: #D3D3D3;
 }
 
-#veglmtlrej .gt_last_grand_summary_row_top {
+#shklfdyrwk .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -866,11 +843,11 @@ Faculté de Médecine de La Timone<br>
   border-bottom-color: #D3D3D3;
 }
 
-#veglmtlrej .gt_striped {
+#shklfdyrwk .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#veglmtlrej .gt_table_body {
+#shklfdyrwk .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -879,7 +856,7 @@ Faculté de Médecine de La Timone<br>
   border-bottom-color: #D3D3D3;
 }
 
-#veglmtlrej .gt_footnotes {
+#shklfdyrwk .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -893,7 +870,7 @@ Faculté de Médecine de La Timone<br>
   border-right-color: #D3D3D3;
 }
 
-#veglmtlrej .gt_footnote {
+#shklfdyrwk .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -902,7 +879,7 @@ Faculté de Médecine de La Timone<br>
   padding-right: 5px;
 }
 
-#veglmtlrej .gt_sourcenotes {
+#shklfdyrwk .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -916,7 +893,7 @@ Faculté de Médecine de La Timone<br>
   border-right-color: #D3D3D3;
 }
 
-#veglmtlrej .gt_sourcenote {
+#shklfdyrwk .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -924,72 +901,72 @@ Faculté de Médecine de La Timone<br>
   padding-right: 5px;
 }
 
-#veglmtlrej .gt_left {
+#shklfdyrwk .gt_left {
   text-align: left;
 }
 
-#veglmtlrej .gt_center {
+#shklfdyrwk .gt_center {
   text-align: center;
 }
 
-#veglmtlrej .gt_right {
+#shklfdyrwk .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#veglmtlrej .gt_font_normal {
+#shklfdyrwk .gt_font_normal {
   font-weight: normal;
 }
 
-#veglmtlrej .gt_font_bold {
+#shklfdyrwk .gt_font_bold {
   font-weight: bold;
 }
 
-#veglmtlrej .gt_font_italic {
+#shklfdyrwk .gt_font_italic {
   font-style: italic;
 }
 
-#veglmtlrej .gt_super {
+#shklfdyrwk .gt_super {
   font-size: 65%;
 }
 
-#veglmtlrej .gt_footnote_marks {
+#shklfdyrwk .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#veglmtlrej .gt_asterisk {
+#shklfdyrwk .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#veglmtlrej .gt_indent_1 {
+#shklfdyrwk .gt_indent_1 {
   text-indent: 5px;
 }
 
-#veglmtlrej .gt_indent_2 {
+#shklfdyrwk .gt_indent_2 {
   text-indent: 10px;
 }
 
-#veglmtlrej .gt_indent_3 {
+#shklfdyrwk .gt_indent_3 {
   text-indent: 15px;
 }
 
-#veglmtlrej .gt_indent_4 {
+#shklfdyrwk .gt_indent_4 {
   text-indent: 20px;
 }
 
-#veglmtlrej .gt_indent_5 {
+#shklfdyrwk .gt_indent_5 {
   text-indent: 25px;
 }
 
-#veglmtlrej .katex-display {
+#shklfdyrwk .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#veglmtlrej div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#shklfdyrwk div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1030,7 +1007,7 @@ Faculté de Médecine de La Timone<br>
 </tr>
 <tr class="even">
 <td class="gt_row gt_center" headers="Operators  Symbol"><span class="math inline">\(\mathbf{A}\mathbf{x}\)</span></td>
-<td class="gt_row gt_left" headers="Operators  Meaning">Matrix–vector product</td>
+<td class="gt_row gt_left" headers="Operators  Meaning">Matrix&lt;U+2013&gt;vector product</td>
 </tr>
 </tbody>
 </table>
@@ -1054,7 +1031,7 @@ Faculté de Médecine de La Timone<br>
       }</style></aside>
 </section>
 <section id="sec-notation" class="slide level2 smaller">
-<h2>Notation</h2>
+<h2>Statistics and probability notation</h2>
 <table class="caption-top">
 <colgroup>
 <col style="width: 50%">
@@ -1287,11 +1264,11 @@ Faculté de Médecine de La Timone<br>
 <h2>Inner product and norm</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="figures/generated/algebra-sketch-01.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="Panel 1 of the StatHarbor algebra poster: the inner product, the Euclidean norm, and distance as the norm of a difference."><img data-src="figures/generated/algebra-sketch-01.jpg" alt="Formula for the inner product of x and y, the Euclidean norm, and a sketch of the angle between two vectors."></a></p>
+<p><a href="figures/sources/algebra-01.png" class="lightbox" data-gallery="quarto-lightbox-gallery-8" title="Panel 1 of the StatHarbor algebra poster: the inner product, the Euclidean norm, and distance as the norm of a difference."><img data-src="figures/sources/algebra-01.png" alt="Formula for the inner product of x and y, the Euclidean norm, and a sketch of the angle between two vectors."></a></p>
 <figcaption>Panel 1 of the StatHarbor algebra poster: the inner product, the Euclidean norm, and distance as the norm of a difference.</figcaption>
 </figure>
 </div>
-<p>An inner product measures <mark>alignment</mark>. The norm is a <mark>length</mark>. The sketches follow the twelve panels <a href="https://www.linkedin.com/posts/statistics-linearalgebra-biostatistics-share-7484322853023154176-qHXd/">StatHarbor Analytics</a> published; the originals stay in <code>figures/sources/</code>.</p>
+<p>An inner product measures <mark>alignment</mark>. The norm is a <mark>length</mark>. These twelve panels are the originals <a href="https://www.linkedin.com/posts/statistics-linearalgebra-biostatistics-share-7484322853023154176-qHXd/">StatHarbor Analytics</a> published.</p>
 <aside class="notes">
 <p>Five panels are live. Name the object, not the proof. Panels from the spectral decomposition onward are in the file but hidden.</p>
 <style type="text/css">
@@ -1310,7 +1287,7 @@ Faculté de Médecine de La Timone<br>
 <h2>Matrix multiplication</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="figures/generated/algebra-sketch-02.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="Panel 2: eta equals X beta, with a schematic of a design matrix times a coefficient vector."><img data-src="figures/generated/algebra-sketch-02.jpg" alt="The equation eta equals X beta, and a small picture of a design matrix multiplying a coefficient vector."></a></p>
+<p><a href="figures/sources/algebra-02.png" class="lightbox" data-gallery="quarto-lightbox-gallery-9" title="Panel 2: eta equals X beta, with a schematic of a design matrix times a coefficient vector."><img data-src="figures/sources/algebra-02.png" alt="The equation eta equals X beta, and a small picture of a design matrix multiplying a coefficient vector."></a></p>
 <figcaption>Panel 2: eta equals X beta, with a schematic of a design matrix times a coefficient vector.</figcaption>
 </figure>
 </div>
@@ -1333,7 +1310,7 @@ Faculté de Médecine de La Timone<br>
 <h2>Least squares</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="figures/generated/algebra-sketch-03.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-10" title="Panel 3: the ordinary least-squares estimator and the orthogonality of residuals."><img data-src="figures/generated/algebra-sketch-03.jpg" alt="The formula for beta hat when X has full column rank, and the statement that residuals are orthogonal to the columns of X."></a></p>
+<p><a href="figures/sources/algebra-03.png" class="lightbox" data-gallery="quarto-lightbox-gallery-10" title="Panel 3: the ordinary least-squares estimator and the orthogonality of residuals."><img data-src="figures/sources/algebra-03.png" alt="The formula for beta hat when X has full column rank, and the statement that residuals are orthogonal to the columns of X."></a></p>
 <figcaption>Panel 3: the ordinary least-squares estimator and the orthogonality of residuals.</figcaption>
 </figure>
 </div>
@@ -1357,7 +1334,7 @@ Faculté de Médecine de La Timone<br>
 <h2>The hat matrix</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="figures/generated/algebra-sketch-04.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-11" title="Panel 4: the projection matrix onto the column space of X."><img data-src="figures/generated/algebra-sketch-04.jpg" alt="The formula for the hat matrix, and a sketch of y projected onto the column space with an orthogonal residual."></a></p>
+<p><a href="figures/sources/algebra-04.png" class="lightbox" data-gallery="quarto-lightbox-gallery-11" title="Panel 4: the projection matrix onto the column space of X."><img data-src="figures/sources/algebra-04.png" alt="The formula for the hat matrix, and a sketch of y projected onto the column space with an orthogonal residual."></a></p>
 <figcaption>Panel 4: the projection matrix onto the column space of X.</figcaption>
 </figure>
 </div>
@@ -1381,7 +1358,7 @@ Faculté de Médecine de La Timone<br>
 <h2>A quadratic form</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="figures/generated/algebra-sketch-05.jpg" class="lightbox" data-gallery="quarto-lightbox-gallery-12" title="Panel 5: the quadratic form x transpose A x, drawn as ellipses."><img data-src="figures/generated/algebra-sketch-05.jpg" alt="The quadratic form x transpose A x, with a sketch of elliptical level curves."></a></p>
+<p><a href="figures/sources/algebra-05.png" class="lightbox" data-gallery="quarto-lightbox-gallery-12" title="Panel 5: the quadratic form x transpose A x, drawn as ellipses."><img data-src="figures/sources/algebra-05.png" alt="The quadratic form x transpose A x, with a sketch of elliptical level curves."></a></p>
 <figcaption>Panel 5: the quadratic form x transpose A x, drawn as ellipses.</figcaption>
 </figure>
 </div>
@@ -2137,8 +2114,8 @@ X^{\mathsf T}(y - X\hat{\beta}) = 0 \quad \text{(orthogonality)}
 <h2>The teaching columns</h2>
 <div class="cell">
 <div class="cell-output-display">
-<div class="reactable html-widget html-fill-item" id="htmlwidget-0ba507e62936ce8ef105" style="width:auto;height:auto;"></div>
-<script type="application/json" data-for="htmlwidget-0ba507e62936ce8ef105">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Column":["sample_id","year","plot","point","system","zone","tillage","plowing","ferti_n","baseline_year","sequencing_depth","total_reads","richness","nitrospira_reads","methylobacter_reads","methylobacter_present","nitrospira_rel"],"Unit":["identifier","calendar year","plot id","point in the plot","SD1, SD2, TS1, TS2","SD, TS, or MIX","No-till or Tilled","Yes or No","Yes or No","true in 2018","reads, before filtering","reads, in the filtered table","OTUs with a read","reads","reads","0 or 1","share of total_reads"],"Records":["One sample","Sampling year. 2018 is before the treatments","The plot the system sits on","The subplot, ID_Point in the deposit","The cropping system","Where the system sits: the zone","SD against TS, built from system","Whether the plot was ploughed","Nitrogen fertilisation recorded on the sample","Baseline year, from the dataset notes","Published sequencing depth","Library size recomputed from the filtered counts","How many OTUs were seen","Nitrospira, a nitrifier used later as a count","Methylobacter, used later as a detection","Whether Methylobacter was seen at all","Nitrospira reads divided by the library size"],"Role":["Design","Design","Design","Design","Design","Design","Design","Design","Design","Design","Effort","Effort","Response","Response","Response","Response","Response"]},"columns":[{"id":"Column","name":"Column","type":"character"},{"id":"Unit","name":"Unit","type":"character"},{"id":"Records","name":"Records","type":"character"},{"id":"Role","name":"Role","type":"character","maxWidth":110,"style":[{"background":"#e4efe9","fontWeight":600},{"background":"#e4efe9","fontWeight":600},{"background":"#e4efe9","fontWeight":600},{"background":"#e4efe9","fontWeight":600},{"background":"#e4efe9","fontWeight":600},{"background":"#e4efe9","fontWeight":600},{"background":"#e4efe9","fontWeight":600},{"background":"#e4efe9","fontWeight":600},{"background":"#e4efe9","fontWeight":600},{"background":"#e4efe9","fontWeight":600},{"background":"#f3ecdc","fontWeight":600},{"background":"#f3ecdc","fontWeight":600},{"background":"#f6e6df","fontWeight":600},{"background":"#f6e6df","fontWeight":600},{"background":"#f6e6df","fontWeight":600},{"background":"#f6e6df","fontWeight":600},{"background":"#f6e6df","fontWeight":600}]}],"defaultPageSize":5,"highlight":true,"bordered":true,"compact":true,"theme":{"cellPadding":"4px 8px","style":{"fontSize":"15px"},"headerStyle":{"background":"#e7f0ec","fontWeight":600}},"dataKey":"6265ca1e3b064a8e86627dc67b0f8919"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
+<div class="reactable html-widget html-fill-item" id="htmlwidget-b896c12a4efb13e13cc9" style="width:auto;height:auto;"></div>
+<script type="application/json" data-for="htmlwidget-b896c12a4efb13e13cc9">{"x":{"tag":{"name":"Reactable","attribs":{"data":{"Column":["sample_id","year","plot","point","system","zone","tillage","plowing","ferti_n","baseline_year","sequencing_depth","total_reads","richness","nitrospira_reads","methylobacter_reads","methylobacter_present","nitrospira_rel"],"Unit":["identifier","calendar year","plot id","point in the plot","SD1, SD2, TS1, TS2","SD, TS, or MIX","No-till or Tilled","Yes or No","Yes or No","true in 2018","reads, before filtering","reads, in the filtered table","OTUs with a read","reads","reads","0 or 1","share of total_reads"],"Records":["One sample","Sampling year. 2018 is before the treatments","The plot the system sits on","The subplot, ID_Point in the deposit","The cropping system","Where the system sits: the zone","SD against TS, built from system","Whether the plot was ploughed","Nitrogen fertilisation recorded on the sample","Baseline year, from the dataset notes","Published sequencing depth","Library size recomputed from the filtered counts","How many OTUs were seen","Nitrospira, a nitrifier used later as a count","Methylobacter, used later as a detection","Whether Methylobacter was seen at all","Nitrospira reads divided by the library size"],"Role":["Design","Design","Design","Design","Design","Design","Design","Design","Design","Design","Effort","Effort","Response","Response","Response","Response","Response"]},"columns":[{"id":"Column","name":"Column","type":"character"},{"id":"Unit","name":"Unit","type":"character"},{"id":"Records","name":"Records","type":"character"},{"id":"Role","name":"Role","type":"character","maxWidth":110,"style":[{"background":"#e4efe9","fontWeight":600},{"background":"#e4efe9","fontWeight":600},{"background":"#e4efe9","fontWeight":600},{"background":"#e4efe9","fontWeight":600},{"background":"#e4efe9","fontWeight":600},{"background":"#e4efe9","fontWeight":600},{"background":"#e4efe9","fontWeight":600},{"background":"#e4efe9","fontWeight":600},{"background":"#e4efe9","fontWeight":600},{"background":"#e4efe9","fontWeight":600},{"background":"#f3ecdc","fontWeight":600},{"background":"#f3ecdc","fontWeight":600},{"background":"#f6e6df","fontWeight":600},{"background":"#f6e6df","fontWeight":600},{"background":"#f6e6df","fontWeight":600},{"background":"#f6e6df","fontWeight":600},{"background":"#f6e6df","fontWeight":600}]}],"defaultPageSize":5,"highlight":true,"bordered":true,"compact":true,"theme":{"cellPadding":"4px 8px","style":{"fontSize":"15px"},"headerStyle":{"background":"#e7f0ec","fontWeight":600}},"dataKey":"6265ca1e3b064a8e86627dc67b0f8919"},"children":[]},"class":"reactR_markup"},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <p>Five rows at a time. Design, effort, and response are the three <mark>roles</mark>. The file behind the table is <a href="data/derived/casys_teaching.csv">casys_teaching.csv</a>.</p>
@@ -3157,7 +3134,7 @@ X^{\mathsf T}(y - X\hat{\beta}) = 0 \quad \text{(orthogonality)}
 </section>
 <section id="sec-pvalue" class="slide level2">
 <h2>2 · A p-value is about the data</h2>
-<p>Under identical replicates of this experiment, with the effect set to zero, <span class="math inline">\(p\)</span> is the probability of a result <mark>more extreme</mark> than the one in hand (<a href="https://hbiostat.org/bbr/alpha">Harrell, ch.&nbsp;22</a>).</p>
+<p>Under identical replicates of this experiment, with the effect set to zero, <span class="math inline">\(p\)</span> is the probability of a result <mark>more extreme</mark> than the one in hand (<a href="https://hbiostat.org/bbr/alpha">Harrell, ch.&nbsp;22</a>). 📄 Thiese, Ronna, and Ott collect the same reading in <a href="references/random-versus-systematic-error.pdf"><em>P value interpretations and considerations</em></a>.</p>
 <p>A <span class="math inline">\(p\)</span> of 0.06 says that, under the model and the null, a replicate would be more extreme about 6 times in 100. It does not say that the null has probability 0.06.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure>
@@ -3277,7 +3254,7 @@ X^{\mathsf T}(y - X\hat{\beta}) = 0 \quad \text{(orthogonality)}
 <li>A <mark>craftsman</mark> reports one <span class="math inline">\(P\)</span> for one question written in advance.</li>
 <li>An <mark>industrialist</mark> uses <span class="math inline">\(P\)</span> to screen thousands of hypotheses; the histogram of all of them is part of the evidence.</li>
 <li>One <span class="math inline">\(P\)</span> can fall anywhere in <span class="math inline">\((0,1)\)</span> when the null is true; the distribution of many <span class="math inline">\(P\)</span> values is a different object.</li>
-<li>Both sides agree that <span class="math inline">\(P\)</span> alone is an insufficient report.</li>
+<li>Both sides agree that <span class="math inline">\(P\)</span> alone is an insufficient report. 📝 StatHarbor, <a href="references/multiple-testing-model.pdf"><em>Multiple testing correction</em></a>. 📄 Qin Ma and colleagues, <a href="references/qin-ma-ad-hoc-post-hoc-and-intrinsic-hoc-in.pdf"><em>Ad hoc, post hoc and intrinsic-hoc in bioinformatics</em></a>.</li>
 </ul>
 </div><div class="column" style="width:38%;">
 <p><a href="figures/generated/sketch-pitfalls-screen.png" class="lightbox" data-gallery="quarto-lightbox-gallery-48"><img data-src="figures/generated/sketch-pitfalls-screen.png" class="sketch" alt="Hand-drawn sketch: on the left, a stick figure holding one P for a planned question; on the right, a histogram of ten thousand P values between 0 and 1 with a peak near 0, labelled screen."></a></p>
@@ -3299,7 +3276,7 @@ X^{\mathsf T}(y - X\hat{\beta}) = 0 \quad \text{(orthogonality)}
 </section>
 <section id="sec-large-n" class="slide level2">
 <h2>2 · The same p, a shrinking effect</h2>
-<p><a href="https://doi.org/10.1111/j.1471-6712.2012.01052.x">Lantz</a> keeps <span class="math inline">\(p = 0.0253\)</span> while a preference for treatment X shrinks toward a coin toss. These are the two ends of his table.</p>
+<p><a href="references/large-sample-size-fallacy.pdf">Lantz</a> keeps <span class="math inline">\(p = 0.0253\)</span> while a preference for treatment X shrinks toward a coin toss. These are the two ends of his table.</p>
 <table class="caption-top">
 <thead>
 <tr class="header">
@@ -4111,7 +4088,7 @@ Q = \sum_i \frac{1}{s_i^2}\,(y_i - \hat\mu_{\mathrm{FE}})^2, \qquad I^2 = \max\l
 <h2>7 · One level deeper: a hierarchical error</h2>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="figures/generated/hierarchical-rmse.png" class="lightbox" data-gallery="quarto-lightbox-gallery-58" title="Nested samples and cell types, with a hierarchical model for a true proportion and its replicates, and three sketches of residual error."><img data-src="figures/generated/hierarchical-rmse.png" style="width:100.0%" alt="Two panels. Left: three replicate samples, each with cell types, and a table of true proportions beside estimates. Right: a hierarchical mean plus sample and residual terms, and three plots in which the gap between true proportions and replicates grows."></a></p>
+<p><a href="figures/sources/hierarchical_rmse.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-58" title="Nested samples and cell types, with a hierarchical model for a true proportion and its replicates, and three sketches of residual error."><img data-src="figures/sources/hierarchical_rmse.svg" style="width:100.0%" alt="Two panels. Left: three replicate samples, each with cell types, and a table of true proportions beside estimates. Right: a hierarchical mean plus sample and residual terms, and three plots in which the gap between true proportions and replicates grows."></a></p>
 <figcaption>Nested samples and cell types, with a hierarchical model for a true proportion and its replicates, and three sketches of residual error.</figcaption>
 </figure>
 </div>
@@ -4361,7 +4338,7 @@ Q = \sum_i \frac{1}{s_i^2}\,(y_i - \hat\mu_{\mathrm{FE}})^2, \qquad I^2 = \max\l
 </div>
 </div>
 <p><span class="math display">\[Y_{ij} = \beta_0 + u_j + \beta^\top \mathbf{x}_{ij} + \epsilon_{ij}, \qquad u_j \sim N(0,\sigma_u^2), \qquad \rho = \frac{\sigma_u^2}{\sigma_u^2 + \sigma^2}\]</span></p>
-<p>Ignoring the <mark>cluster</mark> pretends that rows in the same enclosure are as different as rows in different enclosures <span class="citation" data-cites="riley12thDayChristmas2022">(<a href="#/references" role="doc-biblioref" onclick="">Riley et al. 2022</a>)</span>. The model is a <a href="#/sec-random-intercept">random intercept</a>.</p>
+<p>Ignoring the <mark>cluster</mark> pretends that rows in the same enclosure are as different as rows in different enclosures <span class="citation" data-cites="riley12thDayChristmas2022">(<a href="#/references" role="doc-biblioref" onclick="">Riley et al. 2022</a>)</span>. The model is a <a href="#/sec-random-intercept">random intercept</a>. 📝 Godechot’s panel notes use the same nesting for repeated observations of one unit (<a href="references/econometrie-panels.pdf">the slides</a>).</p>
 <aside class="notes">
 <p>Index <span class="math inline">\(j\)</span> is the unit that received the treatment; <span class="math inline">\(i\)</span> is the repeated measure or sub-sample. Ask them to name both indices for their dataset before you show the row count slide.</p>
 <p><strong>Going further.</strong> In the random-intercept model the intraclass correlation <span class="math inline">\(\rho\)</span> is the correlation between two observations in the same cluster. For a cluster-level treatment with <span class="math inline">\(m\)</span> observations per cluster, the variance of the treatment effect is inflated by the design effect <span class="math inline">\(1 + (m-1)\rho\)</span> (Kish, Survey Sampling), so the effective sample size is <span class="math inline">\(nm/\{1 + (m-1)\rho\}\)</span>: even <span class="math inline">\(\rho = 0.1\)</span> with <span class="math inline">\(m = 20\)</span> nearly triples the variance. Ignoring the cluster gives standard errors that are too small for cluster-level covariates. The variance components are estimated by REML, which corrects the downward bias of maximum likelihood for <span class="math inline">\(\sigma_u^2\)</span> by accounting for the fixed effects (Patterson and Thompson, Biometrika, 1971).</p>
@@ -4667,7 +4644,7 @@ Q = \sum_i \frac{1}{s_i^2}\,(y_i - \hat\mu_{\mathrm{FE}})^2, \qquad I^2 = \max\l
 <figcaption>A machine-learning pipeline from data collection through feature transformation, selection, dimension reduction, and modelling, with model evaluation and tuning circled.</figcaption>
 </figure>
 </div>
-<p><a href="https://github.com/soga-lab/EGU2026_SC">Hartmann and Rudolph</a>, EGU 2026 short course SC2.28, draw the usual order. The circled step is where the score is judged. A rewrite of the column that changes the mean shows up there as a number you cannot interpret. This hour is about that rewrite.</p>
+<p><a href="https://github.com/soga-lab/EGU2026_SC">Hartmann and Rudolph</a>, EGU 2026 short course SC2.28, draw the usual order. The circled step is where the score is judged. A rewrite of the column that changes the mean shows up there as a number you cannot interpret. This hour is about that rewrite. 📝 <a href="references/egu26-how-to-feed-machine-learning.pdf">Their short-course notes</a>. 📄 Sarkar and Stephens separate a measurement model from an expression model in single-cell counts (<a href="references/sarkar-measurement-and-expression-2021.pdf">the perspective</a>).</p>
 <aside class="notes">
 <p>Trace the pipeline left to right and linger on the circled evaluation box. Ask what happens if a log or library-size normalisation is applied before the model is chosen—the metric still looks fine while the estimand changed. This slide sets the stake for everything that follows about transforms versus links.</p>
 <style type="text/css">
@@ -4734,7 +4711,7 @@ Q = \sum_i \frac{1}{s_i^2}\,(y_i - \hat\mu_{\mathrm{FE}})^2, \qquad I^2 = \max\l
 </div><div class="column" style="width:38%;">
 <p><a href="figures/generated/sketch-nongauss-a-sum-product.png" class="lightbox" data-gallery="quarto-lightbox-gallery-64"><img data-src="figures/generated/sketch-nongauss-a-sum-product.png" class="sketch" alt="Hand-drawn comparison: a sum of steps gives a symmetric blue bell, a product of steps gives a red curve skewed to the right."></a></p>
 </div></div>
-<p>Species abundance and environmental concentrations are on the product side (<a href="https://doi.org/10.1641/0006-3568(2001)051%5B0341:LNDATS%5D2.0.CO;2">Limpert, Stahel, and Abbt, 2001</a>; <a href="https://doi.org/10.1038/s41598-021-96010-6">Andersson, 2021</a>). More rows do not turn a product into a sum.</p>
+<p>Species abundance and environmental concentrations are on the product side (<a href="https://doi.org/10.1641/0006-3568(2001)051%5B0341:LNDATS%5D2.0.CO;2">Limpert, Stahel, and Abbt, 2001</a>; <a href="https://doi.org/10.1038/s41598-021-96010-6">Andersson, 2021</a>). More rows do not turn a product into a sum. 📄 Olszewski’s longer note is <a href="references/on-the-ubiquity-of-skewness.pdf"><em>On the ubiquity of skewness in nature</em></a> (2023).</p>
 <aside class="notes">
 <p>Contrast sum versus product in one sentence each; Cauchy and Pareto are the “finite variance fails” examples. The carbon examples at the bottom are the punchline—bigger <span class="math inline">\(n\)</span> does not Gaussianise a multiplicative process. Ask whether read counts feel more like sums or products.</p>
 <p><strong>Going further.</strong> The Lindeberg–Lévy theorem says that <span class="math inline">\(\sqrt{n}(\bar{Y} - \mu)/\sigma\)</span> converges to <span class="math inline">\(\mathcal{N}(0, 1)\)</span> for independent, identically distributed terms with finite variance <span class="math inline">\(\sigma^2\)</span>. Taking logs turns a product <span class="math inline">\(\prod_k U_k\)</span> of positive, independent factors into a sum <span class="math inline">\(\sum_k \log U_k\)</span>, so the same theorem gives a log-normal limit whenever <span class="math inline">\(\operatorname{Var}(\log U_k)\)</span> is finite. Without a finite variance the generalised central limit theorem replaces the Gaussian by a stable law (Cauchy and Lévy are members), with a slower, non-<span class="math inline">\(\sqrt{n}\)</span> scaling. Gnedenko and Kolmogorov, <em>Limit Distributions for Sums of Independent Random Variables</em> (1954), is the classical source; Limpert, Stahel, and Abbt (2001) give the applied log-normal case.</p>
@@ -4853,7 +4830,8 @@ Y_i = \beta_0 + \beta_1 x_i + \varepsilon_i, \qquad \varepsilon_i \sim \mathcal{
 <p><a href="https://www.linkedin.com/pulse/normality-tests-q-q-plots-natalie-rodrigue-qxlqc/">Rodrigue</a>: the horizontal axis is the quantile under the reference distribution. The vertical axis is the observed quantile. A straight line, with extra scatter at the ends, is the reference. <mark>Order statistics</mark> are noisier in the tails. A systematic curve is the departure. The named shapes are the <a href="#/sec-qq-shapes">shape figures</a>.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure>
-<p><a href="figures/generated/sketch-nongauss-a-qq-wander.png" class="lightbox" data-gallery="quarto-lightbox-gallery-67"><img data-src="figures/generated/sketch-nongauss-a-qq-wander.png" class="sketch quarto-figure quarto-figure-center" alt="Two hand-drawn QQ plots. Left, green points follow the grey line with the two end points a little off it, marked fine. Right, red points curve away from the line in a systematic bend, marked wrong."></a></p>
+<p><a href="figures/sources/qq-interpretation.svg" class="lightbox" data-gallery="quarto-lightbox-gallery-67" title="How to read a normal QQ plot: scatter at the ends is allowed, and a systematic curve is the departure."><img data-src="figures/sources/qq-interpretation.svg" style="width:78.0%" alt="A guide to a normal QQ plot. Points may wander at the two ends. A systematic curve away from the reference line is the departure."></a></p>
+<figcaption>How to read a normal QQ plot: scatter at the ends is allowed, and a systematic curve is the departure.</figcaption>
 </figure>
 </div>
 <aside class="notes">
@@ -5084,7 +5062,7 @@ Y_i = \beta_0 + \beta_1 x_i + \varepsilon_i, \qquad \varepsilon_i \sim \mathcal{
 <figcaption>Five panels from Ho and colleagues: a bar chart, a box plot, a scatter with means, a null distribution of the difference, and a Gardner–Altman plot of the mean difference with an interval.</figcaption>
 </figure>
 </div>
-<p><a href="https://doi.org/10.1038/s41592-019-0470-3">Ho and colleagues</a>. Panel e is the graphic this workshop keeps: <span class="math inline">\(\Delta\)</span> and an interval.</p>
+<p><a href="https://doi.org/10.1038/s41592-019-0470-3">Ho and colleagues</a>. Panel e is the graphic this workshop keeps: <span class="math inline">\(\Delta\)</span> and an interval. 📄 <a href="references/against-boxplots.pdf">The paper</a>.</p>
 <aside class="notes">
 <p>Scan panels a–c as what not to stop at, then land on panel e: mean difference <span class="math inline">\(\Delta\)</span> with an interval on a difference axis. Contrast with a lone star or <span class="math inline">\(p\)</span>-value. This is the reporting standard the pitfalls section keeps returning to.</p>
 <style type="text/css">
@@ -5380,7 +5358,7 @@ Y_i = \beta_0 + \beta_1 x_i + \varepsilon_i, \qquad \varepsilon_i \sim \mathcal{
 <li>Why is transforming the response usually a bad default?</li>
 <li>What do you do instead when a Gaussian model for <span class="math inline">\(Y\)</span> does not fit?</li>
 </ol>
-<p><a href="https://www.linkedin.com/pulse/why-transforming-response-regression-analysis-testing-olszewski/">Olszewski’s</a> answers, from the 2022 note, follow the variance-stabilising case. A multiplicative process is the case he keeps. A skewed histogram is not.</p>
+<p><a href="https://www.linkedin.com/pulse/why-transforming-response-regression-analysis-testing-olszewski/">Olszewski’s</a> answers, from the 2022 note, follow the variance-stabilising case. A multiplicative process is the case he keeps. A skewed histogram is not. 📄 <a href="references/against-transformation.pdf">The note</a>.</p>
 <aside class="notes">
 <p>Pause on the two numbered questions—let someone answer before you advance. Olszewski’s “bad default” is about rewriting the estimand without science; the alternative is a model matched to <span class="math inline">\(Y\)</span>. Skew alone is not on his justification list.</p>
 <style type="text/css">
@@ -5585,7 +5563,7 @@ Y_i = \beta_0 + \beta_1 x_i + \varepsilon_i, \qquad \varepsilon_i \sim \mathcal{
 <p><span id="eq-jensen"><span class="math display">\[
 f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
 \tag{1}\]</span></span></p>
-<p>The two sides meet when <span class="math inline">\(f\)</span> is linear. A confidence interval, a moment, or a test computed on <span class="math inline">\(f(Y)\)</span> is not the same object on the original scale after <span class="math inline">\(f^{-1}\)</span>. The log case is the <a href="#/sec-log-estimand">estimand slide</a>. <a href="#/eq-jensen" class="quarto-xref">Equation&nbsp;1</a> is why.</p>
+<p>The two sides meet when <span class="math inline">\(f\)</span> is linear. A confidence interval, a moment, or a test computed on <span class="math inline">\(f(Y)\)</span> is not the same object on the original scale after <span class="math inline">\(f^{-1}\)</span>. The log case is the <a href="#/sec-log-estimand">estimand slide</a>. <a href="#/eq-jensen" class="quarto-xref">Equation&nbsp;1</a> is why. 🔗 <a href="https://www.instagram.com/p/DeMUUNSiNKu/"><span class="citation" data-cites="eulerism_">(<span><strong>eulerism_?</strong></span>)</span></a>, <a href="references/eulerism-cauchy-schwarz-and-jensen-instagram.pdf">carousel PDF</a> (Jensen, slides 8–14).</p>
 <aside class="notes">
 <p>Read <a href="#/eq-jensen" class="quarto-xref">Equation&nbsp;1</a> once. The next slide draws the gap. A common misread is to invert a CI on <span class="math inline">\(f(Y)\)</span> and call it a CI for <span class="math inline">\(\mathbb{E}(Y)\)</span>.</p>
 <p><strong>Going further.</strong> Jensen’s inequality holds for any convex <span class="math inline">\(f\)</span> and integrable <span class="math inline">\(Y\)</span>, with equality if and only if <span class="math inline">\(f\)</span> is affine on the support of <span class="math inline">\(Y\)</span> or <span class="math inline">\(Y\)</span> is degenerate. A second-order expansion gives the size of the gap: <span class="math inline">\(\mathbb{E}\{f(Y)\} \approx f(\mu) + \tfrac12 f''(\mu)\operatorname{Var}(Y)\)</span>. What does travel back is a quantile: for a monotone <span class="math inline">\(f\)</span>, <span class="math inline">\(f^{-1}\)</span> of a quantile of <span class="math inline">\(f(Y)\)</span> is the same quantile of <span class="math inline">\(Y\)</span>. So an interval for the mean of <span class="math inline">\(\log Y\)</span>, back-transformed, is an interval for the median of <span class="math inline">\(Y\)</span> when <span class="math inline">\(\log Y\)</span> is symmetric, not for its mean.</p>
@@ -5797,23 +5775,23 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
 <h2>The centre has to match the scale</h2>
 <div class="cell">
 <div class="cell-output-display">
-<div id="lfhgjwoorf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#lfhgjwoorf table {
+<div id="ywbkotbjuv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ywbkotbjuv table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#lfhgjwoorf thead, #lfhgjwoorf tbody, #lfhgjwoorf tfoot, #lfhgjwoorf tr, #lfhgjwoorf td, #lfhgjwoorf th {
+#ywbkotbjuv thead, #ywbkotbjuv tbody, #ywbkotbjuv tfoot, #ywbkotbjuv tr, #ywbkotbjuv td, #ywbkotbjuv th {
   border-style: none;
 }
 
-#lfhgjwoorf p {
+#ywbkotbjuv p {
   margin: 0;
   padding: 0;
 }
 
-#lfhgjwoorf .gt_table {
+#ywbkotbjuv .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -5839,12 +5817,12 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   border-left-color: #D3D3D3;
 }
 
-#lfhgjwoorf .gt_caption {
+#ywbkotbjuv .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#lfhgjwoorf .gt_title {
+#ywbkotbjuv .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -5856,7 +5834,7 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   border-bottom-width: 0;
 }
 
-#lfhgjwoorf .gt_subtitle {
+#ywbkotbjuv .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -5868,7 +5846,7 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   border-top-width: 0;
 }
 
-#lfhgjwoorf .gt_heading {
+#ywbkotbjuv .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -5880,13 +5858,13 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   border-right-color: #D3D3D3;
 }
 
-#lfhgjwoorf .gt_bottom_border {
+#ywbkotbjuv .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#lfhgjwoorf .gt_col_headings {
+#ywbkotbjuv .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -5901,7 +5879,7 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   border-right-color: #D3D3D3;
 }
 
-#lfhgjwoorf .gt_col_heading {
+#ywbkotbjuv .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 15px;
@@ -5921,7 +5899,7 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   overflow-x: hidden;
 }
 
-#lfhgjwoorf .gt_column_spanner_outer {
+#ywbkotbjuv .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 15px;
@@ -5933,15 +5911,15 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   padding-right: 4px;
 }
 
-#lfhgjwoorf .gt_column_spanner_outer:first-child {
+#ywbkotbjuv .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#lfhgjwoorf .gt_column_spanner_outer:last-child {
+#ywbkotbjuv .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#lfhgjwoorf .gt_column_spanner {
+#ywbkotbjuv .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -5953,11 +5931,11 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   width: 100%;
 }
 
-#lfhgjwoorf .gt_spanner_row {
+#ywbkotbjuv .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#lfhgjwoorf .gt_group_heading {
+#ywbkotbjuv .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -5983,7 +5961,7 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   text-align: left;
 }
 
-#lfhgjwoorf .gt_empty_group_heading {
+#ywbkotbjuv .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -5998,15 +5976,15 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   vertical-align: middle;
 }
 
-#lfhgjwoorf .gt_from_md > :first-child {
+#ywbkotbjuv .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#lfhgjwoorf .gt_from_md > :last-child {
+#ywbkotbjuv .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#lfhgjwoorf .gt_row {
+#ywbkotbjuv .gt_row {
   padding-top: 2px;
   padding-bottom: 2px;
   padding-left: 5px;
@@ -6025,7 +6003,7 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   overflow-x: hidden;
 }
 
-#lfhgjwoorf .gt_stub {
+#ywbkotbjuv .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -6038,7 +6016,7 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   padding-right: 5px;
 }
 
-#lfhgjwoorf .gt_stub_row_group {
+#ywbkotbjuv .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -6052,15 +6030,15 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   vertical-align: top;
 }
 
-#lfhgjwoorf .gt_row_group_first td {
+#ywbkotbjuv .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#lfhgjwoorf .gt_row_group_first th {
+#ywbkotbjuv .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#lfhgjwoorf .gt_summary_row {
+#ywbkotbjuv .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -6070,16 +6048,16 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   padding-right: 5px;
 }
 
-#lfhgjwoorf .gt_first_summary_row {
+#ywbkotbjuv .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#lfhgjwoorf .gt_first_summary_row.thick {
+#ywbkotbjuv .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#lfhgjwoorf .gt_last_summary_row {
+#ywbkotbjuv .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -6089,7 +6067,7 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   border-bottom-color: #D3D3D3;
 }
 
-#lfhgjwoorf .gt_grand_summary_row {
+#ywbkotbjuv .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -6099,7 +6077,7 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   padding-right: 5px;
 }
 
-#lfhgjwoorf .gt_first_grand_summary_row {
+#ywbkotbjuv .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -6109,7 +6087,7 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   border-top-color: #D3D3D3;
 }
 
-#lfhgjwoorf .gt_last_grand_summary_row_top {
+#ywbkotbjuv .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -6119,11 +6097,11 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   border-bottom-color: #D3D3D3;
 }
 
-#lfhgjwoorf .gt_striped {
+#ywbkotbjuv .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#lfhgjwoorf .gt_table_body {
+#ywbkotbjuv .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -6132,7 +6110,7 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   border-bottom-color: #D3D3D3;
 }
 
-#lfhgjwoorf .gt_footnotes {
+#ywbkotbjuv .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -6146,7 +6124,7 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   border-right-color: #D3D3D3;
 }
 
-#lfhgjwoorf .gt_footnote {
+#ywbkotbjuv .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -6155,7 +6133,7 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   padding-right: 5px;
 }
 
-#lfhgjwoorf .gt_sourcenotes {
+#ywbkotbjuv .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -6169,7 +6147,7 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   border-right-color: #D3D3D3;
 }
 
-#lfhgjwoorf .gt_sourcenote {
+#ywbkotbjuv .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -6177,72 +6155,72 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
   padding-right: 5px;
 }
 
-#lfhgjwoorf .gt_left {
+#ywbkotbjuv .gt_left {
   text-align: left;
 }
 
-#lfhgjwoorf .gt_center {
+#ywbkotbjuv .gt_center {
   text-align: center;
 }
 
-#lfhgjwoorf .gt_right {
+#ywbkotbjuv .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#lfhgjwoorf .gt_font_normal {
+#ywbkotbjuv .gt_font_normal {
   font-weight: normal;
 }
 
-#lfhgjwoorf .gt_font_bold {
+#ywbkotbjuv .gt_font_bold {
   font-weight: bold;
 }
 
-#lfhgjwoorf .gt_font_italic {
+#ywbkotbjuv .gt_font_italic {
   font-style: italic;
 }
 
-#lfhgjwoorf .gt_super {
+#ywbkotbjuv .gt_super {
   font-size: 65%;
 }
 
-#lfhgjwoorf .gt_footnote_marks {
+#ywbkotbjuv .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#lfhgjwoorf .gt_asterisk {
+#ywbkotbjuv .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#lfhgjwoorf .gt_indent_1 {
+#ywbkotbjuv .gt_indent_1 {
   text-indent: 5px;
 }
 
-#lfhgjwoorf .gt_indent_2 {
+#ywbkotbjuv .gt_indent_2 {
   text-indent: 10px;
 }
 
-#lfhgjwoorf .gt_indent_3 {
+#ywbkotbjuv .gt_indent_3 {
   text-indent: 15px;
 }
 
-#lfhgjwoorf .gt_indent_4 {
+#ywbkotbjuv .gt_indent_4 {
   text-indent: 20px;
 }
 
-#lfhgjwoorf .gt_indent_5 {
+#ywbkotbjuv .gt_indent_5 {
   text-indent: 25px;
 }
 
-#lfhgjwoorf .katex-display {
+#ywbkotbjuv .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#lfhgjwoorf div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#ywbkotbjuv div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -6618,7 +6596,7 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
 <figcaption>A warning that aov() in R is Type I ANOVA, so the test of treatment depends on whether baseline or treatment is entered first.</figcaption>
 </figure>
 </div>
-<p><a href="https://www.linkedin.com/feed/update/urn:li:activity:7444337265641684992/">Olszewski</a>: <code>aov()</code> is <mark>Type I</mark>, so the treatment <span class="math inline">\(F\)</span> in his sketch is 16.6 or 38.7 depending on order. <code>car::Anova(type = 2)</code> does not inherit that order.</p>
+<p><a href="https://www.linkedin.com/feed/update/urn:li:activity:7444337265641684992/">Olszewski</a>: <code>aov()</code> is <mark>Type I</mark>, so the treatment <span class="math inline">\(F\)</span> in his sketch is 16.6 or 38.7 depending on order. <code>car::Anova(type = 2)</code> does not inherit that order. 📝 <a href="references/anova-interpreation.pdf">His longer ANOVA note</a> asks whether the name is a test or a model.</p>
 <aside class="notes">
 <p>Treatment <span class="math inline">\(F\)</span> is 16.6 or 38.7 depending on entry order in Olszewski’s sketch. <code>car::Anova(type=2)</code> is marked safe on the figure. Ask what happens if baseline and treatment are swapped in <code>aov()</code>.</p>
 <style type="text/css">
@@ -6678,7 +6656,7 @@ f\!\left(\mathbb{E}[Y]\right) \le \mathbb{E}[f(Y)].
 </div>
 </div>
 <p>A <mark>pretest</mark> that switches you from a <span class="math inline">\(t\)</span>-test to a rank test still does not estimate <span class="math inline">\(\mu = \mathbb{E}(Y \mid x)\)</span>. Rank tests answer a different contrast, and they have assumptions of their own.</p>
-<p>The teaching sequence for the three models follows the SIB day on logistic regression and GLMs (<a href="https://github.com/sib-swiss/advanced-statistics/blob/master/docs/assets/pdf/Day2-LogisticregressionandGLM-2026.pdf">slides</a>, <a href="https://www.sib.swiss/training/course/20260907_ADDMG">course</a>).</p>
+<p>The teaching sequence for the three models follows the SIB day on logistic regression and GLMs (<a href="https://www.sib.swiss/training/course/20260907_ADDMG">course</a>). 📝 <a href="references/day2-logistic-regression-and-glm-2026.pdf">Day 2, logistic regression and GLMs</a>. 📝 <a href="references/day1a-linear-regression-and-beyond-2026.pdf">Day 1a, linear models</a>, is the hour before that sequence.</p>
 <aside class="notes">
 <p>Walk the Mermaid: question → support → family → residual plot → estimate. Pretest switching <span class="math inline">\(t\)</span> to ranks still misses <span class="math inline">\(\mu\)</span>. SIB day link is for students who want the full logistic/GLM course—optional aside.</p>
 <style type="text/css">
@@ -7324,7 +7302,7 @@ g(Y_i) = \mathbf{x}_i^{\top}\boldsymbol{\beta} + \varepsilon_i
 </div>
 </div>
 </div>
-<p>Four working assumptions: <span class="math inline">\(Y\)</span> is a count per unit of time or space; <span class="math inline">\(\log \mu\)</span> is linear in <span class="math inline">\(x\)</span>; the observations are independent; and <span class="math inline">\(\mathrm{Var}(Y \mid x) = \mu\)</span>.</p>
+<p>Four working assumptions: <span class="math inline">\(Y\)</span> is a count per unit of time or space; <span class="math inline">\(\log \mu\)</span> is linear in <span class="math inline">\(x\)</span>; the observations are independent; and <span class="math inline">\(\mathrm{Var}(Y \mid x) = \mu\)</span>. 📝 StatHarbor, <a href="references/count-data-models.pdf"><em>Count data models</em></a>.</p>
 <aside class="notes">
 <p><span class="math inline">\(\lambda\)</span> on the slide is <span class="math inline">\(\mu\)</span> here; <span class="math inline">\(\exp(\beta_1)\)</span> multiplies mean count. Four assumptions at the bottom—especially <span class="math inline">\(\mathrm{Var}(Y\mid x)=\mu\)</span>—are what CA-SYS will break.</p>
 <p><strong>Going further.</strong> Under the log link the Poisson log-likelihood is <span class="math inline">\(\sum_i (y_i\eta_i - e^{\eta_i})\)</span> up to a constant, so the score is <span class="math inline">\(\mathbf{X}^{\top}(\mathbf{y}-\boldsymbol\mu)\)</span> and, with an intercept, the fitted counts add up to the observed total; a factor covariate reproduces each group total exactly. The estimator of <span class="math inline">\(\boldsymbol\beta\)</span> stays consistent when the counts are not Poisson, provided <span class="math inline">\(\log\mu\)</span> is correctly specified: this is the pseudo-maximum-likelihood result of Gourieroux, Monfort and Trognon (1984, <em>Econometrica</em>). What breaks is the standard error, which relies on <span class="math inline">\(\mathrm{Var}(Y\mid x)=\mu\)</span>; a sandwich estimator or a variance model repairs it (Cameron and Trivedi, <em>Regression Analysis of Count Data</em>).</p>
@@ -7623,7 +7601,7 @@ D_{\text{small}} - D_{\text{large}} \sim \chi^2,
 </div>
 </div>
 </div>
-<p>This is the <code>MASS::glm.nb</code> parameterisation: large <span class="math inline">\(\theta\)</span> means “close to Poisson”. Agresti writes the same quadratic variance with a different symbol for the extra term <span class="citation" data-cites="agrestiFoundationsLinearGeneralized2015">(<a href="#/references" role="doc-biblioref" onclick="">Agresti 2015</a>)</span>. On these reads <span class="math inline">\(\hat\theta = 29.3\)</span>.</p>
+<p>This is the <code>MASS::glm.nb</code> parameterisation: large <span class="math inline">\(\theta\)</span> means “close to Poisson”. Agresti writes the same quadratic variance with a different symbol for the extra term <span class="citation" data-cites="agrestiFoundationsLinearGeneralized2015">(<a href="#/references" role="doc-biblioref" onclick="">Agresti 2015</a>)</span>. On these reads <span class="math inline">\(\hat\theta = 29.3\)</span>. 📄 Townes reviews the count families in <a href="references/townes-count-distributions-2020.pdf"><em>Review of probability distributions for modeling count data</em></a>.</p>
 <aside class="notes">
 <p>Two readings of theta. Algebraically it is the inverse of the extra variance per unit of mean squared. Mechanistically it is a gamma-distributed latent rate, integrated out, which is the derivation on the Poisson-gamma slide. Stress that theta is not a second scientific effect to interpret.</p>
 <p><strong>Going further.</strong> If <span class="math inline">\(\lambda = \mu\nu\)</span> with <span class="math inline">\(\nu \sim \mathrm{Gamma}(\theta, \theta)\)</span>, so that <span class="math inline">\(\mathbb{E}(\nu)=1\)</span> and <span class="math inline">\(\mathrm{Var}(\nu) = 1/\theta\)</span>, integrating <span class="math inline">\(\nu\)</span> out of <span class="math inline">\(\mathrm{Poisson}(\lambda)\)</span> gives <span class="math inline">\(\Pr(Y=y) = \frac{\Gamma(y+\theta)}{\Gamma(\theta)\,y!}\left(\frac{\theta}{\theta+\mu}\right)^{\theta}\left(\frac{\mu}{\theta+\mu}\right)^{y}\)</span>, Cameron and Trivedi’s NB2, with the quadratic variance on the slide. NB1, <span class="math inline">\(\mathrm{Var}(Y) = (1+\delta)\mu\)</span>, has the quasi-Poisson’s shape and is a different model. <code>MASS::glm.nb</code> alternates IRLS for <span class="math inline">\(\boldsymbol\beta\)</span> at fixed <span class="math inline">\(\theta\)</span> with a maximum-likelihood step for <span class="math inline">\(\theta\)</span> (Venables and Ripley, <em>Modern Applied Statistics with S</em>). Testing the Poisson against it puts <span class="math inline">\(1/\theta = 0\)</span> on the boundary of the parameter space, so the likelihood-ratio statistic is a 50:50 mixture of <span class="math inline">\(\chi^2_0\)</span> and <span class="math inline">\(\chi^2_1\)</span> and the naive <span class="math inline">\(p\)</span>-value should be halved (Self and Liang, 1987, <em>Journal of the American Statistical Association</em>).</p>
@@ -9015,7 +8993,7 @@ H_{0j}: \beta_j = 0, \quad j = 1, \ldots, p.
 <li>a continuous flux: often a positive continuous distribution, or a Gaussian model on a scale you can defend</li>
 <li>dependence in space or in time: the design block is next</li>
 </ul>
-<p>Quasi-Poisson is a <mark>variance fix</mark>, not a full likelihood. Use it only if you can say what the interval means.</p>
+<p>Quasi-Poisson is a <mark>variance fix</mark>, not a full likelihood. Use it only if you can say what the interval means. 📄 A joint model for many species is the Poisson log-normal of Chiquet, Mariadassou, and Robin (<a href="references/chiquet-poisson-lognormal-2021.pdf">the paper</a>).</p>
 <aside class="notes">
 <p>Bullet list: ZI mixture, composition conditioning, continuous flux, space-time design next. Quasi-Poisson variance fix only if you can interpret the interval—closing honesty slide.</p>
 <p><strong>Going further.</strong> Wedderburn (1974, <em>Biometrika</em>) showed that the estimating equations <span class="math inline">\(\sum_i (y_i-\mu_i)\,(\partial\mu_i/\partial\boldsymbol\beta)/V(\mu_i) = \mathbf{0}\)</span> need only a mean and a variance function, not a distribution: this quasi-likelihood gives the Poisson estimates with <span class="math inline">\(\mathrm{Var}(Y) = \phi\mu\)</span> and standard errors scaled by <span class="math inline">\(\sqrt{\hat\phi}\)</span>. With no likelihood there is no AIC; Burnham and Anderson’s QAIC divides the log-likelihood by <span class="math inline">\(\hat\phi\)</span> as a workaround. The quasi-Poisson weights observations in proportion to <span class="math inline">\(\mu_i\)</span>, the negative binomial by <span class="math inline">\(\mu_i/(1+\mu_i/\theta)\)</span>, so on the same data they can give different estimates, not only different intervals (Ver Hoef and Boveng, 2007). For dependence in space or time, the generalised estimating equations of Liang and Zeger (1986, <em>Biometrika</em>) extend the same idea with a working correlation.</p>
@@ -9036,7 +9014,7 @@ H_{0j}: \beta_j = 0, \quad j = 1, \ldots, p.
 </section>
 <section id="sec-smooth" class="slide level2">
 <h2>Smooth <span class="math inline">\(\mu(x)\)</span>, and say what you assumed</h2>
-<p>StatHarbor Analytics, <em>Smoothing and Nonparametric Methods</em>, uses “<mark>nonparametric</mark>” for a curve that is not fixed in advance as a short formula. Complexity may grow with <span class="math inline">\(n\)</span>. The structure that replaces the formula is smoothness, locality, or a penalty.</p>
+<p>📝 StatHarbor Analytics, <a href="references/nonparametric-methods.pdf"><em>Smoothing and nonparametric methods</em></a>, uses “<mark>nonparametric</mark>” for a curve that is not fixed in advance as a short formula. Complexity may grow with <span class="math inline">\(n\)</span>. The structure that replaces the formula is smoothness, locality, or a penalty.</p>
 <div class="callout callout-assumption callout-titled callout-style-simple">
 <div class="callout-body">
 <div class="callout-title">
@@ -9052,7 +9030,7 @@ Y = \mu(x) + \varepsilon, \qquad \mathbb{E}(\varepsilon \mid x) = 0.
 </div>
 </div>
 </div>
-<p><a href="https://www.sib.swiss/training/course/20260907_ADDMG">Angelino and Marcone</a> make the same opening: a linear model is easy to interpret, and the straight line is often an approximation.</p>
+<p><a href="https://www.sib.swiss/training/course/20260907_ADDMG">Angelino and Marcone</a> make the same opening: a linear model is easy to interpret, and the straight line is often an approximation. 📝 <a href="references/day1b-beyond-linearity-2026.pdf">Day 1b, beyond linearity</a>.</p>
 <aside class="notes">
 <p>Start in the assumption callout: <span class="math inline">\(\mu(x)\)</span> is the object, not a transform of <span class="math inline">\(Y\)</span>. Point at the sentence about the straight line being efficient only when the truth is nearly linear. A common slip is to treat “nonparametric” as “no assumptions”; locality and smoothness are assumptions, just not a single global polynomial degree.</p>
 <style type="text/css">
@@ -9448,7 +9426,7 @@ Y = \mu(x) + \varepsilon, \qquad \mathbb{E}(\varepsilon \mid x) = 0.
 </section>
 <section id="sec-rcs" class="slide level2">
 <h2>Restricted cubics are the applied form of that constraint</h2>
-<p><a href="https://doi.org/10.1136/bmj-2024-082440">The BMJ guide</a> calls the natural spline a <mark>restricted cubic spline</mark>: cubics between the inner knots, and a straight line before the first knot and after the last. The tails, where points are few and outliers bite, stay stable. With <span class="math inline">\(k\)</span> knots the model spends <span class="math inline">\(k-1\)</span> degrees of freedom. Three knots, their usual start, sit at the 10th, 50th, and 90th percentiles of <span class="math inline">\(x\)</span>. Three to five knots is the range they recommend, and AIC can choose the number. The exact quantile locations rarely change the curve.</p>
+<p><a href="references/bmj-2024-082440.pdf">The BMJ guide</a> calls the natural spline a <mark>restricted cubic spline</mark>: cubics between the inner knots, and a straight line before the first knot and after the last. The tails, where points are few and outliers bite, stay stable. With <span class="math inline">\(k\)</span> knots the model spends <span class="math inline">\(k-1\)</span> degrees of freedom. Three knots, their usual start, sit at the 10th, 50th, and 90th percentiles of <span class="math inline">\(x\)</span>. Three to five knots is the range they recommend, and AIC can choose the number. The exact quantile locations rarely change the curve.</p>
 <p>Coefficients of a spline are not the summary. The <mark>partial-effect plot</mark> is.</p>
 <aside class="notes">
 <p>Translate “natural” to straight tails beyond the outer knots—where extrapolation would otherwise explode. Three knots at 10th, 50th, 90th percentiles are a concrete default to quote. End on the BMJ line: report partial effects, not raw <span class="math inline">\(\theta_k\)</span> from the basis.</p>
@@ -10307,7 +10285,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
 <figcaption>Three observations labelled i inside one cluster labelled j.</figcaption>
 </figure>
 </div>
-<p>The box is the unit that was assigned. The circles are rows inside it. Counting circles as if they were boxes makes the interval too small.</p>
+<p>The box is the unit that was assigned. The circles are rows inside it. Counting circles as if they were boxes makes the interval too small. 📝 <a href="references/day3-longitudinal-data-analysis-2026.pdf">Day 3, mixed effects and longitudinal data</a>, Angelino and Marcone, September 2026.</p>
 <aside class="notes">
 <p>Point at the box first. For SPRUCE the box is the enclosure. For CA-SYS it is the plot. The circles are depths, dates, or sampling points.</p>
 <p><strong>Going further.</strong> With <span class="math inline">\(m\)</span> rows per cluster and intraclass correlation <span class="math inline">\(\rho = \sigma_u^2/(\sigma_u^2 + \sigma_\varepsilon^2)\)</span>, the variance of a mean over <span class="math inline">\(J\)</span> clusters is inflated by the design effect <span class="math inline">\(1 + (m - 1)\rho\)</span> relative to <span class="math inline">\(Jm\)</span> independent rows (Kish, <em>Survey Sampling</em>, 1965). The effective sample size is <span class="math inline">\(Jm / \big(1 + (m-1)\rho\big)\)</span>, which tends to <span class="math inline">\(J/\rho\)</span> as <span class="math inline">\(m\)</span> grows: adding circles to a box cannot buy more information than the boxes themselves carry. Even <span class="math inline">\(\rho = 0.1\)</span> with <span class="math inline">\(m = 21\)</span> triples the variance. For a treatment assigned to clusters, the degrees of freedom of the test are of the order of <span class="math inline">\(J\)</span> minus the number of cluster-level parameters, not <span class="math inline">\(Jm\)</span>.</p>
@@ -10450,7 +10428,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
 <figcaption>Four layouts: crossed, nested, randomised block, and split-plot. Schielzeth and Nakagawa, Figure 1.</figcaption>
 </figure>
 </div>
-<p>Schielzeth and Nakagawa, Figure 1. Solid lines are a partial cross. Dashed lines complete it. The SPRUCE reading of the same picture is <a href="#/sec-crossed-nested">crossed, nested, or both</a>.</p>
+<p>Schielzeth and Nakagawa, Figure 1. Solid lines are a partial cross. Dashed lines complete it. The SPRUCE reading of the same picture is <a href="#/sec-crossed-nested">crossed, nested, or both</a>. 📄 <a href="references/schielzeth-nakagawa-2013.pdf">The paper</a>.</p>
 <aside class="notes">
 <p>Four panels: crossed, nested, randomised block, split-plot. Point to solid versus dashed lines in the caption—partial versus completed cross. Map split-plot to large-unit versus within-unit factors without re-deriving the cookie-dough story. Link back to [#sec-crossed-nested] for the SPRUCE labels on the same picture.</p>
 <style type="text/css">
@@ -10493,23 +10471,23 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
 <p>The practical gap is often small. A <mark>likelihood-ratio comparison</mark> of two models uses ML.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="zfxfghizhg" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#zfxfghizhg table {
+<div id="jyunicsycr" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#jyunicsycr table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#zfxfghizhg thead, #zfxfghizhg tbody, #zfxfghizhg tfoot, #zfxfghizhg tr, #zfxfghizhg td, #zfxfghizhg th {
+#jyunicsycr thead, #jyunicsycr tbody, #jyunicsycr tfoot, #jyunicsycr tr, #jyunicsycr td, #jyunicsycr th {
   border-style: none;
 }
 
-#zfxfghizhg p {
+#jyunicsycr p {
   margin: 0;
   padding: 0;
 }
 
-#zfxfghizhg .gt_table {
+#jyunicsycr .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -10535,12 +10513,12 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-left-color: #D3D3D3;
 }
 
-#zfxfghizhg .gt_caption {
+#jyunicsycr .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#zfxfghizhg .gt_title {
+#jyunicsycr .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -10552,7 +10530,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-bottom-width: 0;
 }
 
-#zfxfghizhg .gt_subtitle {
+#jyunicsycr .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -10564,7 +10542,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-top-width: 0;
 }
 
-#zfxfghizhg .gt_heading {
+#jyunicsycr .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -10576,13 +10554,13 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-right-color: #D3D3D3;
 }
 
-#zfxfghizhg .gt_bottom_border {
+#jyunicsycr .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#zfxfghizhg .gt_col_headings {
+#jyunicsycr .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -10597,7 +10575,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-right-color: #D3D3D3;
 }
 
-#zfxfghizhg .gt_col_heading {
+#jyunicsycr .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 15px;
@@ -10617,7 +10595,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   overflow-x: hidden;
 }
 
-#zfxfghizhg .gt_column_spanner_outer {
+#jyunicsycr .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 15px;
@@ -10629,15 +10607,15 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   padding-right: 4px;
 }
 
-#zfxfghizhg .gt_column_spanner_outer:first-child {
+#jyunicsycr .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#zfxfghizhg .gt_column_spanner_outer:last-child {
+#jyunicsycr .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#zfxfghizhg .gt_column_spanner {
+#jyunicsycr .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -10649,11 +10627,11 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   width: 100%;
 }
 
-#zfxfghizhg .gt_spanner_row {
+#jyunicsycr .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#zfxfghizhg .gt_group_heading {
+#jyunicsycr .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -10679,7 +10657,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   text-align: left;
 }
 
-#zfxfghizhg .gt_empty_group_heading {
+#jyunicsycr .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -10694,15 +10672,15 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   vertical-align: middle;
 }
 
-#zfxfghizhg .gt_from_md > :first-child {
+#jyunicsycr .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#zfxfghizhg .gt_from_md > :last-child {
+#jyunicsycr .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#zfxfghizhg .gt_row {
+#jyunicsycr .gt_row {
   padding-top: 3px;
   padding-bottom: 3px;
   padding-left: 5px;
@@ -10721,7 +10699,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   overflow-x: hidden;
 }
 
-#zfxfghizhg .gt_stub {
+#jyunicsycr .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -10734,7 +10712,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   padding-right: 5px;
 }
 
-#zfxfghizhg .gt_stub_row_group {
+#jyunicsycr .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -10748,15 +10726,15 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   vertical-align: top;
 }
 
-#zfxfghizhg .gt_row_group_first td {
+#jyunicsycr .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#zfxfghizhg .gt_row_group_first th {
+#jyunicsycr .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#zfxfghizhg .gt_summary_row {
+#jyunicsycr .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -10766,16 +10744,16 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   padding-right: 5px;
 }
 
-#zfxfghizhg .gt_first_summary_row {
+#jyunicsycr .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#zfxfghizhg .gt_first_summary_row.thick {
+#jyunicsycr .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#zfxfghizhg .gt_last_summary_row {
+#jyunicsycr .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -10785,7 +10763,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-bottom-color: #D3D3D3;
 }
 
-#zfxfghizhg .gt_grand_summary_row {
+#jyunicsycr .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -10795,7 +10773,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   padding-right: 5px;
 }
 
-#zfxfghizhg .gt_first_grand_summary_row {
+#jyunicsycr .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -10805,7 +10783,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-top-color: #D3D3D3;
 }
 
-#zfxfghizhg .gt_last_grand_summary_row_top {
+#jyunicsycr .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -10815,11 +10793,11 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-bottom-color: #D3D3D3;
 }
 
-#zfxfghizhg .gt_striped {
+#jyunicsycr .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#zfxfghizhg .gt_table_body {
+#jyunicsycr .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -10828,7 +10806,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-bottom-color: #D3D3D3;
 }
 
-#zfxfghizhg .gt_footnotes {
+#jyunicsycr .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -10842,7 +10820,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-right-color: #D3D3D3;
 }
 
-#zfxfghizhg .gt_footnote {
+#jyunicsycr .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -10851,7 +10829,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   padding-right: 5px;
 }
 
-#zfxfghizhg .gt_sourcenotes {
+#jyunicsycr .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -10865,7 +10843,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-right-color: #D3D3D3;
 }
 
-#zfxfghizhg .gt_sourcenote {
+#jyunicsycr .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -10873,72 +10851,72 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   padding-right: 5px;
 }
 
-#zfxfghizhg .gt_left {
+#jyunicsycr .gt_left {
   text-align: left;
 }
 
-#zfxfghizhg .gt_center {
+#jyunicsycr .gt_center {
   text-align: center;
 }
 
-#zfxfghizhg .gt_right {
+#jyunicsycr .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#zfxfghizhg .gt_font_normal {
+#jyunicsycr .gt_font_normal {
   font-weight: normal;
 }
 
-#zfxfghizhg .gt_font_bold {
+#jyunicsycr .gt_font_bold {
   font-weight: bold;
 }
 
-#zfxfghizhg .gt_font_italic {
+#jyunicsycr .gt_font_italic {
   font-style: italic;
 }
 
-#zfxfghizhg .gt_super {
+#jyunicsycr .gt_super {
   font-size: 65%;
 }
 
-#zfxfghizhg .gt_footnote_marks {
+#jyunicsycr .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#zfxfghizhg .gt_asterisk {
+#jyunicsycr .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#zfxfghizhg .gt_indent_1 {
+#jyunicsycr .gt_indent_1 {
   text-indent: 5px;
 }
 
-#zfxfghizhg .gt_indent_2 {
+#jyunicsycr .gt_indent_2 {
   text-indent: 10px;
 }
 
-#zfxfghizhg .gt_indent_3 {
+#jyunicsycr .gt_indent_3 {
   text-indent: 15px;
 }
 
-#zfxfghizhg .gt_indent_4 {
+#jyunicsycr .gt_indent_4 {
   text-indent: 20px;
 }
 
-#zfxfghizhg .gt_indent_5 {
+#jyunicsycr .gt_indent_5 {
   text-indent: 25px;
 }
 
-#zfxfghizhg .katex-display {
+#jyunicsycr .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#zfxfghizhg div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#jyunicsycr div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -11003,23 +10981,23 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
 <p>The same course names two R packages. <code>nlme</code> is the one they single out for a <mark>flexible covariance</mark>. <code>lme4</code> is the other. The split below is what the two fitting functions actually expose.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="crzozzevep" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#crzozzevep table {
+<div id="yvlbkoyisv" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#yvlbkoyisv table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#crzozzevep thead, #crzozzevep tbody, #crzozzevep tfoot, #crzozzevep tr, #crzozzevep td, #crzozzevep th {
+#yvlbkoyisv thead, #yvlbkoyisv tbody, #yvlbkoyisv tfoot, #yvlbkoyisv tr, #yvlbkoyisv td, #yvlbkoyisv th {
   border-style: none;
 }
 
-#crzozzevep p {
+#yvlbkoyisv p {
   margin: 0;
   padding: 0;
 }
 
-#crzozzevep .gt_table {
+#yvlbkoyisv .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -11045,12 +11023,12 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-left-color: #D3D3D3;
 }
 
-#crzozzevep .gt_caption {
+#yvlbkoyisv .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#crzozzevep .gt_title {
+#yvlbkoyisv .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -11062,7 +11040,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-bottom-width: 0;
 }
 
-#crzozzevep .gt_subtitle {
+#yvlbkoyisv .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -11074,7 +11052,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-top-width: 0;
 }
 
-#crzozzevep .gt_heading {
+#yvlbkoyisv .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -11086,13 +11064,13 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-right-color: #D3D3D3;
 }
 
-#crzozzevep .gt_bottom_border {
+#yvlbkoyisv .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#crzozzevep .gt_col_headings {
+#yvlbkoyisv .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -11107,7 +11085,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-right-color: #D3D3D3;
 }
 
-#crzozzevep .gt_col_heading {
+#yvlbkoyisv .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 15px;
@@ -11127,7 +11105,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   overflow-x: hidden;
 }
 
-#crzozzevep .gt_column_spanner_outer {
+#yvlbkoyisv .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 15px;
@@ -11139,15 +11117,15 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   padding-right: 4px;
 }
 
-#crzozzevep .gt_column_spanner_outer:first-child {
+#yvlbkoyisv .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#crzozzevep .gt_column_spanner_outer:last-child {
+#yvlbkoyisv .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#crzozzevep .gt_column_spanner {
+#yvlbkoyisv .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -11159,11 +11137,11 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   width: 100%;
 }
 
-#crzozzevep .gt_spanner_row {
+#yvlbkoyisv .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#crzozzevep .gt_group_heading {
+#yvlbkoyisv .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -11189,7 +11167,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   text-align: left;
 }
 
-#crzozzevep .gt_empty_group_heading {
+#yvlbkoyisv .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -11204,15 +11182,15 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   vertical-align: middle;
 }
 
-#crzozzevep .gt_from_md > :first-child {
+#yvlbkoyisv .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#crzozzevep .gt_from_md > :last-child {
+#yvlbkoyisv .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#crzozzevep .gt_row {
+#yvlbkoyisv .gt_row {
   padding-top: 3px;
   padding-bottom: 3px;
   padding-left: 5px;
@@ -11231,7 +11209,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   overflow-x: hidden;
 }
 
-#crzozzevep .gt_stub {
+#yvlbkoyisv .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -11244,7 +11222,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   padding-right: 5px;
 }
 
-#crzozzevep .gt_stub_row_group {
+#yvlbkoyisv .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -11258,15 +11236,15 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   vertical-align: top;
 }
 
-#crzozzevep .gt_row_group_first td {
+#yvlbkoyisv .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#crzozzevep .gt_row_group_first th {
+#yvlbkoyisv .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#crzozzevep .gt_summary_row {
+#yvlbkoyisv .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -11276,16 +11254,16 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   padding-right: 5px;
 }
 
-#crzozzevep .gt_first_summary_row {
+#yvlbkoyisv .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#crzozzevep .gt_first_summary_row.thick {
+#yvlbkoyisv .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#crzozzevep .gt_last_summary_row {
+#yvlbkoyisv .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -11295,7 +11273,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-bottom-color: #D3D3D3;
 }
 
-#crzozzevep .gt_grand_summary_row {
+#yvlbkoyisv .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -11305,7 +11283,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   padding-right: 5px;
 }
 
-#crzozzevep .gt_first_grand_summary_row {
+#yvlbkoyisv .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -11315,7 +11293,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-top-color: #D3D3D3;
 }
 
-#crzozzevep .gt_last_grand_summary_row_top {
+#yvlbkoyisv .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -11325,11 +11303,11 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-bottom-color: #D3D3D3;
 }
 
-#crzozzevep .gt_striped {
+#yvlbkoyisv .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#crzozzevep .gt_table_body {
+#yvlbkoyisv .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -11338,7 +11316,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-bottom-color: #D3D3D3;
 }
 
-#crzozzevep .gt_footnotes {
+#yvlbkoyisv .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -11352,7 +11330,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-right-color: #D3D3D3;
 }
 
-#crzozzevep .gt_footnote {
+#yvlbkoyisv .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -11361,7 +11339,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   padding-right: 5px;
 }
 
-#crzozzevep .gt_sourcenotes {
+#yvlbkoyisv .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -11375,7 +11353,7 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   border-right-color: #D3D3D3;
 }
 
-#crzozzevep .gt_sourcenote {
+#yvlbkoyisv .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -11383,72 +11361,72 @@ g(\mu) = \beta_0 + s_1(x_1) + \cdots + s_p(x_p),
   padding-right: 5px;
 }
 
-#crzozzevep .gt_left {
+#yvlbkoyisv .gt_left {
   text-align: left;
 }
 
-#crzozzevep .gt_center {
+#yvlbkoyisv .gt_center {
   text-align: center;
 }
 
-#crzozzevep .gt_right {
+#yvlbkoyisv .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#crzozzevep .gt_font_normal {
+#yvlbkoyisv .gt_font_normal {
   font-weight: normal;
 }
 
-#crzozzevep .gt_font_bold {
+#yvlbkoyisv .gt_font_bold {
   font-weight: bold;
 }
 
-#crzozzevep .gt_font_italic {
+#yvlbkoyisv .gt_font_italic {
   font-style: italic;
 }
 
-#crzozzevep .gt_super {
+#yvlbkoyisv .gt_super {
   font-size: 65%;
 }
 
-#crzozzevep .gt_footnote_marks {
+#yvlbkoyisv .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#crzozzevep .gt_asterisk {
+#yvlbkoyisv .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#crzozzevep .gt_indent_1 {
+#yvlbkoyisv .gt_indent_1 {
   text-indent: 5px;
 }
 
-#crzozzevep .gt_indent_2 {
+#yvlbkoyisv .gt_indent_2 {
   text-indent: 10px;
 }
 
-#crzozzevep .gt_indent_3 {
+#yvlbkoyisv .gt_indent_3 {
   text-indent: 15px;
 }
 
-#crzozzevep .gt_indent_4 {
+#yvlbkoyisv .gt_indent_4 {
   text-indent: 20px;
 }
 
-#crzozzevep .gt_indent_5 {
+#yvlbkoyisv .gt_indent_5 {
   text-indent: 25px;
 }
 
-#crzozzevep .katex-display {
+#yvlbkoyisv .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#crzozzevep div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#yvlbkoyisv div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -12777,7 +12755,7 @@ Y(t+1) \approx a_1 X_1(t) + \cdots + a_k X_k(t).
 <figcaption>A hand-made report: analysis, then a copy into Word and into PowerPoint, and a loop back when the data or the style changes.</figcaption>
 </figure>
 </div>
-<p>The diagrams in this block are from <a href="https://jadeyryan.quarto.pub/slc-rug-quarto/">Jadey Ryan</a>, Salt Lake City R Users Group, 1 July 2024.</p>
+<p>The diagrams in this block are from <a href="https://jadeyryan.quarto.pub/slc-rug-quarto/">Jadey Ryan</a>, Salt Lake City R Users Group, 1 July 2024. 📝 Lehmann and Blampey, <a href="references/reproducibility-practices.pdf"><em>Good practices</em></a>.</p>
 <aside class="notes">
 <p>Start by asking how many people have copied a number from a console into a manuscript. Everyone has. The loop at the bottom of the figure is the cost: a data correction arriving after the copy means every downstream number has to be found again by hand, and the one you miss is the one that reaches the reader. This is the same argument as the derived-data script in the datasets block, applied to the report.</p>
 <style type="text/css">
