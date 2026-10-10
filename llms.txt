@@ -1,0 +1,7 @@
+# From the question to the model
+
+> PEPR Carbon statistical workshop: carbon data when the response is not Gaussian.
+
+## Pages
+
+- [Logistic regression is regression](https://bastienchassagnol.github.io/PEPR-Carbon-Statistical-Courses/logistic-regression-is-regression.llms.md)

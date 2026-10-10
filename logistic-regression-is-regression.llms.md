@@ -1,0 +1,73 @@
+# Logistic regression is regression
+
+A reading guide to Adrian Olszewski’s repository, for the PEPR Carbon workshop
+
+This page is a guide, not a copy. It summarises, in the workshop’s notation, the argument and the worked examples of 🔗 [Adrian Olszewski, *Logistic-regression-is-regression*](https://github.com/adrianolszewski/Logistic-regression-is-regression) (GitHub). The repository has no licence file, so its text and figures stay on GitHub: follow the links for the derivations, the R output, and his own wording.
+
+## The claim
+
+Logistic regression is a generalised linear model. Its target is a function of the conditional mean, \\\mathrm{logit}(\pi) = \beta_0 + \beta_1 x\\, where \\\pi = \mathbb{E}(Y \mid x) = \Pr(Y = 1 \mid x)\\ for a binary \\Y\\. That is a regression in the same sense as least squares, with a Bernoulli or binomial family and a logit link. Turning the fitted \\\hat\pi\\ into a class with a threshold is one use of the model, added afterwards; it is not what the model estimates.
+
+Olszewski writes from clinical biostatistics, where logistic regression is the main tool for binary endpoints: treatment effects on the odds or on the probability of success, non-inferiority margins, interactions, and trends over visits. None of that is classification.
+
+📄 [README: the full argument](https://github.com/adrianolszewski/Logistic-regression-is-regression/blob/main/README.md), including the history from Berkson’s logit to Nelder and Wedderburn’s GLM.
+
+## What the coefficients say
+
+| Scale | Quantity | In R |
+|----|----|----|
+| Link | Log odds, \\\beta_1\\ | `coef(m)` |
+| Odds | Odds ratio, \\e^{\beta_1}\\ | `exp(coef(m))` |
+| Probability | Estimated marginal means, or an average marginal effect | `emmeans(m, ~ group, regrid = "response")`, `marginaleffects::avg_comparisons(m)` |
+
+On the probability scale the effect of \\x\\ depends on where you start on the curve, so a difference of probabilities is reported as an average over the rows (average marginal effect) or at a reference grid (estimated marginal means).
+
+## Classic tests as one model
+
+The repository’s main practical point: the named tests of proportions are special cases of a logistic model, or of one of its friends. With `m <- glm(y ~ group, family = binomial)`:
+
+| Classic test | Model route | What matches |
+|----|----|----|
+| Wald \\z\\ for two proportions, unpooled SE | Marginal effect of `group` on the probability scale | The \\z\\ statistic |
+| Rao score \\z\\ for two proportions, pooled SE (`prop.test(correct = FALSE)`) | `anova(m, test = "Rao")` | The statistic and \\p\\ |
+| \\\chi^2\\ for two or more proportions | Likelihood-ratio or Rao test of `group` | Asymptotically |
+| \\n\\-way ANOVA or ANCOVA for proportions | `glm(y ~ a * b + z, family = binomial)` with `car::Anova()` or `emmeans::joint_tests()` | Joint tests of main effects and interactions |
+| Cochran–Mantel–Haenszel | Conditional logistic regression, `survival::clogit(y ~ x + strata(s))` | The score test of the common odds ratio |
+| Breslow–Day | Rao test of the `x:stratum` interaction | Homogeneity of the odds ratios |
+| Cochran–Armitage for trend | `glm(y ~ ordered(x), family = binomial)` with a likelihood-ratio test of the linear term | The trend statistic |
+| McNemar, Cochran’s \\Q\\, Friedman | GEE, `geepack::geeglm(y ~ time, id = id, family = binomial, corstr = "exchangeable")` | Paired or repeated proportions |
+| Mann–Whitney–Wilcoxon, Kruskal–Wallis | Ordinal logistic regression, `rms::orm(y ~ group)` or `MASS::polr()` | Stochastic superiority, through the concordance |
+
+Once the test is a model, a covariate, a cluster, or an interaction is one more term in the formula.
+
+📄 [Testing hypotheses about proportions using logistic regression](https://github.com/adrianolszewski/Logistic-regression-is-regression/blob/main/Testing%20hypotheses%20about%20proportions%20using%20logistic%20regression.md): R code and output for every row of the table.
+
+## The three proofs
+
+Three short notes prove the equivalences for two proportions algebraically:
+
+- 📄 [Wald \\z\\ with unpooled variances equals the average marginal effect of the logistic model](https://github.com/adrianolszewski/Logistic-regression-is-regression/blob/main/logistic_regression_AME_Wald_z_test_proportions.md) (2 March 2025)
+- 📄 [Pooled \\z\\ equals the Rao score test of the logistic model](https://github.com/adrianolszewski/Logistic-regression-is-regression/blob/main/logistic_regression_Rao_Wald_z_test_proportions.md) (21 March 2025)
+- 📄 [Pooled \\z\\ squared equals Pearson’s \\\chi^2\\ for a two-by-two table](https://github.com/adrianolszewski/Logistic-regression-is-regression/blob/main/Pearson_chi2_Wald_z_test_proportions.md) (27 March 2025)
+
+The notes show that the statistics coincide; the asymptotic distributions are the usual ones for Wald, score, and likelihood-ratio tests, which agree to first order.
+
+## The friends of logistic regression
+
+The README lists the models that extend the binary case:
+
+- multinomial logistic regression, for unordered classes, and its nested version when the classes form a hierarchy
+- ordinal logistic regression (proportional odds), for ordered categories, which is also the route to rank tests
+- conditional logistic regression, for matched or stratified data
+- GEE and generalised linear mixed models, for repeated or clustered binary outcomes
+- beta and fractional regression, for a proportion measured on \\(0, 1)\\ rather than counted
+
+## Where it sits in the deck
+
+- [A test of two proportions is this model](index.llms.md#sec-proportion-tests)
+- [One model, every test of proportions](index.llms.md#sec-proportion-map)
+- [Logistic regression checks](index.llms.md#sec-logit-check-linear)
+
+## Source
+
+Adrian Olszewski, *Logistic-regression-is-regression*, GitHub repository, <https://github.com/adrianolszewski/Logistic-regression-is-regression>. Summarised here with links; no text or figure from the repository is reproduced on this page.
