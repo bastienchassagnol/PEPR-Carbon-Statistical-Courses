@@ -68,16 +68,16 @@ Read the two displayed fractions that yield 86% and 79%. Point at the $800$ vers
 
 ## Severity mixes two hospitals that are not the same {#sec-simpson-dag}
 
-```{mermaid}
-%%| fig-width: 9
-%%| fig-height: 2.8
-flowchart LR
-  severity["Severity"]
-  hospital["Hospital"]
-  survival["Survival"]
-  severity --> hospital
-  severity --> survival
-  hospital --> survival
+```{.tikz}
+%%| filename: dag-simpson
+%%| alt: Causal graph: severity points to hospital and to survival; hospital points to survival.
+%%| width: 60%
+\begin{tikzpicture}
+\node[var] (s) {Severity};
+\node[var, below left=12mm and 6mm of s] (h) {Hospital};
+\node[var, below right=12mm and 6mm of s] (y) {Survival};
+\draw[edge] (s) -- (h); \draw[edge] (s) -- (y); \draw[edge] (h) -- (y);
+\end{tikzpicture}
 ```
 
 Severity changes which hospital the patients go to, and it changes the survival rate. Pooling the light cases with the severe cases compares hospitals that did not treat the same mix.
@@ -119,16 +119,16 @@ This is a positivity, or overlap, failure, and it is worth naming. Within the no
 :::
 ## The arrow pattern behind both tables {#sec-casys-dag}
 
-```{mermaid}
-%%| fig-width: 9
-%%| fig-height: 2.8
-flowchart LR
-  zone["Zone, and the soil in it"]
-  practice["Tillage practice"]
-  richness["Richness Y"]
-  zone --> practice
-  zone --> richness
-  practice --> richness
+```{.tikz}
+%%| filename: dag-casys-zone
+%%| alt: Causal graph: zone, and the soil in it, points to tillage practice and to richness Y; tillage practice points to richness Y.
+%%| width: 66%
+\begin{tikzpicture}
+\node[var] (z) {Zone, and its soil};
+\node[var, below left=12mm and 2mm of z] (p) {Tillage practice};
+\node[var, below right=12mm and 2mm of z] (y) {Richness $Y$};
+\draw[edge] (z) -- (p); \draw[edge] (z) -- (y); \draw[edge] (p) -- (y);
+\end{tikzpicture}
 ```
 
 Zone decides which practice a field receives, and the soil in a zone also acts on the community. That is the hospital graph with new labels: [severity mixes two hospitals](#sec-simpson-dag).
@@ -138,79 +138,30 @@ Point out that this diagram is an assumption, not a result. It says zone acts on
 
 **Going further.** In this graph the path practice $\leftarrow$ zone $\to$ richness is a back-door path: it starts with an arrow into the treatment. Pearl's back-door criterion says a set $\mathbf{L}$ identifies the effect of practice on $Y$ when no member of $\mathbf{L}$ is a descendant of practice and $\mathbf{L}$ blocks every back-door path; here $\mathbf{L} = \{\text{zone}\}$ qualifies. The identifying formula is then $\mathbb{E}\{Y \mid do(x)\} = \sum_{z} \mathbb{E}(Y \mid x, z)\,\Pr(z)$, and the previous slide shows that two of the three terms $\mathbb{E}(Y \mid x, z)$ are not estimable. A valid adjustment set therefore needs both a correct graph and positivity within it. The reference is Pearl, *Causality* (2nd edition, 2009), chapter 3.
 :::
+
 ## Roles on a graph {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #e3efc8 100%)"}
 
-## A confounder in the soil table {#sec-confounder}
+## The DAG is a set of assumptions {#sec-dag-assumptions}
 
-```{mermaid}
-%%| fig-width: 9
-%%| fig-height: 3.2
-flowchart LR
-  moisture[Soil moisture]
-  carbon[Organic carbon x]
-  taxon[Taxon count Y]
-  moisture --> carbon
-  moisture --> taxon
-  carbon --> taxon
-```
+Johannes Hertel, *Linking statistics, computational biology and biochemistry*, lists three assumptions before the arrows can be read as causes.
 
-Both carbon and the taxon respond to moisture. The unadjusted slope of $Y$ on carbon mixes the carbon path with the moisture path.
+::: assumption
+There is a DAG that is a causal representation of the system. A variable is independent of its non-effects given its direct causes. The only conditional independences in the data are the ones that DAG states.
+:::
 
-If the [estimand]{.mark} is the association **at a given moisture**, moisture belongs in the model. If moisture is how carbon affects the taxon, moisture is a [mediator]{.mark}, and adjusting for it removes part of the effect you wanted. The pitfalls drawing is [three arrows, three estimands](#sec-arrows).
+The second sentence is his [causal Markov condition]{.mark}. The third is [faithfulness]{.mark}. He notes that a complete measurement of every variable in the graph is generally impossible, so the practical question is which variables the analysis has to include.
 
 ::: {.notes}
-Moisture $\to$ carbon and moisture $\to$ taxon $Y$; carbon $\to$ taxon. The unadjusted carbon slope mixes paths. Ask the room: block moisture for "at fixed moisture" or leave it for total carbon effect? Wrong choice is the classic confounder–mediator swap—link [#sec-arrows] in pitfalls.
-:::
+Read the assumption callout slowly: causal DAG, Markov (independence given parents), faithfulness (only those independences). Incomplete measurement is the practical punchline—which nodes must enter the model? The six numbered role slides after the fork and the chain answer that question one third variable at a time.
 
-## A mediator is a different question {#sec-mediator}
-
-```{mermaid}
-%%| fig-width: 10
-%%| fig-height: 2.6
-flowchart LR
-  warming[Assigned warming]
-  plants[Plant productivity]
-  flux[Soil CO2 flux Y]
-  warming --> plants --> flux
-  warming --> flux
-```
-
-The top path is [indirect]{.mark}. The lower path is [direct]{.mark}. The **total** effect of assigned warming leaves plant productivity alone. Conditioning on productivity estimates something else, and only under further assumptions.
-
-Write the path you mean before you add the covariate.
-
-::: {.notes}
-Warming $\to$ plant productivity $\to$ flux $Y$ is indirect; warming $\to$ flux is direct. Total effect of assigned warming does not condition on productivity. Adjusting productivity targets a different estimand under extra assumptions—say "write the path first" before opening `lm()`.
-
-**Going further.** With nested potential outcomes $Y(x, M(x'))$, the total effect splits exactly into a natural direct effect, $\mathbb{E}\{Y(1, M(0))\} - \mathbb{E}\{Y(0, M(0))\}$, and a natural indirect effect, $\mathbb{E}\{Y(1, M(1))\} - \mathbb{E}\{Y(1, M(0))\}$. Randomising warming identifies the total effect, but not these two pieces: they also need no unmeasured confounding of the mediator–outcome relation, and no such confounder affected by warming itself (the cross-world assumption). Adding productivity to the regression gives the direct effect only under those extra conditions; if a soil variable drives both productivity and flux, conditioning on productivity opens a collider path and biases even the direct effect. The usual references are Robins and Greenland (1992), Pearl, "Direct and indirect effects" (2001), and VanderWeele, *Explanation in Causal Inference* (2015).
-:::
-
-## The explanatory target is $do(x)$ {#sec-do}
-
-:::: {.columns}
-::: {.column width="64%"}
-Johannes Hertel, *Linking statistics, computational biology and biochemistry*. The question he sets is the effect of varying the independent variable on the response, in an observational study.
-
-Lewis (1973), as Hertel quotes it: an event $E$ depends causally on $C$ when $E$ would have occurred had $C$ occurred, and would not have occurred had $C$ not. Pearl (2000) writes the [explanatory]{.mark} statement as $P(\text{cancer} \mid do(\text{smoking}))$ and the statistical statement as $P(\text{cancer} \mid \text{smoking})$.
-
-Confounder, selection bias, and mediation are defined inside that framework. A prediction of $Y$ from $x$ does not use the $do$.
-:::
-::: {.column width="36%"}
-![](figures/generated/sketch-causal-see-do.png){.sketch fig-alt="Hand-drawn contrast: on the left an eye watches a scatter of points, labelled see; on the right a hand-set slider, labelled set x and do."}
-:::
-::::
-
-::: {.notes}
-Hertel's observational question is effect of varying $x$ on $Y$. Contrast Lewis's counterfactual wording with Pearl's $P(\text{cancer}\mid do(\text{smoking}))$ versus $P(\text{cancer}\mid \text{smoking})$. Prediction without $do$ is not the explanatory estimand—the fork and chain slides show why independence alone is insufficient.
-
-**Going further.** Formally, $do(X = x)$ replaces the structural equation for $X$ by the constant $x$ and leaves every other mechanism unchanged. For a DAG with joint density $\prod_k p(v_k \mid \mathrm{pa}_k)$ this gives the truncated factorisation: the intervention distribution is the same product with the factor $p(x \mid \mathrm{pa}_X)$ removed and $X$ fixed at $x$. $P(Y \mid do(x))$ equals $P(Y \mid x)$ exactly when $X$ has no open back-door path to $Y$, which randomisation guarantees. Pearl's three rules of the do-calculus decide, from the graph alone, whether an interventional quantity can be rewritten in observational terms, and Shpitser and Pearl (2006) proved the rules complete. Lewis's counterfactual and Pearl's $do$ agree at the population level; the potential outcome $Y(x)$ is the unit-level version.
+**Going further.** The causal Markov condition states that each variable is independent of its non-descendants given its parents, which is equivalent to the factorisation $p(v_1, \ldots, v_K) = \prod_k p(v_k \mid \mathrm{pa}_k)$ and to "d-separation implies independence". Faithfulness is the converse: every conditional independence in the distribution is a d-separation in the graph. It fails when two paths cancel exactly, for example a direct effect $+\beta$ and an indirect effect $-\beta$; the set of such parameter values has Lebesgue measure zero, which is the usual justification, but near-cancellation makes tests unreliable in finite samples (Uhler and colleagues, *Annals of Statistics*, 2013). A third, often implicit, condition is causal sufficiency: no unmeasured common cause of two measured variables. Spirtes, Glymour and Scheines, *Causation, Prediction, and Search* (2000), is the standard statement of all three.
 :::
 
 ## One independence, two causal stories {#sec-same-ci}
 
 A [directed acyclic graph]{.mark} is what lets you check a correlation pattern against a causal theory. One pattern can belong to more than one theory.
 
-The shared statistical statement in his pair of examples: $T$ is correlated with $X$ and with $Z$ whether or not you condition, and $Z$ is conditionally independent of $X$ given $T$.
+The shared statistical statement in Hertel's pair of examples: $T$ is correlated with $X$ and with $Z$ whether or not you condition, and $Z$ is conditionally independent of $X$ given $T$.
 
 ::: {.notes}
 Set up the puzzle: one conditional-independence pattern, two directed stories. Read the shared statement about $T$, $X$, and $Z$ without showing arrows yet. Ask the room what differs between fork and chain if $Z\perp X\mid T$ in both—the next two slides answer with arrow direction.
@@ -220,134 +171,216 @@ Set up the puzzle: one conditional-independence pattern, two directed stories. R
 
 ## $T$ is a common cause {#sec-fork}
 
-```{mermaid}
-%%| fig-width: 8
-%%| fig-height: 2.4
-flowchart LR
-  T["T"] --> X["X"]
-  T --> Z["Z"]
+```{.tikz}
+%%| filename: dag-fork
+%%| alt: Causal graph: T points to X and to Z. T is a common cause.
+%%| width: 36%
+\begin{tikzpicture}
+\node[var] (t) {$T$};
+\node[var, below left=10mm and 6mm of t] (x) {$X$};
+\node[var, below right=10mm and 6mm of t] (z) {$Z$};
+\draw[edge] (t) -- (x); \draw[edge] (t) -- (z);
+\end{tikzpicture}
 ```
 
 $T$ causes $X$ and $T$ causes $Z$. There is no direct arrow between $Z$ and $X$. Conditioning on $T$ leaves $Z$ independent of $X$.
 
 ::: {.notes}
-Fork: $T\to X$ and $T\to Z$; no edge between $X$ and $Z$. Conditioning on the common cause $T$ blocks the non-causal $X$–$Z$ association. Students map this to age or severity as $T$ before you label confounder formally on Hertel's slide.
+Fork: $T\to X$ and $T\to Z$; no edge between $X$ and $Z$. Conditioning on the common cause $T$ blocks the non-causal $X$–$Z$ association. This is the skeleton of role 1, the confounder.
 :::
 
 ## $Z$ acts through $T$ {#sec-chain}
 
-```{mermaid}
-%%| fig-width: 8
-%%| fig-height: 2.2
-flowchart LR
-  Z["Z"] --> T["T"] --> X["X"]
+```{.tikz}
+%%| filename: dag-chain
+%%| alt: Causal graph: Z points to T, which points to X.
+%%| width: 44%
+\begin{tikzpicture}
+\node[var] (z) {$Z$};
+\node[var, right=14mm of z] (t) {$T$};
+\node[var, right=14mm of t] (x) {$X$};
+\draw[edge] (z) -- (t); \draw[edge] (t) -- (x);
+\end{tikzpicture}
 ```
 
 $Z$ causes $T$ and $T$ causes $X$. The conditional independence is the same as in the fork. The arrows are not settled by that independence.
 
 ::: {.notes}
-Chain: $Z\to T\to X$. Same $Z\perp X\mid T$ as the fork, but mediation and control rules differ. Emphasise Hertel's line—arrows are not identified by that independence alone. Pair with [#sec-same-ci] as the setup slide.
+Chain: $Z\to T\to X$. Same $Z\perp X\mid T$ as the fork, but the adjustment rules differ: the chain is the skeleton of role 4, the mediator. Arrows are not identified by that independence alone. Pair with [#sec-same-ci] as the setup slide.
 :::
 
-## The DAG is a set of assumptions {#sec-dag-assumptions}
+## Role 1 · A confounder causes both $X$ and $Y$ {.dag-role #sec-confounder}
 
-Three assumptions are listed, before the arrows can be read as causes.
-
-::: assumption
-There is a DAG that is a causal representation of the system. A variable is independent of its non-effects given its direct causes. The only conditional independences in the data are the ones that DAG states.
-:::
-
-The second sentence is his [causal Markov condition]{.mark}. The third is [faithfulness]{.mark}. He notes that a complete measurement of every variable in the graph is generally impossible, so the practical question is which variables the analysis has to include.
-
-::: {.notes}
-Read the assumption callout slowly: causal DAG, Markov (independence given parents), faithfulness (only those independences). Incomplete measurement is the practical punchline—which nodes must enter the model? Everything after this slide assigns roles to a third variable.
-
-**Going further.** The causal Markov condition states that each variable is independent of its non-descendants given its parents, which is equivalent to the factorisation $p(v_1, \ldots, v_K) = \prod_k p(v_k \mid \mathrm{pa}_k)$ and to "d-separation implies independence". Faithfulness is the converse: every conditional independence in the distribution is a d-separation in the graph. It fails when two paths cancel exactly, for example a direct effect $+\beta$ and an indirect effect $-\beta$; the set of such parameter values has Lebesgue measure zero, which is the usual justification, but near-cancellation makes tests unreliable in finite samples (Uhler and colleagues, *Annals of Statistics*, 2013). A third, often implicit, condition is causal sufficiency: no unmeasured common cause of two measured variables. Spirtes, Glymour and Scheines, *Causation, Prediction, and Search* (2000), is the standard statement of all three.
-:::
-
-## A third variable has a job {#sec-hertel-confounder}
-
-The names, for an observational effect of $X$ on $Y$. A [confounder]{.mark} causes both. One example is age, between a disease phenotype and a metabolite. $X$ and $Y$ are then correlated even when they are unrelated. That is the soil-moisture diagram, [a confounder in the soil table](#sec-confounder).
-
-A mediator sits on the path from $X$ to $Y$. Controlling for it reduces, and can remove, the correlation. That is [a mediator is a different question](#sec-mediator).
-
-::: {.notes}
-Confounder: causes $X$ and $Y$—age between phenotype and metabolite on the slide. Mediator: on the $X\to Y$ path; control shrinks the $X$–$Y$ association. Link back to moisture (confounder diagram) and warming–productivity–flux (mediator slide). Role determines adjust-or-not.
-:::
-
-## A variance factor touches only $Y$ {#sec-variance-factor}
-
-```{mermaid}
-%%| fig-width: 8
-%%| fig-height: 2.4
-flowchart LR
-  X["X"] --> Y["Y"]
-  Z["Z"] --> Y
+```{.tikz}
+%%| filename: dag-role-confounder
+%%| alt: Causal graph with legend. The third variable Z, soil moisture, drawn in orange, points with orange arrows to X, organic carbon, and to Y, taxon count. A thick blue arrow from X to Y is the effect of interest. The legend reads grey for X and Y, orange for the third variable Z, blue for the effect of X on Y.
+\begin{tikzpicture}
+\node[var] (x) {$X$};
+\node[var, right=32mm of x] (y) {$Y$};
+\node[role, above=14mm of $(x)!0.5!(y)$] (z) {$Z$};
+\node[note, above=1mm of z] {soil moisture};
+\node[note, below=1mm of x] {organic carbon};
+\node[note, below=1mm of y] {taxon count};
+\draw[roleedge] (z) -- (x); \draw[roleedge] (z) -- (y);
+\draw[effectedge] (x) -- (y);
+\rolelegend
+\end{tikzpicture}
 ```
 
-$Z$ causes $Y$ and does not cause $X$. One example is a [batch effect]{.mark}. $Z$ does not create a correlation between $X$ and $Y$. It can mask one. He would control it, by design or in the model, to recover power.
+Carbon and the taxon both respond to moisture, so the unadjusted slope of $Y$ on $X$ mixes the blue path with the orange back-door path.
+
+[Adjust for it]{.mark}, by design or in the model. Otherwise the coefficient is not the effect of $X$. Simpson's hospitals and the CA-SYS zones are this graph.
 
 ::: {.notes}
-DAG: $X\to Y$ and $Z\to Y$ only—no $Z\to X$. Batch effects are the named example: they inflate noise on $Y$ without inducing an $X$–$Y$ correlation. Control for power, not because $Z$ confounds the effect.
+Point at the orange back-door path $X \leftarrow Z \to Y$ first, then at the blue arrow. Age between a disease phenotype and a metabolite is Hertel's example; soil moisture between carbon and a taxon is ours. Ask the room what happens if moisture were instead the way carbon acts on the taxon: then it is role 4, and adjusting removes part of the effect.
 
-The graph factorises as $p(x,y,z)=p(x)\,p(z)\,p(y\mid x,z)$. The only path between $X$ and $Z$ is the collider at $Y$, so $X\perp Z$. Conditioning on $Y$ opens it: $X\not\perp Z\mid Y$. There is no back-door, so $\mathbb{E}(Y\mid X=x)=\mathbb{E}\{\mathbb{E}(Y\mid X=x,Z)\mid X=x\}$ still carries the $X$ slope. The law of total variance splits the noise: $\mathrm{Var}(Y\mid X)=\mathbb{E}\{\mathrm{Var}(Y\mid X,Z)\mid X\}+\mathrm{Var}\{\mathbb{E}(Y\mid X,Z)\mid X\}$. A batch effect sits in the second term. Conditioning on $Z$ drops it.
+**Going further.** Pearl's back-door criterion: a set $\mathbf{L}$ identifies the effect of $X$ on $Y$ when no member of $\mathbf{L}$ is a descendant of $X$ and $\mathbf{L}$ blocks every path that starts with an arrow into $X$. The identifying formula is $\mathbb{E}\{Y \mid do(x)\} = \sum_{z} \mathbb{E}(Y \mid x, z)\Pr(z)$, the standardisation that reversed the hospital ranking. Under the null of no effect the fork gives $X \perp Y \mid Z$, which is why conditioning on $Z$ removes the spurious association. An unmeasured confounder cannot be adjusted for; the sensitivity slide at the end of this block bounds how strong it would have to be (Pearl, *Causality*, 2nd edition, 2009, chapter 3).
 :::
 
-## An instrument touches only $X$ {#sec-instrument}
+## Role 2 · A collider is caused by both {.dag-role #sec-collider}
 
-```{mermaid}
-%%| fig-width: 8
-%%| fig-height: 2.2
-flowchart LR
-  Z["Z"] --> X["X"] --> Y["Y"]
+```{.tikz}
+%%| filename: dag-role-collider
+%%| alt: Causal graph with legend. X, organic carbon, and Y, taxon count, both point with orange arrows to the third variable Z, the sample passing the read-depth filter, drawn in orange below them. A thick blue arrow from X to Y is the effect of interest. The legend reads grey for X and Y, orange for the third variable Z, blue for the effect of X on Y.
+\begin{tikzpicture}
+\node[var] (x) {$X$};
+\node[var, right=32mm of x] (y) {$Y$};
+\node[role, below=14mm of $(x)!0.5!(y)$] (z) {$Z$};
+\node[note, below=1mm of z] {kept by the read-depth filter};
+\node[note, above=1mm of x] {organic carbon};
+\node[note, above=1mm of y] {taxon count};
+\draw[roleedge] (x) -- (z); \draw[roleedge] (y) -- (z);
+\draw[effectedge] (x) -- (y);
+\rolelegend
+\end{tikzpicture}
 ```
 
-$Z$ causes $X$ and does not cause $Y$. One example is a genetic variant. $Z$ does not create a correlation between $X$ and $Y$. It does not have to enter the regression. Some designs use it on purpose.
+Conditioning on $Z$, or keeping only the samples that passed it, opens the orange path and creates an $X$–$Y$ association. Restricting a study to healthy people is the [selection-bias]{.mark} version.
+
+[Leave it out.]{.mark} Conditioning on a collider anyway is called overmatching.
 
 ::: {.notes}
-Instrument path: $Z\to X\to Y$ with no arrow from $Z$ to $Y$. A genetic variant is the example on the slide. Students confuse instruments with confounders because both touch $X$; check for a $Z\to Y$ edge.
+Collider: $X\to Z\leftarrow Y$, a v-structure in the Bayesian-network notes. Hertel's example is inflammation. Here the filter on sequencing depth is the collider: if both carbon and the taxon raise the read count, the samples that survive the filter carry an association the field never had.
 
-The graph factorises as $p(z,x,y)=p(z)\,p(x\mid z)\,p(y\mid x)$. The definition of the conditional then gives $p(y\mid x,z)=p(y\mid x)$, which is $Z\perp Y\mid X$. So $Z$ does not belong in the regression of $Y$ on $X$. Marginally $Z\not\perp Y$ if both arrows carry an effect, because the chain is open. A confounder would add $Z\to Y$ and break $p(y\mid x,z)=p(y\mid x)$.
+The graph without the blue arrow factorises as $p(x,y,z)=p(x)\,p(y)\,p(z\mid x,y)$, so $p(x,y)=p(x)p(y)$ and $X\perp Y$. After selecting on $Z$, $p(x,y\mid z)=p(z\mid x,y)\,p(x)\,p(y)/p(z)$, which does not factor into a function of $x$ times a function of $y$, so $X\not\perp Y\mid Z$.
 
-**Going further.** An instrument is used on purpose when $X$ and $Y$ share an unmeasured confounder $U$. The three conditions are relevance ($Z \not\perp X$), exclusion ($Z$ acts on $Y$ only through $X$) and independence ($Z \perp U$); only the first is testable. With a binary $Z$ and a linear, homogeneous effect, the Wald estimator $\{\mathbb{E}(Y \mid Z=1) - \mathbb{E}(Y \mid Z=0)\}/\{\mathbb{E}(X \mid Z=1) - \mathbb{E}(X \mid Z=0)\}$ recovers the effect of $X$; two-stage least squares is its multivariable form. With heterogeneous effects it identifies only the local average effect among units whose $X$ responds to $Z$, under an extra monotonicity condition (Imbens and Angrist, *Econometrica*, 1994). A weak instrument, one with a small denominator, gives a biased and highly variable ratio; Mendelian randomisation is the genetic-variant case on this slide.
+**Going further.** The classical case is Berkson's bias (Berkson, *Biometrics Bulletin*, 1946): two diseases independent in the population become negatively associated among hospital patients, because admission is a common effect of both. Adjusting for a descendant of a collider opens the path too, more weakly. Unlike confounding bias, collider bias cannot be removed by collecting more covariates after the selection; it has to be prevented at the design stage, or corrected with inverse probability of selection weights when the selection model is known. Hernán, Hernández-Díaz and Robins, "A structural approach to selection bias" (*Epidemiology*, 2004), is the reference.
 :::
 
-## A collider is a common effect {#sec-collider}
+## Role 3 · A variance factor touches only $Y$ {.dag-role #sec-variance-factor}
 
-```{mermaid}
-%%| fig-width: 8
-%%| fig-height: 2.4
-flowchart LR
-  X["X"] --> Z["Z"]
-  Y["Y"] --> Z
+```{.tikz}
+%%| filename: dag-role-variance
+%%| alt: Causal graph with legend. The third variable Z, the sequencing run, drawn in orange, points with an orange arrow to Y, taxon count, only. A thick blue arrow from X, organic carbon, to Y is the effect of interest. The legend reads grey for X and Y, orange for the third variable Z, blue for the effect of X on Y.
+\begin{tikzpicture}
+\node[var] (x) {$X$};
+\node[var, right=32mm of x] (y) {$Y$};
+\node[role, above=14mm of y] (z) {$Z$};
+\node[note, above=1mm of z] {sequencing run};
+\node[note, below=1mm of x] {organic carbon};
+\node[note, below=1mm of y] {taxon count};
+\draw[roleedge] (z) -- (y);
+\draw[effectedge] (x) -- (y);
+\rolelegend
+\end{tikzpicture}
 ```
 
-$X$ and $Y$ both cause $Z$. One example is inflammation. Controlling for $Z$ induces a correlation between $X$ and $Y$. A study restricted to healthy people is the [selection-bias]{.mark} version of the same arrow: the restriction can create correlations that were not there.
+A [batch effect]{.mark} adds noise to $Y$ without creating an $X$–$Y$ correlation. It can hide one.
 
-Do not control a collider. The word for doing it anyway is [overmatching]{.mark}. The Bayesian-network notes call this arrow a v-structure, and they connect it to selection bias.
+[Adjust for it, for power]{.mark}: by blocking in the design, or as a term in the model. The coefficient of $X$ is unbiased either way; only its interval changes.
 
 ::: {.notes}
-Collider: $X\to Z\leftarrow Y$. Conditioning on $Z$ opens a spurious $X$–$Y$ association. A healthy-only restriction is the same v-structure. Overmatching is the name for conditioning on a collider anyway.
+DAG: $X\to Y$ and $Z\to Y$ only—no $Z\to X$. Adjust for precision, not because $Z$ confounds. This is the blocking argument of the design hour in graph form.
 
-The graph factorises as $p(x,y,z)=p(x)\,p(y)\,p(z\mid x,y)$, so $p(x,y)=p(x)p(y)$ and $X\perp Y$. Bayes' rule after selecting on $Z$ is $p(x\mid y,z)=p(z\mid x,y)\,p(x)/p(z\mid y)$, and $p(x,y\mid z)=p(z\mid x,y)\,p(x)\,p(y)/p(z)$. That joint does not factor into a function of $x$ times a function of $y$, so $X\not\perp Y\mid Z$. Once $Z$ is known, learning $Y$ changes the posterior of $X$.
-
-**Going further.** The classical case is Berkson's bias (Berkson, *Biometrics Bulletin*, 1946): two diseases independent in the population become negatively associated among hospital patients, because admission is a common effect of both. The same mechanism appears whenever the sample is selected on a descendant of the outcome, including a filter on sequencing depth or a detection threshold on a qPCR assay. Adjusting for a descendant of a collider opens the path too, more weakly. Unlike confounding bias, collider bias cannot be removed by collecting more covariates after the selection; it has to be prevented at the design stage, or corrected with inverse probability of selection weights when the selection model is known. Hernán, Hernández-Díaz and Robins, "A structural approach to selection bias" (*Epidemiology*, 2004), is the reference.
+The graph factorises as $p(x,y,z)=p(x)\,p(z)\,p(y\mid x,z)$. There is no back-door path, so the $X$ slope is identified with or without $Z$. The law of total variance splits the noise: $\mathrm{Var}(Y\mid X)=\mathbb{E}\{\mathrm{Var}(Y\mid X,Z)\mid X\}+\mathrm{Var}\{\mathbb{E}(Y\mid X,Z)\mid X\}$. A batch effect sits in the second term, and conditioning on $Z$ drops it. On a non-identity link the story is subtler: for a logistic model, omitting a precision variable attenuates the conditional odds ratio, because odds ratios are not collapsible, even though $Z \perp X$.
 :::
 
-## A moderator changes the path {#sec-moderator}
+## Role 4 · A mediator carries part of the effect {.dag-role #sec-mediator}
 
-$Z$ changes the causal path from $X$ to $Y$. One example is sex. Women and men may show different metabolite profiles in response to a disease.
+```{.tikz}
+%%| filename: dag-role-mediator
+%%| alt: Causal graph with legend. X, assigned warming, points with an orange arrow to the third variable Z, plant productivity, drawn in orange above, which points with an orange arrow to Y, soil CO2 flux. A thick blue arrow from X to Y is the direct effect. The legend reads grey for X and Y, orange for the third variable Z, blue for the effect of X on Y.
+\begin{tikzpicture}
+\node[var] (x) {$X$};
+\node[var, right=32mm of x] (y) {$Y$};
+\node[role, above=14mm of $(x)!0.5!(y)$] (z) {$Z$};
+\node[note, above=1mm of z] {plant productivity};
+\node[note, below=1mm of x] {assigned warming};
+\node[note, below=1mm of y] {soil CO$_2$ flux};
+\draw[roleedge] (x) -- (z); \draw[roleedge] (z) -- (y);
+\draw[effectedge] (x) -- (y);
+\rolelegend
+\end{tikzpicture}
+```
 
-The analysis is then a stratum, or an [interaction]{.mark}. Matching on $Z$ does not do that job, and the sample has to be large enough for the interaction.
+The orange path is [indirect]{.mark}. The blue arrow is [direct]{.mark}. The total effect of assigned warming is both together.
 
-![](figures/generated/sketch-causal-moderator.png){.sketch fig-alt="Hand-drawn axes of Y against x with two straight lines of different slope, a steep orange line labelled Z = 1 and a shallow blue line labelled Z = 0." fig-align="center"}
+[Leave it out]{.mark} for the total effect. Adjusting for productivity estimates something else, and only under further assumptions. Write the path you mean before you add the covariate.
 
 ::: {.notes}
-Moderator $Z$ changes how $X$ maps to $Y$. Sex and the metabolite response is the example on the slide. You need an interaction or separate strata, not matching on $Z$.
+Warming $\to$ productivity $\to$ flux is indirect; warming $\to$ flux is direct. The total effect of assigned warming does not condition on productivity. Adjusting for productivity targets a different estimand—say "write the path first" before opening `lm()`.
 
-There is no new conditional independence to block or open. Write $\mathbb{E}(Y\mid X=x,Z=z)=\beta_0+\beta_1 x+\beta_2 z+\beta_3 xz$. Then $\beta_3$ is the change in the $X$ slope per unit of $Z$. Matching on $Z$ mixes the stratum slopes; it does not estimate $\beta_3$. A confounder is a fork you condition on to recover $X\perp Y\mid Z$ under the null of no effect. A collider is the opposite pattern, $X\perp Y$ until you condition. A moderator is neither.
+**Going further.** With nested potential outcomes $Y(x, M(x'))$, the total effect splits exactly into a natural direct effect, $\mathbb{E}\{Y(1, M(0))\} - \mathbb{E}\{Y(0, M(0))\}$, and a natural indirect effect, $\mathbb{E}\{Y(1, M(1))\} - \mathbb{E}\{Y(1, M(0))\}$. Randomising warming identifies the total effect, but not these two pieces: they also need no unmeasured confounding of the mediator–outcome relation, and no such confounder affected by warming itself (the cross-world assumption). If a soil variable drives both productivity and flux, conditioning on productivity opens a collider path and biases even the direct effect. The usual references are Robins and Greenland (1992), Pearl, "Direct and indirect effects" (2001), and VanderWeele, *Explanation in Causal Inference* (2015).
+:::
 
-**Going further.** Effect modification is scale-dependent: on a log link, $\beta_3 = 0$ means the rate ratio is the same in each stratum of $Z$, yet the difference in $\mu$ can still differ between strata, and the reverse holds on the identity scale. So "no interaction" must always name the link $g$. VanderWeele distinguishes effect modification (the effect of $X$ varies across levels of $Z$, with $Z$ merely observed) from causal interaction (joint intervention on $X$ and $Z$), which needs $Z$ itself to be unconfounded. Power is the practical limit: with a balanced binary $Z$, the standard error of $\beta_3$ is roughly twice that of a main effect, so detecting an interaction of the same size takes about four times the sample (Gelman, Hill and Vehtari, *Regression and Other Stories*, 2020).
+## Role 5 · A moderator changes the effect {.dag-role #sec-moderator}
+
+```{.tikz}
+%%| filename: dag-role-moderator
+%%| alt: Causal graph with legend. A thick blue arrow from X, assigned warming, to Y, soil CO2 flux, is the effect of interest. The third variable Z, water-table depth, drawn in orange above, points with an orange arrow to the middle of the blue arrow, because it changes the size of the effect. The legend reads grey for X and Y, orange for the third variable Z, blue for the effect of X on Y.
+\begin{tikzpicture}
+\node[var] (x) {$X$};
+\node[var, right=32mm of x] (y) {$Y$};
+\node[role, above=14mm of $(x)!0.5!(y)$] (z) {$Z$};
+\node[note, above=1mm of z] {water-table depth};
+\node[note, below=1mm of x] {assigned warming};
+\node[note, below=1mm of y] {soil CO$_2$ flux};
+\draw[effectedge] (x) -- (y);
+\draw[roleedge] (z) -- ($(x)!0.5!(y)+(0,1.5mm)$);
+\rolelegend
+\end{tikzpicture}
+```
+
+The orange arrow points at the blue arrow, not at a node: $Z$ changes [how much]{.mark} $Y$ moves when $X$ moves.
+
+[Model an interaction]{.mark}, or report each stratum. Matching on $Z$ does not do that job, and the sample must be large enough for the interaction.
+
+::: {.notes}
+Hertel's example is sex: women and men may show different metabolite profiles in response to a disease. Ours: the warming effect on flux may depend on how far down the water table sits. There is no new conditional independence to block or open—a moderator is neither a fork nor a collider.
+
+Write $\mathbb{E}(Y\mid X=x,Z=z)=\beta_0+\beta_1 x+\beta_2 z+\beta_3 xz$. Then $\beta_3$ is the change in the $X$ slope per unit of $Z$. Matching on $Z$ mixes the stratum slopes; it does not estimate $\beta_3$.
+
+**Going further.** Effect modification is scale-dependent: on a log link, $\beta_3 = 0$ means the rate ratio is the same in each stratum of $Z$, yet the difference in $\mu$ can still differ between strata, and the reverse holds on the identity scale. So "no interaction" must always name the link $g$. VanderWeele distinguishes effect modification ($Z$ merely observed) from causal interaction (joint intervention on $X$ and $Z$), which needs $Z$ itself to be unconfounded. With a balanced binary $Z$, the standard error of $\beta_3$ is roughly twice that of a main effect, so detecting an interaction of the same size takes about four times the sample (Gelman, Hill and Vehtari, *Regression and Other Stories*, 2020).
+:::
+
+## Role 6 · An instrument touches only $X$ {.dag-role #sec-instrument}
+
+```{.tikz}
+%%| filename: dag-role-instrument
+%%| alt: Causal graph with legend. The third variable Z, a genetic variant, drawn in orange on the left, points with an orange arrow to X, a metabolite, only. A thick blue arrow from X to Y, a phenotype, is the effect of interest. The legend reads grey for X and Y, orange for the third variable Z, blue for the effect of X on Y.
+\begin{tikzpicture}
+\node[role] (z) {$Z$};
+\node[var, right=18mm of z] (x) {$X$};
+\node[var, right=26mm of x] (y) {$Y$};
+\node[note, below=1mm of z] {genetic variant};
+\node[note, below=1mm of x] {metabolite};
+\node[note, below=1mm of y] {phenotype};
+\draw[roleedge] (z) -- (x);
+\draw[effectedge] (x) -- (y);
+\rolelegend
+\end{tikzpicture}
+```
+
+$Z$ moves $X$ and reaches $Y$ only through $X$. It creates no spurious $X$–$Y$ correlation.
+
+[Optional.]{.mark} It does not need to enter the regression. Some designs are built around it, when $X$ and $Y$ share a confounder nobody measured.
+
+::: {.notes}
+Instrument path: $Z\to X\to Y$ with no arrow from $Z$ to $Y$. Students confuse instruments with confounders because both touch $X$; check for a $Z\to Y$ edge.
+
+The graph factorises as $p(z,x,y)=p(z)\,p(x\mid z)\,p(y\mid x)$, so $p(y\mid x,z)=p(y\mid x)$, which is $Z\perp Y\mid X$. A confounder would add $Z\to Y$ and break that equality.
+
+**Going further.** The three instrument conditions are relevance ($Z \not\perp X$), exclusion ($Z$ acts on $Y$ only through $X$) and independence ($Z \perp U$ for the unmeasured confounder $U$); only the first is testable. With a binary $Z$ and a homogeneous linear effect, the Wald estimator $\{\mathbb{E}(Y \mid Z=1) - \mathbb{E}(Y \mid Z=0)\}/\{\mathbb{E}(X \mid Z=1) - \mathbb{E}(X \mid Z=0)\}$ recovers the effect of $X$; two-stage least squares is its multivariable form. With heterogeneous effects it identifies only the local average effect among units whose $X$ responds to $Z$, under monotonicity (Imbens and Angrist, *Econometrica*, 1994). Mendelian randomisation is the genetic-variant case on this slide.
 :::
 
 ## Adjust what the role requires {#sec-adjust-rules}
@@ -355,53 +388,21 @@ There is no new conditional independence to block or open. Write $\mathbb{E}(Y\m
 The control list, for an explanatory analysis.
 
 ::: {.incremental}
-- A confounder: control it, by matching or in the model, or the interpretation is wrong.
+- [Role 1](#sec-confounder), a confounder: control it, by matching or in the model, or the interpretation is wrong.
 
-- A collider: leave it out.
+- [Role 2](#sec-collider), a collider: leave it out.
 
-- A variance factor: control it, for power.
+- [Role 3](#sec-variance-factor), a variance factor: control it, for power.
 
-- A mediator: leave it out, unless the question is that path.
+- [Role 4](#sec-mediator), a mediator: leave it out, unless the question is that path.
 
-- A moderator: an interaction or a stratum, not a match alone.
+- [Role 5](#sec-moderator), a moderator: an interaction or a stratum, not a match alone.
 
-- An instrument: optional. Some designs are built around it.
+- [Role 6](#sec-instrument), an instrument: optional. Some designs are built around it.
 :::
-
 
 ::: {.notes}
 Step the six fragments as a control checklist: confounder in, collider out, variance factor in for power, mediator out unless that path is the estimand, moderator needs interaction, instrument optional. About one minute if you step each line—pause after collider versus confounder because that pair is what exams test.
-:::
-
-## Which of these is age, and which is diet? {#sec-parkinson}
-
-The discussion, left as a discussion. Parkinson's disease and the blood metabolome. The candidates he writes down: age, sex, BMI, kidney function, exercise, diet, smoking, Parkinson's medication, and other medication.
-
-The question he asks is which of those you would control, and which assumption that control uses. The six labels under his sketch are confounder, variance factor, collider, instrument, mediator, and moderator.
-
-::: {.notes}
-Leave it conversational: Parkinson's metabolome with age, sex, BMI, kidney function, exercise, diet, smoking, medications listed on the slide. Ask the room to tag each candidate with one of Hertel's six roles and to say what happens if they adjust blindly. No single answer key on the slide—that is intentional.
-:::
-
-## The simulated association matches only if the arrow is real {#sec-sem-iff}
-
-:::: {.columns}
-::: {.column width="62%"}
-The closing slide is a [structural equation model]{.mark} on a DAG: host factors, a microbiome layer, community secretion, and the host metabolome. The sentence drawn from it:
-
-> "in silico association statistics" will correlate with "in vivo association statistics" if and only if the microbiome is causal for a metabolite in the host.
-
-An association computed from the model tracks the association in the host when that causal arrow is the one in the diagram.
-:::
-::: {.column width="38%"}
-![](figures/generated/sketch-causal-sem-iff.png){.sketch fig-alt="Hand-drawn two-row comparison: when an arrow joins microbiome M to metabolite m, the in silico and in vivo panels show the same slope and get a green tick; when the arrow is crossed out, one panel is sloped and the other flat, with a red cross."}
-:::
-::::
-
-::: {.notes}
-Read the quoted if-and-only-if carefully: in silico association tracks in vivo association only when the microbiome truly causes the metabolite in the host. The SEM DAG on the slide is host factors, microbiome, secretion, metabolome—association is not direction. This is the bridge to network search limits later.
-
-**Going further.** A structural equation model writes each node as a function of its parents plus an independent error, $V_k = f_k(\mathrm{pa}_k, \varepsilon_k)$; in the linear case, the covariance between two nodes is the sum over connecting open paths of the products of path coefficients (Wright's path-tracing rules, 1921). The if-and-only-if then has a precise reading: the in silico statistic reproduces the in vivo one when the path through the microbiome carries the association, and agreement can fail either because that coefficient is zero or because another open path, such as host diet acting on both, contributes. Even a perfect match only shows consistency with the graph, not that the graph is the unique one; equivalent models with reversed arrows fit the same covariance. Bollen, *Structural Equations with Latent Variables* (1989), covers identification and fit for this model class.
 :::
 
 ## Sensitivity is the causal report {#sec-causal-sensitivity}
@@ -421,7 +422,7 @@ Observational claims need explicit what-ifs: unmeasured confounder strength, alt
 **Going further.** The first bullet has a closed-form answer. For an observed risk ratio $RR$ (or a rate ratio from a log-link GLM), the E-value $RR + \sqrt{RR(RR - 1)}$ is the minimum strength of association, on the risk-ratio scale, that an unmeasured confounder would need with both treatment and outcome to move the estimate to the null, conditional on the measured covariates (VanderWeele and Ding, *Annals of Internal Medicine*, 2017). It rests on the Ding–VanderWeele bounding factor, which makes no assumption about the confounder's distribution, so it is conservative. Rosenbaum's sensitivity parameter $\Gamma$ plays the same role for matched designs: it bounds how far the odds of treatment can differ between two matched units because of an unobserved covariate (Rosenbaum, *Observational Studies*, 2002). For the Bayesian bullet, the analogue is to report the posterior under at least two priors and say whether the decision changes.
 :::
 
-## Searching a graph {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d4f0f6 100%)"}
+## Causally orient the edges {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d4f0f6 100%)"}
 
 ## A direct link is not a direction {#sec-bn-direction}
 
@@ -456,7 +457,7 @@ With $Z$ between $X$ and $Y$ and no $X\to Y$, four DAGs collapse to one Markov e
 
 ## A knock-out supplies the direction {#sec-knockout}
 
-When the graph was not drawn by an expert, the notes' first source of direction is a [perturbation]{.mark}. If knocking out $X$ changes $Y$, the notes write $X \to Y$. They identify that experiment with the $do$-operator.
+When the graph was not drawn by an expert, the notes' first source of direction is a [perturbation]{.mark}. If knocking out $X$ changes $Y$, the notes write $X \to Y$. They read that experiment as an intervention on $X$.
 
 It is empirical, and it does not need a fitted network. It is a wet-lab result. Orienting a whole network this way needs many perturbations, which the notes say does not scale.
 
@@ -491,9 +492,7 @@ Read the model callout: $Y(t+1)$ regressed on $X_1(t),\ldots,X_k(t)$. Non-zero $
 **Going further.** Testing $a_i = 0$ in this lagged regression is Granger causality (Granger, *Econometrica*, 1969): $X_i$ Granger-causes $Y$ when its past improves the prediction of $Y$ beyond the past of every other included series. It is a statement about prediction, and it equals a causal claim only when all common drivers are in the regression, the sampling interval is shorter than the causal lag, and there is no instantaneous effect within a time step; a slow, unmeasured seasonal driver produces spurious lags. A dynamic Bayesian network adds the assumptions that the transition is first-order Markov and stationary, so one two-slice graph describes the whole series (Murphy, *Dynamic Bayesian Networks*, PhD thesis, 2002). Because arrows only point forward in time, the acyclicity restriction is lifted across slices, which is how feedback loops re-enter.
 :::
 
-## Tests, or a score, when nobody states the graph {#sec-bn-search}
-
-The notes' three searches, for the case with no expert graph.
+## Three complementary approaches to learn the structure of a DAG {#sec-bn-search}
 
 ::: {.incremental}
 - Constraint-based: test a conditional independence. If the test rejects independence, the nodes are joined.
@@ -507,23 +506,19 @@ The notes' three searches, for the case with no expert graph.
 Marco Scutari's benchmark, as the notes report it, for the developer of `bnlearn`: at small samples the constraint-based algorithms were more accurate than the score-based ones, and as accurate as the hybrids. Tabu search, a score-based method, was faster than the constraint-based algorithms and faster than simulated annealing.
 
 ::: {.notes}
-Step the three items: constraint-based joins nodes when independence tests fail; score-based maximises a graph score; hybrid skeleton then score. The figure on the next slide is the same three families, with algorithm names printed on the nodes. These learn association structure under DAG assumptions, not causation by default.
+Step the three items: constraint-based joins nodes when independence tests fail; score-based maximises a graph score; hybrid skeleton then score. The figure on the next slide is the same three families, with the algorithm names under each panel. These learn association structure under DAG assumptions, not causation by default.
 
 **Going further.** The reference constraint-based method is the PC algorithm (Spirtes and Glymour, 1991): start from the complete undirected graph, delete an edge $A - B$ as soon as some subset $S$ of the current neighbours makes $A \perp B \mid S$ pass the test, then orient the v-structures and apply Meek's rules. Its output is a CPDAG, and it is consistent as $n \to \infty$ under causal Markov, faithfulness, causal sufficiency and correct tests; Kalisch and Bühlmann (*JMLR*, 2007) extended this to sparse high-dimensional Gaussian graphs. Score-based methods maximise a decomposable score such as BIC or BDe, and the greedy equivalence search of Chickering (2002) is consistent under the same assumptions. Searching all DAGs exactly is NP-hard, which is why hill-climbing and tabu are heuristics. FCI relaxes causal sufficiency and returns a partial ancestral graph that admits latent confounders.
 :::
 
-## Where the searches landed {#sec-bn-families}
+## The three searches, named {#sec-bn-families}
 
-![Three overlapping families: constraint-based, hybrid, and score-based, with gene labels and the algorithm that returned each one.](figures/sources/constraint-vs-score.jpg){fig-alt="Three overlapping circles labelled constraint-based, hybrid, and score-based. Several genes, including PRODH and SLC13A5, are tied to constraint-based searches such as GS-RSMAX and MMPC-RSMAX. LPL is tied to the score-based search GS-HC. SEMA3E is tied to hybrid searches MMPC-HC-MMHC and MMPC-TS-MMHC." width="78%"}
+A generated sketch. The names are the ones `bnlearn` groups under each search.
 
-The labels are the searches, not a new biological claim.
-
-- Constraint-based circle: labels such as GS-RSMAX and MMPC-RSMAX
-- Score-based circle: LPL, labelled GS-HC
-- Hybrid boundary: SEMA3E, labelled MMPC-HC-MMHC and MMPC-TS-MMHC
+![](figures/generated/dag-search-families.jpg){fig-alt="Three panels. Constraint-based: nodes A, B, C and D, with the edge between B and C crossed out and labelled delete if independent, and the names PC, Grow-Shrink, IAMB and MMPC. Score-based: a lower-scoring fork from A to B and from A to C, beside a higher-scoring graph that also has B pointing to C, and the names hill-climbing and tabu. Hybrid: the same three nodes, then the graph with the extra arrow from B to C, and the names MMHC and RSMAX2." fig-align="center"}
 
 ::: {.notes}
-Do not interpret the gene names. Point at LPL in the score-based circle and at SEMA3E on the hybrid boundary. Read the labels as printed. The speed remark on the previous slide is about tabu search, the TS in MMPC-TS-MMHC.
+Walk the three panels. Constraint-based removes the edge when the conditional-independence test does not reject: PC, Grow-Shrink, IAMB, MMPC. Score-based prefers the higher-scoring DAG: hill-climbing and tabu, drawn here as the extra arrow $B \to C$. Hybrid takes that skeleton and then scores: MMHC and RSMAX2. The picture is a generated sketch, not a fitted graph.
 :::
 
 ## A searched graph is still a DAG {#sec-bn-caveats}
@@ -535,9 +530,27 @@ The two implementations they name are `bnlearn` in R and `PyAgrum` in Python.
 ![](figures/generated/sketch-causal-no-cycle.png){.sketch fig-alt="Hand-drawn contrast: a red loop of arrows from X to Y to Z and back to X, marked loop with a cross, beside a green acyclic graph on the same three nodes marked DAG with a tick." fig-align="center"}
 
 ::: {.notes}
-Close the limits first: no cycles, so feedback is out; more data can flip an edge; thousands of nodes need a heuristic. The next slide is only the two implementations. Causal claims still need design, $do$, or a perturbation. Thirty seconds.
+Close the limits first: no cycles, so feedback is out; more data can flip an edge; thousands of nodes need a heuristic. The next slide says why the loop is excluded, then the two implementations. Causal claims still need design, $do$, or a perturbation. Thirty seconds.
 
 **Going further.** The number of DAGs on $p$ labelled nodes grows super-exponentially (Robinson's recursion gives about $4.2 \times 10^{18}$ for $p = 10$), so exhaustive search stops at a few dozen nodes even with dynamic programming. Edge flips with more data are expected rather than alarming: the score difference between equivalent orientations is zero, and between near-equivalent ones it is small, so the bootstrap edge-frequency of Friedman, Goldszmidt and Wyner (1999), available as `boot.strength()` in `bnlearn`, is the honest report of how stable each arrow is. Cycles can be handled by unrolling in time, as on the dynamic slide, or with cyclic structural causal models, whose equilibrium semantics is more delicate (Bongers and colleagues, *Annals of Statistics*, 2021).
+:::
+
+## Why the graph cannot loop {#sec-dag-acyclic}
+
+A Bayesian network is a product of one conditional per node, each given its parents:
+
+::: model
+$$
+p(v_1, \ldots, v_K) = \prod_{k=1}^{K} p(v_k \mid \mathrm{pa}_k).
+$$
+:::
+
+The product is a probability only because the nodes have a [topological order]{.mark}: every parent comes before its child. Integrate out the last node, then the one before, and each factor sums to one. A loop $X \to Y \to X$ has no first node, so $p(x \mid y)\,p(y \mid x)$ need not be a joint at all. [d-separation]{.mark} reads independences off that ordered product, so it needs the order too. Feedback comes back by [unrolling in time](#sec-dbn).
+
+::: {.notes}
+One idea: the arrows must admit an order, because the factorisation is built along it. Say "integrate from the leaves upwards" and the room sees why every factor normalises. Then the loop: there is no node to start from. d-separation and the Markov condition are statements about that factorisation, so a cyclic graph has neither.
+
+**Going further.** A concrete failure: take $p(x \mid y) = \mathcal{N}(y, 1)$ and $p(y \mid x) = \mathcal{N}(x, 1)$. Their product is proportional to $\exp\{-(x - y)^2\}$, whose integral over the plane is infinite, so no joint density has these two conditionals. In general two conditionals are compatible only if their ratio factorises as $a(x)/b(y)$ (Arnold and Press, *Journal of the American Statistical Association*, 1989), which a loop does not guarantee. The topological order also makes ancestral sampling possible: draw each node after its parents. Undirected graphs (Markov random fields) allow cycles but pay with a global normalising constant, and cyclic structural causal models are defined through equilibrium solutions rather than a factorisation (Bongers and colleagues, *Annals of Statistics*, 2021). The dynamic Bayesian network keeps the order by indexing the loop in time: $X_t \to Y_{t+1} \to X_{t+2}$ is acyclic.
 :::
 
 ## Two implementations {.smaller #sec-bn-packages}
@@ -555,4 +568,3 @@ Neither search supplies a causal reading by itself.
 ::: {.notes}
 bnlearn is the structure-learning catalogue behind labels such as MMPC and RSMAX. pyAgrum is the inference engine, and it also holds influence diagrams and credal nets. Do not quote a speed ratio between the packages. Tabu against constraint-based searches was Scutari's comparison of algorithms, already on the search slide.
 :::
-

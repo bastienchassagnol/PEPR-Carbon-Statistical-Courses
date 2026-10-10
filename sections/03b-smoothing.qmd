@@ -339,21 +339,3 @@ Read $g(\mu)$ first so Poisson and logistic examples slot in from the GLM hour. 
 Step the five fragments and ask the room to match a CA-SYS or SPRUCE exploratory plot to item 1 versus item 5. KDE is easy to forget because regression stole the hour. Item 4 is when you need a written basis for simulation or reporting.
 :::
 
-## Four controls on the flexibility {#sec-smooth-takeaways}
-
-::: {.incremental}
-- Smoothness or locality replaces a rigid global formula.
-
-- The control is a bandwidth, a penalty, or the size of the basis.
-
-- Choosing that control is part of the performance, not a detail after the fit.
-
-- In higher dimensions, an additive structure, or some other structure, becomes necessary.
-:::
-
-![](figures/generated/sketch-smoothing-knobs.png){.sketch-sm fig-alt="Three hand-drawn dials side by side, labelled h for the bandwidth, lambda for the penalty, and K for the size of the basis." fig-align="center"}
-
-
-::: {.notes}
-StatHarbor's reading list: Hastie, Tibshirani, and Friedman (2009), *The Elements of Statistical Learning*; Wood (2017), *Generalized Additive Models: An Introduction with R*; Wasserman (2006), *All of Nonparametric Statistics*; Fan and Gijbels (1996), *Local Polynomial Modelling and Its Applications*; Silverman (1986), *Density Estimation for Statistics and Data Analysis*; Green and Silverman (1994), *Nonparametric Regression and Generalized Linear Models*. MARS and projection pursuit are their two extensions that relax strict additivity. They mark the links to kernels and neural nets as conceptual, not equivalences.
-:::

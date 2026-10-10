@@ -1,0 +1,1709 @@
+## Ordinary least squares, a reminder {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d6e2f5 100%)"}
+
+## The formula is the model {#sec-lm-formula}
+
+In R the same line is `response ~ predictors`. Read `~` as "described by".
+
+::: {.incremental}
+- `+` adds a term. `-` or `-1` drops one, including the intercept.
+
+- `:` is an interaction. `*` is the interaction and the main effects. `^n` adds interactions up to degree $n$.
+
+- `I()` is arithmetic. `age^2` in a formula is not $age^2$. The square is `I(age^2)`.
+:::
+
+
+`y ~ 1` is the [null model]{.mark}: the mean, and no covariate. One mixed formula example is `Income ~ age^2 + I(weight/height^2) + gender`.
+
+::: {.notes}
+Step fragments: `+`/`-`, `:`/`*`/`^n`, `I()` for arithmetic. `y~1` is intercept-only. `age^2` in a formula is not squared age—`I(age^2)` is. Mixed example at the bottom is one sentence.
+:::
+
+## One row, then every row {#sec-lm-matrix}
+
+For one observation,
+
+$$
+Y_i = \beta_0 + \beta_1 x_{i1} + \cdots + \beta_{p-1} x_{i,p-1} + \varepsilon_i.
+$$
+
+Stacked, that is $\mathbf{Y} = \mathbf{X}\boldsymbol{\beta} + \boldsymbol{\varepsilon}$. The first column of $\mathbf{X}$ is 1 when the model has an intercept. Least squares chooses $\boldsymbol{\beta}$ to minimise the sum of squared vertical residuals. The fitted values are $\hat{\mathbf{Y}} = \mathbf{H}\mathbf{Y}$, and $\mathbf{H}$ is the hat matrix.
+
+![](figures/generated/sketch-nongauss-a-matrix.png){.sketch-sm fig-alt="Block picture of Y equals X beta plus epsilon: a green column Y, a grey matrix X whose first column of ones is yellow, a red column beta, and a grey column epsilon, with one blue row i across Y and X." fig-align="center"}
+
+::: {.notes}
+Display $Y_i=\beta_0+\cdots+\varepsilon_i$, then $\mathbf{Y}=\mathbf{X}\boldsymbol{\beta}+\boldsymbol{\varepsilon}$. $\hat{\mathbf{Y}}=\mathbf{H}\mathbf{Y}$ introduces the hat matrix for leverage later.
+:::
+
+## Ordinary least squares is BLUE {#sec-gauss-markov}
+
+The [Gauss–Markov theorem](https://en.wikipedia.org/wiki/Gauss%E2%80%93Markov_theorem): if $\mathbb{E}(\varepsilon_i) = 0$, the $\varepsilon_i$ are uncorrelated, each has the same finite variance $\sigma^2$, and $\mathbf{X}$ has full column rank, then
+
+$$
+\hat{\boldsymbol{\beta}} = (\mathbf{X}^{\top}\mathbf{X})^{-1}\mathbf{X}^{\top}\mathbf{Y}
+$$
+
+has the smallest variance among [linear unbiased]{.mark} estimators. The errors do not have to be Gaussian for that result. Gauss used normality. Markov removed it.
+
+If, in addition, the $\varepsilon_i$ are independent and Gaussian, that same $\hat{\boldsymbol{\beta}}$ is the maximum-likelihood estimator. The $t$ tests and the $F$ test on the printout use this extra assumption. If the variances differ or the errors are correlated, the corresponding estimator is generalised least squares, which is the [Welch case](#sec-ols-replacements) when the variance is a group.
+
+::: {.notes}
+Gauss–Markov needs zero mean, uncorrelated equal-variance errors, full-rank $\mathbf{X}$—not Gaussian errors for BLUE. Gaussianity enters for MLE and for $t$/ $F$ on the printout. GLS is named when variance differs.
+
+**Going further.** Gauss–Markov restricts the competition to linear unbiased estimators: a biased estimator such as ridge regression, or the James–Stein estimator when $p \ge 3$, can have a smaller mean squared error. Without Gaussian errors, $\hat{\boldsymbol{\beta}}$ is still asymptotically normal, with covariance $\sigma^2(\mathbf{X}^{\top}\mathbf{X})^{-1}$, provided no single row of $\mathbf{X}$ dominates (the Lindeberg condition, $\max_i h_{ii} \to 0$); the $t$ and $F$ tests are then approximately valid for large $n$. With Gaussian errors the result strengthens to minimum variance among all unbiased estimators, since OLS attains the Cramér–Rao bound.
+:::
+
+## A coefficient is a $t$ {#sec-lm-t}
+
+`summary(lm)` tests each coefficient against 0. The statistic is the estimate divided by its standard error. [Angelino and Marcone](https://www.sib.swiss/training/course/20260907_ADDMG) note that this test assumes Gaussian residuals. It is the interesting test for a slope. It is rarely the question for the intercept.
+
+In a model with several covariates, each line is the test of that coefficient **with the other terms already in the model**. [Mahanty](https://www.linkedin.com/pulse/interpreting-linear-model-output-r-anil-mahanty/) (9 January 2018) maps the same printout. Two of his readings do not travel: multiple $R$ is not a count of points on the line, and a small $p$ is not a verdict that the model fits.
+
+::: {.notes}
+Each `summary(lm)` line tests that coefficient with others already in. Mahanty's two warnings: multiple $R$ is not a point count; small $p$ is not goodness of fit. Intercept $t$ is rarely the scientific question.
+
+**Going further.** Under independent Gaussian errors, $(\hat{\beta}_k - \beta_k)/\mathrm{SE}(\hat{\beta}_k)$ has an exact $t_{n - p}$ distribution because $\hat{\boldsymbol{\beta}}$ and $\hat{\sigma}^2$ are independent and $(n - p)\hat{\sigma}^2/\sigma^2 \sim \chi^2_{n - p}$ (Cochran's theorem). Without normality the ratio is asymptotically standard normal under the conditions of the previous slide. $\mathrm{SE}(\hat{\beta}_k) = \hat{\sigma}\sqrt{\{(\mathbf{X}^{\top}\mathbf{X})^{-1}\}_{kk}}$ grows when $x_k$ is correlated with the other columns, by the variance inflation factor $1/(1 - R_k^2)$.
+:::
+
+## The $F$ test compares two nested models {#sec-lm-f}
+
+The $F$ statistic on the same printout compares the fitted model with the [intercept-only model]{.mark}. The statistic is the drop in the residual sum of squares, per extra parameter, divided by the remaining residual mean square:
+
+$$
+\frac{\{\mathrm{SS}(\mathrm{mean}) - \mathrm{SS}(\mathrm{fit})\}/(p_{\mathrm{fit}} - p_{\mathrm{mean}})}{\mathrm{SS}(\mathrm{fit})/(n - p_{\mathrm{fit}})}.
+$$
+
+With a single slope, this $F$ matches the $t$ test of that slope. With several slopes, every coefficient can be quiet and the $F$ test can still reject. $R^2$ is the share of the variance of $Y$ that the fit captures. Adjusted $R^2$ charges a cost for each extra term. The residual degrees of freedom are $n$ minus the number of estimated parameters.
+
+::: {.notes}
+Read the $F$ ratio formula once; with one slope it matches slope $t$. Several quiet slopes can still yield a significant $F$. $R^2$ and adjusted $R^2$ definitions are on the slide—df is $n$ minus parameter count.
+
+**Going further.** Under Gaussian errors and the null that the extra $q = p_{\mathrm{fit}} - p_{\mathrm{mean}}$ coefficients are zero, the ratio is exactly $F_{q,\, n - p_{\mathrm{fit}}}$. With $q = 1$ it equals the square of the $t$ statistic of that coefficient. It is a monotone function of the likelihood-ratio statistic for Gaussian models, so it is the small-sample version of the deviance test used for GLMs. $R^2$ never decreases when a term is added; adjusted $R^2 = 1 - (1 - R^2)(n - 1)/(n - p)$ can.
+:::
+
+## Four plots, then two more {#sec-lm-plot}
+
+`plot()` on an `lm` draws four checks by default: residuals against fitted values, a normal QQ plot, scale against location, and residuals against leverage ([`plot.lm`](https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/plot.lm)). Those are `which = c(1, 2, 3, 5)`.
+
+[Tay](https://www.r-bloggers.com/2019/11/the-hidden-diagnostic-plots-for-the-lm-object/) (14 November 2019) notes the two that are not in that panel. `which = 4` is [Cook's distance]{.mark} against the row number. `which = 6` is Cook's distance against leverage over one minus leverage. He treats a Cook's distance above 1 as a point to inspect. The next four slides are the default four, each with a fit that respects the assumption and a fit that does not. Illustrative draws, seed `20261005`.
+
+::: {.notes}
+Default `plot(lm)` is which 1,2,3,5; Tay adds Cook vs index (4) and Cook vs leverage (6). Cook $>1$ to inspect. Next four slides are the default panel, seed 20261005 illustrative fits.
+:::
+
+## Residuals against the fitted values
+
+![Two residual-versus-fitted plots. Left: a flat cloud around zero. Right: a U-shape from fitting a straight line to a quadratic.](figures/generated/lm-resid-fitted.png){fig-alt="Left, residuals from a straight-line fit sit in a flat band around zero. Right, residuals from a straight line fitted to a quadratic curve form a U." width="96%"}
+
+A flat cloud is the linear mean. A curve means $f(x)$ is still in the residual.
+
+::: {.notes}
+Left panel flat cloud is the linear mean assumption; right U-shape is missing curvature in $f(x)$. Pair with the smoothing section later. This is the first of four diagnostic figures—code was on the prior slide.
+:::
+
+## The residual QQ plot
+
+![Two normal QQ plots of residuals. Left: points along the line. Right: heavy tails from a t distribution.](figures/generated/lm-qq.png){fig-alt="Left, Gaussian residuals follow the normal reference line. Right, residuals from a heavy-tailed draw flare at both ends." width="92%"}
+
+Same reading as the [shape figures](#sec-qq-shapes). A line supports the Gaussian assumption behind the $t$ and $F$ tests. A flare is a heavy tail, and the next slide changes the model for $Y$.
+
+::: {.notes}
+Gaussian residuals on the line; $t$ residuals flare both tails. Same vocabulary as the opening QQ shapes. Flare here motivates changing the family for $Y$, not only the mean structure.
+:::
+
+## Scale against location {#sec-lm-scale-location}
+
+![Two scale-location plots. Left: a flat smooth of the square-root absolute residual. Right: the smooth rises because the variance grows with x.](figures/generated/lm-scale-location.png){fig-alt="Left, the square root of the absolute residual stays level across fitted values. Right, it rises as the fitted value increases." width="96%"}
+
+A flat smooth is [constant variance]{.mark}, the Gauss–Markov condition. A rise is a variance that travels with the mean: [generalised least squares](#sec-ols-replacements), or a family in which the variance depends on $\mu$.
+
+::: {.notes}
+Flat smooth of $\sqrt{|\text{residual}|}$ is constant variance; rising smooth is variance with mean. Link to $\phi V(\mu)$ in GLMs and to GLS on the replacements slide.
+:::
+
+## Leverage and Cook's distance
+
+![Two residual-versus-leverage plots. Left: points near the origin, inside the Cook contours. Right: one point far to the right with a large residual.](figures/generated/lm-leverage.png){fig-alt="Left, residuals sit at small leverage. Right, one observation has high leverage and a large residual, beyond a Cook's-distance contour." width="96%"}
+
+[Leverage]{.mark} $h_{ii}$ is the diagonal of the hat matrix. A common cut is $2p/n$ or $3p/n$ from Belsley, Kuh, and Welsch (1980). The contours are Cook's distance 0.5 and 1.
+
+::: {.notes}
+Leverage $h_{ii}$ from the hat matrix; cuts $2p/n$ or $3p/n$ from BKW. Cook contours 0.5 and 1 on the figure. High leverage plus large residual is the point to name on the right panel.
+
+**Going further.** The leverage $h_{ii} = \mathbf{x}_i^{\top}(\mathbf{X}^{\top}\mathbf{X})^{-1}\mathbf{x}_i$ lies in $[0, 1]$ and the $h_{ii}$ sum to $p$, so their mean is $p/n$ and $2p/n$ flags twice the average. Cook's distance is $D_i = e_i^2 h_{ii} / \{p\, \hat{\sigma}^2 (1 - h_{ii})^2\}$, the scaled change in all fitted values when row $i$ is deleted; it combines a large residual with a large leverage. A cut of 1 corresponds roughly to moving $\hat{\boldsymbol{\beta}}$ to the edge of a 50% confidence region (Cook and Weisberg, *Residuals and Influence in Regression*, 1982). For a GLM the same quantities come from the weighted hat matrix of the final IRLS step.
+:::
+
+## ANOVA and ANCOVA {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #f6e2c4 100%)"}
+
+## ANOVA is a joint test on a model {#sec-anova-joint}
+
+- It is not a test: it uses an $F$ or a $\chi^2$ statistic
+- It is not a model: it runs on a fitted model
+- It asks whether the levels of a factor [jointly]{.mark} move the mean: all the contrasts of that factor at once, not one pair
+
+`anova(lm(y ~ group), lm(y ~ 1))` and `summary(aov(lm(y ~ group)))` give the same $F$. 📝 Olszewski, [*A brief story of ANOVA*](references/anova-interpreation.pdf) (2025).
+
+::: {.notes}
+Read the three bullets as his three questions: test, model, then what. In his example a three-level factor gives $F = 174.6$ on 2 and 87 degrees of freedom whether you call `aov`, compare two nested models with `anova`, or test the two contrasts $\mu_{A1} - \mu_{A2}$ and $(\mu_{A1} + \mu_{A2})/2 - \mu_{A3}$ jointly with `emmeans`. The "variance" in analysis of variance is the residual variance that drops when the factor enters.
+
+**Going further.** For a factor with $L$ levels the ANOVA null is $\mathbf{C}\boldsymbol\beta = \mathbf{0}$ for any full-rank $(L-1)$-row contrast matrix $\mathbf{C}$; the Wald statistic $(\mathbf{C}\hat{\boldsymbol\beta})^{\top}\{\mathbf{C}\widehat{\mathrm{Var}}(\hat{\boldsymbol\beta})\mathbf{C}^{\top}\}^{-1}(\mathbf{C}\hat{\boldsymbol\beta})/(L-1)$ does not depend on which $\mathbf{C}$ is chosen. In the Gaussian linear model Wald, score, and likelihood-ratio tests coincide and give the exact $F$; in a GLM they agree only asymptotically, and the same partition is the analysis of deviance. The construction applies to any model that returns $\hat{\boldsymbol\beta}$ and its covariance, including quantile, robust, and mixed models, which is what `emmeans::joint_tests()` exploits.
+:::
+
+## ANCOVA · a factor shifts the intercept {#sec-lm-ancova}
+
+The height example is `Height ~ Age + Gender`. Gender is a factor, so R codes it as an indicator against a reference level. Women are the baseline in the printout. The line for women is $124.52 + 2.72\,\mathrm{Age}$. The line for men has the same slope and a higher intercept, $127.3 + 2.72\,\mathrm{Age}$.
+
+That is an [analysis of covariance]{.mark}: one continuous covariate, one categorical factor, and a common slope unless you add `Age:Gender`. The gender coefficient is a difference of intercepts, not the raw difference of the two mean heights. The sums of squares for that fit still depend on [which ANOVA type](#sec-anova-type) you ask for.
+
+::: {.notes}
+`Height~Age+Gender`: women $124.52+2.72\,\mathrm{Age}$, men same slope, higher intercept $127.3$. Gender coefficient is intercept difference, not raw mean difference. ANOVA type still matters for SS.
+:::
+
+## Type I, II, and III answer different questions {#sec-deviance .smaller}
+
+- **Type I:** each term after the terms written before it
+- **Type II:** each main effect after the other main effects; an interaction after the mains
+- **Type III:** each term after every other term, including interactions
+
+The three answer different questions. Pick one before fitting, and do not use Type I unless the order is the scientific order.
+
+For a generalised linear model the same partition is an [analysis of deviance]{.mark}. The statistic is a likelihood-ratio $\chi^2$, or a score test, rather than an $F$ on residual sums of squares. `anova(glm(...), test = "LRT")` is that comparison of nested models. It is still a test of a term in a model, not a new model. His 2025 notes put the conditional mean, the probability, the quantile, and the hazard on one page as the functions that comparison can target.
+
+::: {.notes}
+Type I, II, III definitions are different questions—pick before fitting. GLM partition is analysis of deviance with LRT, not $F$ on SS. His 2025 note bundles mean, probability, quantile, hazard as comparison targets—one line, do not over-read.
+
+**Going further.** Type II respects marginality (Nelder, *Journal of the Royal Statistical Society, Series A*, 1977): a main effect is not tested in the presence of an interaction that contains it. Type III does test it, and its sums of squares depend on the contrast coding, so it is meaningful only with sum-to-zero contrasts (`contr.sum`), not R's default treatment contrasts. For a GLM, the deviance difference between nested models is asymptotically $\chi^2$ with the difference in parameters (Wilks' theorem); when $\phi$ is estimated, as in a quasi-Poisson fit, the ratio to $\hat{\phi}$ is referred to an $F$ instead.
+:::
+
+## `aov()` is Type I {#sec-anova-type}
+
+![A warning that aov() in R is Type I ANOVA, so the test of treatment depends on whether baseline or treatment is entered first.](figures/sources/ancova-type-i-order.jpeg){fig-alt="Four rows. lm, car::Anova with type 2, and permuco are marked safe. aov is marked not safe, because the order of baseline and treatment changes the sums of squares." width="78%"}
+
+[Olszewski](https://www.linkedin.com/feed/update/urn:li:activity:7444337265641684992/): `aov()` is [Type I]{.mark}, so the treatment $F$ in his sketch is 16.6 or 38.7 depending on order. `car::Anova(type = 2)` does not inherit that order. 📝 [His longer ANOVA note](references/anova-interpreation.pdf) asks whether the name is a test or a model.
+
+::: {.notes}
+Treatment $F$ is 16.6 or 38.7 depending on entry order in Olszewski's sketch. `car::Anova(type=2)` is marked safe on the figure. Ask what happens if baseline and treatment are swapped in `aov()`.
+:::
+
+## Which R function gives which type {.smaller #sec-anova-functions}
+
+| Function | Type | Models | Watch |
+| --- | --- | --- | --- |
+| `aov()` | I | Linear model | ⚠️ The order of the terms changes the result |
+| `anova()` | I or III | Most models, including GLMs | Usually a comparison of two models |
+| `car::Anova()` | II or III | Most models | Type III needs `contr.sum` |
+| `emmeans::joint_tests()` | III | GLS, GEE, mixed, quantile, robust | Tests [estimated marginal means]{.mark}, not raw means |
+
+Choose the type for the question, then the function that gives it.
+
+::: {.notes}
+The table is Olszewski's last-but-one page, shortened. Type II is the safe default for main effects without an interaction; `joint_tests()` is the route when the model is not a plain `lm`, and it does not need the contrasts to be set by hand.
+
+**Going further.** `emmeans` builds a reference grid with every combination of factor levels, predicts at each, and averages those predictions with equal weights by default; in an unbalanced design that grid is not the observed covariate distribution, so the "marginal mean" is a standardised mean, not the sample mean. The denominator degrees of freedom for mixed models can use the Satterthwaite or Kenward–Roger approximations, and a sandwich covariance can be passed in for heteroscedastic data (Lenth, *emmeans* vignettes).
+:::
+
+## When an ANOVA assumption fails, generalise the model {#sec-anova-fails}
+
+| Assumption violated | Use instead |
+| --- | --- |
+| Equal variance per group | Generalised least squares with one variance per group, `nlme::gls()` with `varIdent()` |
+| Independence | GLS with a correlation, GEE, or a linear mixed model |
+| Gaussian residuals | GEE, or a permutation ANOVA |
+| Outliers | A robust linear model |
+
+Each keeps the [arithmetic mean]{.mark} as the null. A switch to Kruskal–Wallis does not: it tests stochastic superiority.
+
+::: {.notes}
+His example, seed 100: three groups with standard deviations 1, 2, and 5. The ordinary ANOVA gives $p = 0.142$; the GLS fit with a variance per group gives $p = 0.011$ for the same means. No Levene pretest is needed: start from the GLS fit.
+
+**Going further.** With $\mathrm{Var}(\varepsilon_{ij}) = \sigma_j^2$, GLS weights each group by $1/\hat\sigma_j^2$, which is the multi-group generalisation of the Welch test; the denominator degrees of freedom shrink because the variances are estimated, which is why `joint_tests(..., mode = "df.error")` reports 85 rather than 87. Permutation ANOVA is exact only under exchangeability, so with unequal variances it should permute a studentised statistic (the Welch-type $F$), for the same reason as the two-group case.
+:::
+
+## Generalised linear models {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d5eadf 100%)"}
+
+## Favour the model, not a pretest
+
+```{mermaid}
+%%| fig-width: 10
+%%| fig-height: 2.8
+flowchart LR
+  question["Question"]
+  support["Support of $$Y$$"]
+  family["$$Y \mid x \sim \mathrm{family}(\mu)$$"]
+  check["Residual plot"]
+  report["Estimate and interval"]
+  question --> support --> family --> check --> report
+```
+
+A [pretest]{.mark} that switches you from a $t$-test to a rank test still does not estimate $\mu = \mathbb{E}(Y \mid x)$. Rank tests answer a different contrast, and they have assumptions of their own.
+
+The teaching sequence for the three models follows the SIB day on logistic regression and GLMs ([course](https://www.sib.swiss/training/course/20260907_ADDMG)). 📝 [Day 2, logistic regression and GLMs](references/day2-logistic-regression-and-glm-2026.pdf). 📝 [Day 1a, linear models](references/day1a-linear-regression-and-beyond-2026.pdf), is the hour before that sequence.
+
+::: {.notes}
+Walk the Mermaid: question → support → family → residual plot → estimate. Pretest switching $t$ to ranks still misses $\mu$. SIB day link is for students who want the full logistic/GLM course—optional aside.
+:::
+
+## The link acts on $\mu$, not on $Y$ {#sec-glm-link-mean}
+
+Agresti writes a generalised linear model as one object: a distribution for $Y$, a [linear predictor]{.mark}, and a link on the conditional mean [@agrestiFoundationsLinearGeneralized2015].
+
+:::: {.columns}
+::: {.column width="50%"}
+**Link on the mean**
+
+::: model
+$$
+g(\mu_i) = \mathbf{x}_i^{\top}\boldsymbol{\beta}
+$$
+:::
+
+After the fit, $\mathbb{E}(Y \mid \mathbf{x}) = g^{-1}(\mathbf{x}^{\top}\boldsymbol{\beta})$ is a probability, an expected count, or a positive rate.
+:::
+
+::: {.column width="50%"}
+**Transform of $Y$**
+
+$$
+g(Y_i) = \mathbf{x}_i^{\top}\boldsymbol{\beta} + \varepsilon_i
+$$
+
+That sentence rewrites each observation before the fit. It targets $\mathbb{E}\{g(Y)\}$, which is not $g(\mu)$ when $g$ is nonlinear.
+:::
+::::
+
+The [estimand slides](#sec-log-estimand) are what the second column costs.
+
+::: {.notes}
+Left column: $g(\mu_i)=\mathbf{x}_i^{\top}\boldsymbol{\beta}$. Right column transforms each $Y_i$ and targets $\mathbb{E}\{g(Y)\}$. Walk both callouts; estimand slides are the cost of the right column.
+
+**Going further.** The families of a GLM are exponential dispersion models, $f(y; \theta, \phi) = \exp\{(y\theta - b(\theta))/a(\phi) + c(y, \phi)\}$, with $\mu = b'(\theta)$ and $\operatorname{Var}(Y) = a(\phi)\, b''(\theta)$. The link $g$ connects $\mu$ to $\eta = \mathbf{x}^{\top}\boldsymbol{\beta}$; the canonical link is the one with $\theta = \eta$. Nelder and Wedderburn (*Journal of the Royal Statistical Society, Series A*, 1972) introduced the class, and McCullagh and Nelder, *Generalized Linear Models* (1989), is the standard reference; Agresti [@agrestiFoundationsLinearGeneralized2015] gives the modern treatment.
+:::
+
+## The family matches the type of $Y$ {#sec-glm-family-match}
+
+Ordinary least squares on a transformed response still carries a Gaussian error on whatever scale you chose.
+
+:::: {.columns}
+::: {.column width="62%"}
+A GLM keeps $Y$ on its support and changes the [family]{.mark}:
+
+- Bernoulli or binomial for a 0/1 outcome or a proportion
+- Poisson for a non-negative integer count
+- Gaussian on the identity link when that support is appropriate
+:::
+::: {.column width="38%"}
+![](figures/generated/sketch-nongauss-a-support.png){.sketch fig-alt="Three supports: two blue dots at 0 and 1 for Bernoulli, green dots at 0, 1, 2 and on along an arrow for Poisson, and a violet double arrow for Gaussian."}
+:::
+::::
+
+The [family table](#sec-family-table) is the first menu. The point here is that the likelihood is written for $Y$, not for $g(Y)$.
+
+::: {.notes}
+OLS on $g(Y)$ still assumes Gaussian errors on the transformed scale. GLM list: Bernoulli/binomial, Poisson, Gaussian identity. Likelihood is written for $Y$, not $g(Y)$—family table is next.
+
+**Going further.** The maximum-likelihood score equations of any GLM are $\sum_i \frac{(Y_i - \mu_i)}{\phi V(\mu_i)} \frac{\partial \mu_i}{\partial \boldsymbol{\beta}} = \mathbf{0}$. They depend on the family only through the mean model and the variance function. Wedderburn (*Biometrika*, 1974) used this to define quasi-likelihood: specify only $\mu(\mathbf{x})$ and $V(\mu)$, solve the same equations, and $\hat{\boldsymbol{\beta}}$ remains consistent and asymptotically normal if the mean is right. The full family matters for the likelihood itself, for prediction intervals, and for anything that uses the shape beyond two moments.
+:::
+
+## Variance travels with $\mu$ {#sec-glm-variance-mu}
+
+:::: {.columns}
+::: {.column width="50%"}
+**Constant variance**
+
+$$
+\operatorname{Var}(Y \mid \mathbf{x}) = \sigma^2
+$$
+
+This is the classical linear-model assumption. A fan on [scale against location](#sec-lm-scale-location) is the picture that it has failed.
+:::
+
+::: {.column width="50%"}
+**Variance tied to the mean**
+
+$$
+\operatorname{Var}(Y_i \mid \mathbf{x}_i) = \phi\, V(\mu_i)
+$$
+
+Poisson: $V(\mu) = \mu$. Binomial mean $\pi$: variance $\pi(1-\pi)$. The link is part of the family, not a fix applied to the residuals afterwards.
+:::
+::::
+
+::: {.notes}
+Left: $\operatorname{Var}(Y\mid x)=\sigma^2$. Right: $\phi V(\mu)$ with Poisson $V(\mu)=\mu$ and binomial $\pi(1-\pi)$. Fan on scale-location is the picture for the left column failing.
+
+**Going further.** In an exponential dispersion family the variance function $V(\mu) = b''\{(b')^{-1}(\mu)\}$ determines the family within the natural exponential families. Morris (*Annals of Statistics*, 1982) shows that exactly six have a quadratic $V$: Gaussian, Poisson, gamma, binomial, negative binomial, and the generalised hyperbolic secant. The Tweedie class, $V(\mu) = \mu^p$, interpolates: $p = 0$ Gaussian, $p = 1$ Poisson, $p = 2$ gamma, and $1 < p < 2$ a compound Poisson–gamma with exact zeros. The dispersion $\phi$ is 1 for Poisson and binomial; a Pearson estimate $\hat{\phi} = \sum_i (Y_i - \hat{\mu}_i)^2/V(\hat{\mu}_i)/(n - p)$ well above 1 is overdispersion.
+:::
+
+## Coefficients read on the link scale {#sec-glm-coef-meaning}
+
+The link is chosen so $\boldsymbol{\beta}$ answers a substantive question on the mean.
+
+For $\log(\mu) = \beta_0 + \beta_1 x$,
+
+$$
+\frac{\mu(x+1)}{\mu(x)} = e^{\beta_1}.
+$$
+
+For a logit on $\pi$, $e^{\beta_1}$ is an [odds ratio]{.mark}. The goal is not to make a histogram look Gaussian. The goal is a coefficient that names an effect on $\mu$. The compact contrast is [the link stays on the mean](#sec-glm-versus-transform).
+
+::: {.notes}
+For $\log\mu=\beta_0+\beta_1 x$, $\mu(x+1)/\mu(x)=e^{\beta_1}$. Logit: $e^{\beta_1}$ is an odds ratio. Goal is substantive effect on $\mu$, not a pretty histogram.
+
+**Going further.** Wald intervals are computed on the link scale, $\hat{\beta}_1 \pm 1.96\, \mathrm{SE}$, and then exponentiated, which keeps a ratio positive; profile-likelihood intervals (`confint()` on a `glm`) are more accurate in small samples. The odds ratio approximates the risk ratio only when $\pi$ is small. The odds ratio is also non-collapsible: adding a covariate unrelated to treatment can change it, even in a randomised trial, because the marginal and conditional odds ratios differ (Greenland, Robins, and Pearl, *Statistical Science*, 1999). A log-linear rate ratio is collapsible in that sense.
+:::
+
+## The response chooses the family {#sec-family-table}
+
+| Support of $Y$ | A first model |
+| --- | --- |
+| Continuous, unrestricted, stable variance | Gaussian linear model |
+| Two categories, truly binary | Logit, $Y \sim \mathrm{Bernoulli}(\pi)$ |
+| Non-negative integer, variance near the mean | Poisson, log link |
+| Same, with extra-Poisson variance | Negative binomial, log link |
+
+The next slides keep $\mu = \mathbb{E}(Y \mid x)$ and change the family. A transformation of $Y$ is the other route, already set aside on the [estimand slides](#sec-log-estimand).
+
+::: {.notes}
+Table rows: continuous stable variance → Gaussian; binary → logit; count near equidispersion → Poisson; extra variance → negative binomial. Transformation route is explicitly set aside via log-estimand link.
+
+**Going further.** Goodness of fit for a GLM is judged by the residual deviance $D = 2\{\ell(\text{saturated}) - \ell(\hat{\boldsymbol{\beta}})\}$, which is approximately $\chi^2_{n - p}$ only when every expected count is large; for sparse counts or binary $Y$ the reference distribution fails and residual plots are the better check. The negative binomial NB2 has $V(\mu) = \mu + \mu^2/\theta$, a gamma mixture of Poissons; it is not an exponential dispersion family unless $\theta$ is fixed, so `MASS::glm.nb` alternates between $\boldsymbol{\beta}$ and $\theta$. Hilbe, *Negative Binomial Regression* (2011), covers the variants.
+:::
+
+## The link stays on the mean {#sec-glm-versus-transform}
+
+[Angelino and Marcone](https://www.sib.swiss/training/course/20260907_ADDMG) write the earlier models as $g(Y) = f(x) + \text{error}$. On a 0/1 response that line can return a probability below 0, because a straight line is not confined to $(0, 1)$.
+
+In the generalised linear model the linearity sits on $g(\mu)$. The family then draws $Y$. The quantity you report is still a mean of the response you measured.
+
+::: {.notes}
+Angelino and Marcone: $g(Y)=f(x)+\text{error}$ on 0/1 can predict outside $(0,1)$. GLM linearises $g(\mu)$; family draws $Y$. Reported quantity remains mean of measured $Y$.
+
+**Going further.** A linear probability model, least squares on a 0/1 $Y$, is unbiased for the slope of $\mathbb{E}(Y \mid x)$ when that mean really is linear, but $\operatorname{Var}(Y \mid x) = \pi(1 - \pi)$ is heteroskedastic by construction, so it needs a sandwich standard error, and its fitted values can leave $[0, 1]$. The logistic model is the canonical-link GLM for the Bernoulli family, so its score equations $\sum_i \mathbf{x}_i (Y_i - \hat{\pi}_i) = \mathbf{0}$ make the fitted and observed totals agree within every level of a factor in $\mathbf{x}$.
+:::
+
+## One skeleton for all three :link: {#sec-skeleton}
+
+```{.tikz}
+%%| filename: dag-glm-skeleton
+%%| alt: Plate diagram of a generalised linear model over rows i: the constant x i and the coefficients beta feed the dotted linear predictor eta i, which gives the dotted mean mu i through the inverse link, which gives the observed Y i through the family.
+%%| width: 92%
+\begin{tikzpicture}
+\node[const] (x) {$x_i$};
+\node[det, right=14mm of x] (eta) {$\eta_i$};
+\node[det, right=14mm of eta] (mu) {$\mu_i$};
+\node[obs, right=14mm of mu] (y) {$Y_i$};
+\node[const, above=9mm of eta] (b) {$\boldsymbol\beta$};
+\draw[edge] (x) -- (eta); \draw[edge] (b) -- (eta);
+\draw[edge] (eta) -- (mu); \draw[edge] (mu) -- (y);
+\node[note, below=2mm of eta] (n1) {$\eta_i = \beta_0 + \beta_1 x_i$};
+\node[note, below=2mm of mu] (n2) {$\mu_i = g^{-1}(\eta_i)$};
+\node[note, below=2mm of y] (n3) {$Y_i \sim \mathrm{family}(\mu_i)$};
+
+\plate{p}{(x)(eta)(mu)(y)(n1)(n2)(n3)}{$i = 1,\ldots,n$}
+\end{tikzpicture}
+```
+
+- **Family:** how $\mathrm{Var}(Y \mid x)$ depends on $\mu$
+- **Link** $g$: the scale on which $\beta_1 x$ is linear
+- **Mean** $\mu = \mathbb{E}(Y \mid x)$: what $\beta$ describes, after you invert $g$
+
+Agresti is the reference for the theory and the worked models [@agrestiFoundationsLinearGeneralized2015]. Estimation is by [maximum likelihood]{.mark}, not by a normal test of $Y$. The letters are fixed on the [notation](#sec-notation) slide.
+
+::: {.notes}
+Read the graph left to right: $x_i$ and $\boldsymbol\beta$ give $\eta_i$, the inverse link gives $\mu_i$, the family gives $Y_i$. Three bullets map to variance structure, scale of $\beta$, and mean after inversion. Agresti citation is the theory anchor; MLE not normal test on raw $Y$.
+
+**Going further.** Each family here is a one-parameter exponential family, $f(y;\theta,\phi) = \exp\{[y\theta - b(\theta)]/a(\phi) + c(y,\phi)\}$, so $\mu = b'(\theta)$ and $\mathrm{Var}(Y) = a(\phi)\,b''(\theta) = \phi V(\mu)$: the variance function $V$ is what "family" means on this slide. The canonical link is $g = (b')^{-1}$, which gives the identity, the logit and the log for the Gaussian, Bernoulli and Poisson. With the canonical link, $\mathbf{X}^{\top}\mathbf{y}$ is sufficient for $\boldsymbol\beta$ and the score equations reduce to $\mathbf{X}^{\top}(\mathbf{y}-\boldsymbol\mu) = \mathbf{0}$. Nelder and Wedderburn's 1972 paper unified the three cases; McCullagh and Nelder's *Generalized Linear Models* is the classical derivation, and Agresti the modern one [@agrestiFoundationsLinearGeneralized2015].
+:::
+
+## A continuous response, on the identity {#sec-glm-gaussian}
+
+A continuous response goes to a linear regression. The drawing is Gaussian, and the link is the [identity]{.mark}, so $\mu$ and the linear predictor are the same number.
+
+```{.tikz}
+%%| filename: dag-glm-gaussian
+%%| alt: Plate diagram of the Gaussian linear model: x i and beta give eta i, mu i equals eta i, and Y i is normal with mean mu i and variance sigma squared, a constant.
+%%| width: 92%
+\begin{tikzpicture}
+\node[const] (x) {$x_i$};
+\node[det, right=14mm of x] (eta) {$\eta_i$};
+\node[det, right=14mm of eta] (mu) {$\mu_i$};
+\node[obs, right=14mm of mu] (y) {$Y_i$};
+\node[const, above=9mm of eta] (b) {$\boldsymbol\beta$};
+\draw[edge] (x) -- (eta); \draw[edge] (b) -- (eta);
+\draw[edge] (eta) -- (mu); \draw[edge] (mu) -- (y);
+\node[note, below=2mm of eta] (n1) {$\eta_i = \beta_0 + \beta_1 x_i$};
+\node[note, below=2mm of mu] (n2) {$\mu_i = \eta_i$};
+\node[note, below=2mm of y] (n3) {$Y_i \sim \mathcal{N}(\mu_i, \sigma^2)$};
+\node[const, above=9mm of y] (s) {$\sigma^2$}; \draw[edge] (s) -- (y);
+\plate{p}{(x)(eta)(mu)(y)(n1)(n2)(n3)}{$i = 1,\ldots,n$}
+\end{tikzpicture}
+```
+
+::: {.notes}
+Identity link: $\mu=\eta$. The graph ends at Normal$(\mu,\sigma^2)$, with $\sigma^2$ a constant. This is linear regression dressed in GLM notation—bridge for students who only know `lm`.
+:::
+
+## What $\sigma$ does to a Gaussian {#sec-density-gaussian}
+
+![Three normal densities. Widening sigma flattens the curve. Shifting the mean moves it.](figures/generated/density-gaussian.png){fig-alt="Three normal density curves. One has mean 0 and standard deviation 1. One has mean 0 and standard deviation 2 and is flatter. One has mean 1.5 and standard deviation 1." width="88%"}
+
+These are the density functions, not a sample and not CA-SYS. $\sigma$ changes the spread. The mean shifts the curve. The two parameters are separate, which is the Gaussian case the [variance function](#sec-glm-variance-mu) gives up.
+
+::: {.notes}
+Point at the flat red curve first: same mean, larger $\sigma$. Then the blue shift. Illustrative densities from `scripts/generate-density-curves.R`. Twenty seconds.
+:::
+
+## The fit maximises the likelihood {#sec-glm-mle}
+
+The fit is by maximum likelihood. For a Gaussian linear model that maximiser is the least-squares fit. For the logit and the Poisson log link there is no closed form: the estimates come from an [iterative algorithm]{.mark}.
+
+The Newton step for the logit, from the chapter embedded [below](#sec-burakov), uses the Bernoulli variances as weights:
+
+$$
+\boldsymbol{\beta}^{(t+1)} = \boldsymbol{\beta}^{(t)} + (\mathbf{X}^{\top}\mathbf{W}^{(t)}\mathbf{X})^{-1}\mathbf{X}^{\top}(\mathbf{y} - \boldsymbol{\pi}^{(t)}),
+\qquad w_i = \pi_i(1-\pi_i).
+$$
+
+::: {.notes}
+The course notes state that the maximiser is iterative and do not write the update. The displayed step is Burakov's equation (2.87), in the chapter embedded later. $\mathbf{W}$ is diagonal. At convergence, $(\mathbf{X}^{\top}\mathbf{W}\mathbf{X})^{-1}$ is the estimated covariance of $\hat{\boldsymbol{\beta}}$.
+
+**Going further.** The general algorithm is iteratively reweighted least squares: regress the working response $z_i = \eta_i + (y_i-\mu_i)\,g'(\mu_i)$ on $\mathbf{X}$ with weights $w_i = 1/\{V(\mu_i)\,g'(\mu_i)^2\}$, and repeat. This is Fisher scoring; with the canonical link the observed and expected information coincide, so it is also Newton–Raphson, and for the logit $w_i = \pi_i(1-\pi_i)$ as on the slide. Under regularity conditions (fixed $p$, information growing with $n$, true value inside the parameter space), $\hat{\boldsymbol\beta}$ is consistent and approximately $\mathrm{Normal}\{\boldsymbol\beta, \phi(\mathbf{X}^{\top}\mathbf{W}\mathbf{X})^{-1}\}$. The maximiser need not exist: for a logit under separation the likelihood increases without bound, the failure on the checks figure. McCullagh and Nelder's *Generalized Linear Models* gives the derivation.
+:::
+
+## Hat values and Cook's distance, again {#sec-glm-influence}
+
+:::: {.columns}
+::: {.column width="62%"}
+The same two diagnostics carry over. Keep the [hat-value]{.mark} cut at $2p/n$ or $3p/n$, the cut already used for the [linear model](#sec-lm-plot).
+
+A [Cook's distance]{.mark} above about $4/n$ is the cut in the [SIB notes](https://www.sib.swiss/training/course/20260907_ADDMG), and a Cook's distance above 1 is [Tay's](https://www.r-bloggers.com/2019/11/the-hidden-diagnostic-plots-for-the-lm-object/) cut for `plot(lm)`, also printed on the [checks figure](#sec-glm-checks): two sources, so quote the one you use.
+:::
+::: {.column width="38%"}
+![](figures/generated/sketch-nongauss-b-leverage.png){.sketch fig-alt="Hand-drawn scatter: a cluster of black points at low x and one red point far to the right, labelled high h, pulls a solid red line upward away from the green dashed line fitted without it."}
+:::
+::::
+
+::: {.notes}
+Hat cut $2p/n$ or $3p/n$ as for `lm`. Say aloud that $4/n$ is the SIB cut and 1 is Tay's cut for `plot(lm)`; they are not two versions of one rule. Next slide is residual types.
+
+**Going further.** For a GLM the hat matrix is $\mathbf{H} = \mathbf{W}^{1/2}\mathbf{X}(\mathbf{X}^{\top}\mathbf{W}\mathbf{X})^{-1}\mathbf{X}^{\top}\mathbf{W}^{1/2}$, taken from the last IRLS step (Pregibon, 1981, *Logistic regression diagnostics*, *Annals of Statistics*). Its trace is still $p$, which is why the $2p/n$ cut carries over, but $h_{ii}$ now depends on the fitted mean as well as on $\mathbf{x}_i$: in a logit, a point with an extreme $x$ and $\hat\pi_i$ near 0 or 1 gets a small weight and can have a small leverage. R's `cooks.distance()` for a `glm` uses the one-step approximation $D_i = r_{P,i}^2\,h_{ii}/\{\hat\phi\,p\,(1-h_{ii})^2\}$, with $r_{P,i}$ the Pearson residual, rather than refitting without observation $i$ (Williams, 1987, *Applied Statistics*).
+:::
+
+## Three residual scales {#sec-glm-resid}
+
+Three residuals are worth plotting after a GLM.
+
+::: {.incremental}
+- A [deviance residual]{.mark}, plotted against the fitted value and against each covariate. A curve is a missing piece of the linear predictor.
+
+- A [Pearson residual]{.mark}, $(Y - \mu)$ divided by the fitted standard deviation. A trend against a covariate is a term the model does not yet contain.
+
+- A [quantile residual]{.mark}. Under the fitted family it is uniform on $(0,1)$. A QQ plot against normal quantiles is the picture. Extra-large tails are a signal to leave the Poisson for a quasi-Poisson or a negative binomial.
+:::
+
+
+`acf()` is a quick check that the observations are not ordered in a way the independence assumption forbids. The Poisson simulation later draws the quantile residual for that family.
+
+::: {.notes}
+Step deviance, Pearson, quantile residuals and what curve each catches. Quantile residuals uniform under the fitted family—QQ against normal is the plot. `acf()` flags ordered dependence.
+
+**Going further.** With $d_i$ the contribution of observation $i$ to the deviance, the deviance residual is $\mathrm{sign}(y_i-\hat\mu_i)\sqrt{d_i}$ and the Pearson residual is $(y_i-\hat\mu_i)/\sqrt{\hat\phi\,V(\hat\mu_i)}$. Both are only approximately normal, and for binary data or small counts they fall in bands, one per observed value, so a residual-against-fitted plot shows stripes whatever the model. The quantile residual is Dunn and Smyth's (1996, *Randomized quantile residuals*, *Journal of Computational and Graphical Statistics*): $r_i = \Phi^{-1}(u_i)$, with $u_i$ uniform between $F(y_i^-;\hat\mu_i)$ and $F(y_i;\hat\mu_i)$. If the model is correct and its parameters known, the $r_i$ are exactly independent standard normal; with estimated parameters this holds asymptotically. The `DHARMa` package builds the same residual by simulating from the fitted model, which also covers mixed models.
+:::
+
+## Deviance is the residual sum of squares {#sec-glm-deviance}
+
+:::: {.columns}
+::: {.column width="62%"}
+Lack of fit is measured by the [deviance]{.mark}. The null deviance $D_0$ compares the intercept-only model with the [saturated model]{.mark}. The residual deviance $D$ compares the fitted model with the saturated model. Maximising the log-likelihood is the same operation as making $D$ small.
+:::
+::: {.column width="38%"}
+![](figures/generated/sketch-nongauss-b-deviance.png){.sketch fig-alt="Hand-drawn log-likelihood axis with three dots, null in grey, fitted in blue, saturated in green; a long arrow D0 spans null to saturated and a shorter blue arrow D spans fitted to saturated, under the formula D equals 2 times l-sat minus l."}
+:::
+::::
+
+For nested models the [likelihood-ratio statistic]{.mark} is the drop in deviance,
+
+$$
+D_{\text{small}} - D_{\text{large}} \sim \chi^2,
+$$
+
+with degrees of freedom equal to the number of extra parameters. In R that is `anova(model1, model2, test = "Chisq")`. This is the GLM form of the [analysis of deviance](#sec-deviance).
+
+::: {.notes}
+Their pseudo-$R^2$ is $1 - D/D_0$. They say that several pseudo-$R^2$ exist, and that a nested comparison should be the likelihood-ratio test. AIC is the comparison they allow when the models are not nested: deviance, plus a penalty for the number of parameters.
+
+**Going further.** The scaled deviance is $D/\phi = 2\{\ell_{\text{sat}} - \ell(\hat{\boldsymbol\beta})\}$, and $\phi = 1$ for the Poisson and the Bernoulli. Wilks' theorem makes $(D_{\text{small}} - D_{\text{large}})/\phi$ approximately $\chi^2_q$ for nested models, with $p$ fixed and $n \to \infty$; when $\phi$ is estimated, as in the quasi-Poisson, the reference is an $F$ distribution (`test = "F"`). The residual deviance itself is $\chi^2_{n-p}$ only under small-dispersion asymptotics, large Poisson means or large binomial totals, because the saturated model gains a parameter with every observation. For 0/1 data the deviance is a function of the $\hat\pi_i$ alone and says nothing about fit; use a grouped check such as Hosmer–Lemeshow, or the residual plots. McCullagh and Nelder's *Generalized Linear Models* treats these limits.
+:::
+
+## Quantile residuals check the family
+
+These are [randomised quantile residuals]{.mark} for a Poisson mean: if the family is right, they should look Gaussian. A heavy upper tail is a reason to leave the Poisson, not a reason to run Shapiro–Wilk on the raw counts.
+
+```{r}
+#| echo: true
+#| eval: false
+lower <- ifelse(y <= 0, 0, ppois(y - 1L, lambda = mu_hat))
+upper <- ppois(y, lambda = mu_hat)
+residual <- qnorm(runif(length(y), min = lower, max = upper))
+```
+
+::: {.notes}
+Walk the code first: each count is spread uniformly over its step of the fitted distribution function, then mapped to the normal scale. The figure is on the next slide.
+:::
+
+## Quantile residuals check the family
+
+![Two QQ plots of randomised Poisson quantile residuals. The Poisson sample tracks the reference line. The overdispersed sample lifts in the upper tail.](figures/generated/qq-quantile-residuals.png){fig-alt="QQ plots of randomised quantile residuals from a Poisson fit to Poisson counts and from a Poisson fit to overdispersed counts." width="96%"}
+
+::: {.notes}
+Walk the code, then the QQ plot. Stress that the reference is the fitted family, not marginal normality of the counts. Ask whether a heavy upper tail would change the variance model before they quote a rate ratio. About one minute.
+:::
+
+## Poisson regression {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d4efe8 100%)"}
+
+## A count, on the log {#sec-glm-poisson}
+
+A count goes to a [Poisson regression]{.mark}. The mean is often written as $\lambda$. That symbol is $\mu$ on these slides. The log link keeps $\mu > 0$, and $\exp(\beta_1)$ is a multiplicative change in the mean count.
+
+```{.tikz}
+%%| filename: dag-glm-poisson
+%%| alt: Plate diagram of the Poisson regression: x i and beta give eta i, mu i is the exponential of eta i, and Y i is Poisson with mean mu i.
+%%| width: 92%
+\begin{tikzpicture}
+\node[const] (x) {$x_i$};
+\node[det, right=14mm of x] (eta) {$\eta_i$};
+\node[det, right=14mm of eta] (mu) {$\mu_i$};
+\node[obs, right=14mm of mu] (y) {$Y_i$};
+\node[const, above=9mm of eta] (b) {$\boldsymbol\beta$};
+\draw[edge] (x) -- (eta); \draw[edge] (b) -- (eta);
+\draw[edge] (eta) -- (mu); \draw[edge] (mu) -- (y);
+\node[note, below=2mm of eta] (n1) {$\eta_i = \beta_0 + \beta_1 x_i$};
+\node[note, below=2mm of mu] (n2) {$\mu_i = e^{\eta_i}$};
+\node[note, below=2mm of y] (n3) {$Y_i \sim \mathrm{Poisson}(\mu_i)$};
+
+\plate{p}{(x)(eta)(mu)(y)(n1)(n2)(n3)}{$i = 1,\ldots,n$}
+\end{tikzpicture}
+```
+
+Four working assumptions: $Y$ is a count per unit of time or space; $\log \mu$ is linear in $x$; the observations are independent; and $\mathrm{Var}(Y \mid x) = \mu$. 📝 StatHarbor, [*Count data models*](references/count-data-models.pdf).
+
+::: {.notes}
+$\lambda$ on the slide is $\mu$ here; $\exp(\beta_1)$ multiplies mean count. Four assumptions at the bottom—especially $\mathrm{Var}(Y\mid x)=\mu$—are what CA-SYS will break.
+
+**Going further.** Under the log link the Poisson log-likelihood is $\sum_i (y_i\eta_i - e^{\eta_i})$ up to a constant, so the score is $\mathbf{X}^{\top}(\mathbf{y}-\boldsymbol\mu)$ and, with an intercept, the fitted counts add up to the observed total; a factor covariate reproduces each group total exactly. The estimator of $\boldsymbol\beta$ stays consistent when the counts are not Poisson, provided $\log\mu$ is correctly specified: this is the pseudo-maximum-likelihood result of Gourieroux, Monfort and Trognon (1984, *Econometrica*). What breaks is the standard error, which relies on $\mathrm{Var}(Y\mid x)=\mu$; a sandwich estimator or a variance model repairs it (Cameron and Trivedi, *Regression Analysis of Count Data*).
+:::
+
+## What $\lambda$ does to a Poisson {#sec-density-poisson}
+
+![Poisson probabilities for lambda 2, 8, and 20.](figures/generated/density-poisson.png){fig-alt="Three Poisson probability plots. Lambda 2 is piled near zero. Lambda 8 is wider. Lambda 20 is wider still and shifted right. The spread grows with the mean." width="88%"}
+
+$\mathrm{Var}(Y) = \lambda = \mathbb{E}(Y)$. A larger mean is a wider plot. Illustrative probabilities from `scripts/generate-density-curves.R`, not a soil count.
+
+::: {.notes}
+The right-hand comb is both higher and wider. That is the one-parameter constraint. If their counts are wider than this picture, the next family is the negative binomial.
+:::
+
+## Poisson · when the count matches the story {auto-animate=true}
+
+Use it when $Y$ is a non-negative integer and, to a first approximation, $\mathrm{Var}(Y \mid x) = \mu$.
+
+::: {data-id="pois-eq"}
+$$
+\log \mu = \beta_0 + \beta_1 x.
+$$
+:::
+
+Colony counts on a plate are the clean case. Sequence reads are a count too, but with two complications: the [sampling effort]{.mark} differs between samples, and the counts are more variable than a Poisson.
+
+::: {.notes}
+$\log\mu=\beta_0+\beta_1 x$ with data-id animate. Colony counts are clean; reads need offset and extra variance—foreshadow CA-SYS. Var equals mean is the assumption to test first.
+:::
+
+## Poisson · the CA-SYS version {auto-animate=true}
+
+::: {data-id="pois-eq"}
+$$
+\log \mu_i = \beta_0 + \beta_1 \mathrm{tilled}_i + \mathrm{year}_i + \log(\text{library size}_i).
+$$
+:::
+
+$Y$ is the number of *Nitrospira* reads in a sample: a nitrite-oxidising genus, 153,771 reads across the 595 samples. The last term is the [offset](#sec-casys-offset), so $\beta_1$ is a ratio of rates per read.
+
+::: {.notes}
+Point out that the equation changed in two places from the previous slide: year entered as a factor, and the offset appeared. Neither is cosmetic. Without the offset, a sample sequenced twice as deeply looks twice as rich in Nitrospira.
+:::
+
+## Poisson · the call {#sec-casys-poisson-code}
+
+```{r}
+#| echo: true
+#| eval: false
+casys <- read.csv("data/derived/casys_teaching.csv")
+
+fit_pois <- glm(
+  nitrospira_reads ~ tillage + factor(year) + offset(log(total_reads)),
+  family = poisson,
+  data = casys
+)
+
+# Is one parameter doing both jobs?
+sum(residuals(fit_pois, "pearson")^2) / fit_pois$df.residual
+#> 10.6
+```
+
+A Poisson sets $\mathrm{Var}(Y \mid x) = \mu$. A [Pearson statistic]{.mark} of 10.6 per degree of freedom says the data are about ten times more variable than that.
+
+::: {.notes}
+Run this if the laptop allows. The dispersion statistic is the number to look at before reading any coefficient, because the coefficient will look fine and the standard error will not. The rule of thumb is that a value near 1 is consistent with the Poisson; 10.6 is not a borderline case.
+
+**Going further.** The statistic is the moment estimator of the dispersion, $\hat\phi = X^2/(n-p)$ with $X^2 = \sum_i (y_i-\hat\mu_i)^2/V(\hat\mu_i)$; under a correct Poisson model $X^2$ is approximately $\chi^2_{n-p}$, so $\hat\phi$ is near 1. The quasi-Poisson fit keeps the Poisson estimates and multiplies every standard error by $\sqrt{\hat\phi}$; here $\sqrt{10.6} \approx 3.3$, close to the threefold widening the negative binomial gives a few slides on. The deviance-based estimate $D/(n-p)$ is less reliable when many $\hat\mu_i$ are small, which is why McCullagh and Nelder prefer the Pearson form. A formal check is the score test of Dean and Lawless (1989, *Journal of the American Statistical Association*).
+:::
+
+## A table of counts is a log-linear model {#sec-loglinear}
+
+[Penn State STAT 504, Lesson 10](https://online.stat.psu.edu/stat504/Lesson10) models a contingency table by a Poisson GLM. The cell count is $Y_{ab} \sim \mathrm{Poisson}(\mu_{ab})$. The lesson is this [log-linear model]{.mark}. Independence, with neither margin as the response, is
+
+$$
+\log \mu_{ab} = \alpha + \alpha_a + \alpha_b.
+$$
+
+::: {.notes}
+$Y_{ab}\sim\mathrm{Poisson}(\mu_{ab})$; independence $\log\mu_{ab}=\alpha+\alpha_a+\alpha_b$. PSU STAT 504 lesson—joint model, not logit of one margin.
+
+**Going further.** Independent Poisson cell counts, conditioned on their total $n$, are multinomial, and Birch (1963, *Journal of the Royal Statistical Society, Series B*) showed that a Poisson log-linear model with an intercept gives the same maximum-likelihood fitted counts as the multinomial, or as product-multinomial sampling when the fixed margins are in the model. That is why a Poisson `glm` can fit a contingency table whatever the sampling plan. The residual deviance of the independence model is the likelihood-ratio $G^2$ on $(A-1)(B-1)$ degrees of freedom for an $A \times B$ table, asymptotically equivalent to Pearson's $X^2$. Bishop, Fienberg and Holland's *Discrete Multivariate Analysis* develops the hierarchy of log-linear models.
+:::
+
+## Independence, drawn
+
+```{.tikz}
+%%| filename: dag-loglinear
+%%| alt: Plate diagram of the log-linear independence model: the constants alpha, alpha a and alpha b feed the dotted mean mu a b inside a plate over the cells of the table, which gives the observed count Y a b.
+%%| width: 70%
+\begin{tikzpicture}
+\node[const] (aa) {$\alpha_a$};
+\node[const, right=10mm of aa] (a0) {$\alpha$};
+\node[const, right=10mm of a0] (ab) {$\alpha_b$};
+\node[det, below=11mm of a0] (mu) {$\mu_{ab}$};
+\node[obs, below=9mm of mu] (y) {$Y_{ab}$};
+\draw[edge] (aa) -- (mu); \draw[edge] (a0) -- (mu); \draw[edge] (ab) -- (mu); \draw[edge] (mu) -- (y);
+\node[note, right=3mm of mu] (n1) {$\log\mu_{ab} = \alpha + \alpha_a + \alpha_b$};
+\node[note, right=3mm of y] (n3) {$Y_{ab} \sim \mathrm{Poisson}(\mu_{ab})$};
+\plate{p}{(mu)(y)(n1)(n3)}{cells $(a, b)$}
+\end{tikzpicture}
+```
+
+The fitted counts are row total times column total over $n$, and every odds ratio equals 1. A logit model is the conditional distribution of one margin. This log-linear model is the [joint distribution]{.mark}. Dummy coding changes the separate coefficients. Differences of coefficients, the log odds, stay put.
+
+::: {.notes}
+A logit-equivalent log-linear model includes every association among the predictors. The lesson contrasts R's dummy coding, first level set to 0, with the zero-sum constraint in `loglin()`. Expected counts do not depend on that choice.
+:::
+
+## Negative binomial regression, and other counts {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #e4d8f5 100%)"}
+
+## Negative binomial · same mean, one extra parameter {#sec-nb-theta}
+
+Keep the log link. Add a [dispersion parameter]{.mark} $\theta > 0$:
+
+::: model
+$$
+\mathrm{Var}(Y \mid x) = \mu + \frac{\mu^2}{\theta}.
+$$
+:::
+
+This is the `MASS::glm.nb` parameterisation: large $\theta$ means "close to Poisson". Agresti writes the same quadratic variance with a different symbol for the extra term [@agrestiFoundationsLinearGeneralized2015]. On these reads $\hat\theta = 29.3$. 📄 Townes reviews the count families in [*Review of probability distributions for modeling count data*](references/townes-count-distributions-2020.pdf).
+
+::: {.notes}
+Two readings of theta. Algebraically it is the inverse of the extra variance per unit of mean squared. Mechanistically it is a gamma-distributed latent rate, integrated out, which is the derivation on the Poisson-gamma slide. Stress that theta is not a second scientific effect to interpret.
+
+**Going further.** If $\lambda = \mu\nu$ with $\nu \sim \mathrm{Gamma}(\theta, \theta)$, so that $\mathbb{E}(\nu)=1$ and $\mathrm{Var}(\nu) = 1/\theta$, integrating $\nu$ out of $\mathrm{Poisson}(\lambda)$ gives $\Pr(Y=y) = \frac{\Gamma(y+\theta)}{\Gamma(\theta)\,y!}\left(\frac{\theta}{\theta+\mu}\right)^{\theta}\left(\frac{\mu}{\theta+\mu}\right)^{y}$, Cameron and Trivedi's NB2, with the quadratic variance on the slide. NB1, $\mathrm{Var}(Y) = (1+\delta)\mu$, has the quasi-Poisson's shape and is a different model. `MASS::glm.nb` alternates IRLS for $\boldsymbol\beta$ at fixed $\theta$ with a maximum-likelihood step for $\theta$ (Venables and Ripley, *Modern Applied Statistics with S*). Testing the Poisson against it puts $1/\theta = 0$ on the boundary of the parameter space, so the likelihood-ratio statistic is a 50:50 mixture of $\chi^2_0$ and $\chi^2_1$ and the naive $p$-value should be halved (Self and Liang, 1987, *Journal of the American Statistical Association*).
+:::
+
+## Same mean, three values of $\theta$ {#sec-density-nb}
+
+![Negative binomial probabilities at mean 8 for theta 1, 5, and 50, with the Poisson of the same mean.](figures/generated/density-negbin.png){fig-alt="Probability plots at mean 8. Theta 1 is the widest, with a long right tail. Theta 50 sits close to the Poisson of the same mean." width="88%"}
+
+The mean stays 8. Small $\theta$ puts more mass in the tail, because $\mathrm{Var}(Y) = \mu + \mu^2/\theta$. Large $\theta$ collapses toward the Poisson. Illustrative, from `scripts/generate-density-curves.R`.
+
+::: {.notes}
+Cover the grey Poisson last. Ask which $\theta$ matches a Pearson dispersion near 1. The answer is the large one. The CA-SYS $\hat\theta$ of 29 is in that direction, not at 1.
+:::
+
+## One mean, two variance assumptions {#sec-casys-nb}
+
+![Rate ratio for tilled against no-till, with a Poisson interval and a much wider negative binomial interval.](figures/generated/casys-poisson-vs-nb.png){fig-alt="Two horizontal intervals for the same rate ratio of about 0.97. The Poisson interval spans roughly 0.962 to 0.982; the negative binomial interval spans 0.941 to 1.002 and crosses one." width="94%"}
+
+| Family | Rate ratio | 95% interval |
+| --- | --- | --- |
+| Poisson | 0.972 | 0.962 to 0.982 |
+| Negative binomial | 0.971 | 0.941 to 1.002 |
+
+::: {.notes}
+This is the slide to slow down on. The point estimate barely moves, 0.972 against 0.971, because both models use the same mean equation. The interval is 3.1 times wider. Under the Poisson the contrast is "detected"; under the negative binomial it crosses one. Nothing about the biology changed between the two rows, only an assumption about the variance. Ask the room which interval they would put in a paper.
+
+**Going further.** The near-identical point estimates are expected: when $\log\mu$ is correctly specified, the Poisson score equations give a consistent $\hat{\boldsymbol\beta}$ whatever the true variance (Gourieroux, Monfort and Trognon, 1984), and the negative binomial only re-weights observations, by $\mu_i/(1+\mu_i/\theta)$ instead of $\mu_i$. The two fits therefore differ in efficiency and, mostly, in the covariance matrix. A third option keeps the Poisson estimate with a sandwich covariance, valid under any variance function but less stable in small samples (`sandwich` package). Ver Hoef and Boveng (2007, *Ecology*) compare quasi-Poisson and negative-binomial weighting and suggest plotting binned squared residuals against $\hat\mu$ to choose between a linear and a quadratic variance.
+:::
+
+## Read the mean, then $\theta$ {#sec-nb-read}
+
+::: {.incremental}
+- The rate ratio is a statement about $\mu$, on the log link, per read
+- $\theta$ is not a second effect; it describes [leftover variation]{.mark}
+- A QQ plot of quantile residuals is the check, not a test that "selects NB"
+- With the wider interval, 1.00 is compatible with these data
+:::
+
+
+A 2.9% lower rate under tillage would matter agronomically. These 595 samples cannot separate it from no difference.
+
+::: {.notes}
+The last line is the honest summary, and it is the pitfalls lesson applied to a real fit: the estimate is the result, and the interval says how much the data constrain it. Resist the temptation to call this a null finding. It is an imprecise estimate of a small contrast, which is a different sentence.
+:::
+
+## The wrong family, on a QQ plot {#sec-casys-qq}
+
+![Two QQ plots of residuals for the Nitrospira reads. The Gaussian linear model departs from the line at both ends; the negative binomial quantile residuals track it.](figures/generated/casys-qq-family.png){fig-alt="Left panel, standardised residuals from a Gaussian linear model on raw read counts, curving away from the reference line. Right panel, negative binomial quantile residuals close to the line." width="96%"}
+
+::: {.notes}
+Left is what you get if you put these counts into lm(). Right is the family the offset and the dispersion were chosen for. This is the same diagnostic as the earlier QQ slides, now on a real response rather than a draw, and it is the reason the family question comes before the test question.
+:::
+
+## Same count, three implementations
+
+::: {.panel-tabset}
+
+### Poisson
+
+$$
+\log \mu = \mathbf{x}^{\top}\boldsymbol{\beta} + \log(\text{library size}), \qquad \mathrm{Var}(Y \mid x) = \mu.
+$$
+
+Tilled against no-till: rate ratio **0.972** (0.962 to 0.982). Pearson $\chi^2/\mathrm{df} = 10.6$, so that interval is too narrow.
+
+### Negative binomial
+
+$$
+\mathrm{Var}(Y \mid x) = \mu + \mu^2/\theta, \qquad \hat\theta = 29.3.
+$$
+
+Same mean equation: rate ratio **0.971** (0.941 to 1.002). The interval is 3.1 times wider and crosses 1.
+
+### $\log(Y+1)$, then Gaussian
+
+$$
+\mathbb{E}\{\log(Y+1) \mid x\} = \mathbf{x}^{\top}\boldsymbol{\beta}.
+$$
+
+That coefficient is not a rate ratio for $\mu$, and the library size no longer enters as an offset. The two means are not the same function of $x$.
+
+:::
+
+Arrow keys step the tabs. All three are fits to the CA-SYS reads, from [generate-data-figures.R](scripts/generate-data-figures.R), using [casys_teaching.csv](data/derived/casys_teaching.csv).
+
+::: {.notes}
+Tab through Poisson, NB, $\log(Y+1)$ Gaussian—arrow keys on slide. Rate ratio 0.972 vs 0.971, Pearson 10.6, $\hat\theta=29.3$, log-plus-one loses offset interpretation. Script path `generate-data-figures.R` if asked.
+:::
+
+## A count that is not Poisson {#sec-casys-richness}
+
+![Observed richness by cropping system, in four yearly panels.](figures/generated/casys-richness-system.png){fig-alt="Boxplots with jittered points of observed OTU richness for systems SD1, SD2, TS1 and TS2, in panels for 2018 to 2021." width="96%"}
+
+Richness is an integer, so the reflex is a Poisson. Pearson $\chi^2/\mathrm{df} = 27.8$ says otherwise: richness is a count of OTUs out of 10,633, [bounded above]{.mark} and driven by sequencing effort.
+
+::: {.notes}
+A useful corrective. "Integer" does not imply "Poisson". Richness here is the number of distinct OTUs detected, so it is closer to a capture problem than to a rate: it is bounded by the reference table and it rises with library size. The honest teaching answer is that observed richness is a biased estimator of richness, and that the estimator belongs to the diversity literature rather than to a GLM slide. Note the 2018 panel is the pre-treatment baseline.
+:::
+
+## A gamma latent rate is a negative binomial {#sec-count-nb}
+
+:::: {.columns}
+::: {.column width="62%"}
+The same derivation gives the negative binomial as a [Poisson–gamma compound]{.mark}: the Poisson rate is itself a gamma draw, and that draw is integrated out. The extra variance is unobserved heterogeneity.
+:::
+::: {.column width="38%"}
+![](figures/generated/sketch-nongauss-b-gamma-poisson.png){.sketch fig-alt="Hand-drawn violet gamma curve for lambda with three coloured draws; each draw feeds a narrow Poisson bump at its own place, and together they make one wide black bump labelled NB."}
+:::
+::::
+
+$$
+\mathrm{Var}(Y \mid x) = \mu + \frac{\mu^2}{\alpha}
+\qquad\text{or}\qquad
+\mathrm{Var}(Y \mid x) = \mu + \alpha\mu^2.
+$$
+
+McCullagh and Nelder use the first form. The simulation slides call that shape $\theta$. In the second form, $\alpha \to 0$ returns the Poisson. Estimating $\alpha$ leaves the one-parameter exponential family.
+
+::: {.notes}
+Treating $\alpha$ as known keeps the model inside a one-parameter GLM. Estimating it is full maximum likelihood. StatHarbor reaches for the negative binomial when the variance exceeds the mean and the zeros come from the same process as the positive counts, and compares it with the Poisson by a likelihood-ratio test.
+
+**Going further.** The derivation is two lines: $\mathbb{E}(Y) = \mathbb{E}(\lambda) = \mu$ and $\mathrm{Var}(Y) = \mathbb{E}(\lambda) + \mathrm{Var}(\lambda) = \mu + \mu^2/\theta$ when $\lambda$ is gamma with shape $\theta$ and mean $\mu$. Another mixing law gives another margin with a similar variance: a log-normal $\lambda$ also has $\mathrm{Var}(\lambda) \propto \mu^2$, so the Poisson log-normal shares the quadratic variance and differs in the tails. Greenwood and Yule (1920, *Journal of the Royal Statistical Society*) introduced this gamma mixture for accident counts; Hilbe's *Negative Binomial Regression* is the applied reference. The likelihood-ratio test against the Poisson has the boundary problem noted on the $\theta$ slide.
+:::
+
+## A point mass of zeros is a mixture {#sec-count-zip}
+
+A zero-inflated model is a different generative story. With probability $\pi_0$ the observation is a [structural zero]{.mark}. With probability $1-\pi_0$ it is a draw from a count distribution $f$. StatHarbor writes $\pi_0$ as $p$.
+
+$$
+\Pr(Y=0) = \pi_0 + (1-\pi_0)\,f(0),
+\qquad
+\Pr(Y=k>0) = (1-\pi_0)\,f(k).
+$$
+
+```{.tikz}
+%%| filename: dag-zero-inflated
+%%| alt: Plate diagram of a zero-inflated count over rows i: the constant pi zero gives the latent indicator Z i of a structural zero; Z i and the constant mean mu give the observed count Y i.
+%%| width: 78%
+\begin{tikzpicture}
+\node[const] (p0) {$\pi_0$};
+\node[stoch, below=9mm of p0] (z) {$Z_i$};
+\node[obs, right=16mm of z] (y) {$Y_i$};
+\node[const, above=9mm of y] (mu) {$\mu$};
+\draw[edge] (p0) -- (z); \draw[edge] (z) -- (y); \draw[edge] (mu) -- (y);
+\node[note, below=2mm of z] (n1) {$Z_i \sim \mathrm{Bernoulli}(\pi_0)$};
+\node[note, below=2mm of y, align=left] (n3) {$Y_i = 0$ if $Z_i = 1$\\ else $Y_i \sim f(\mu)$};
+\plate{p}{(z)(y)(n1)(n3)}{$i = 1,\ldots,n$}
+\end{tikzpicture}
+```
+
+A logit for $\pi_0$ plus a log-linear Poisson is the zero-inflated Poisson. The negative binomial in $f$ is the zero-inflated negative binomial. Neither is an exponential-family GLM.
+
+::: {.notes}
+StatHarbor compares a zero-inflated model with an ordinary Poisson by AIC, BIC, or a Vuong test, because those two models are not nested.
+
+**Going further.** The zero-inflated Poisson is Lambert's (1992, *Technometrics*); it is fitted by maximum likelihood, or by EM with the latent structural-zero indicator. Vuong's test (1989, *Econometrica*) compares non-nested models through the mean and variance of the per-observation log-likelihood ratios. But the Poisson is the zero-inflated Poisson at $\pi_0 = 0$, on the boundary, so the two are in fact nested there and the Vuong reference distribution does not hold; Wilson (2015, *Economics Letters*) documents this misuse. A boundary-corrected likelihood-ratio test, or a plot of predicted against observed zero frequencies, is the safer check. A hurdle model (Mullahy, 1986, *Journal of Econometrics*) tells the other story: every zero comes from one binary process and the positives from a zero-truncated count.
+:::
+
+## Four count models, three questions {#sec-count-table}
+
+| Model | Extra variance | Structural zeros | Exponential family |
+| --- | --- | --- | --- |
+| Poisson | No | No | Yes |
+| Negative binomial | Yes | No | Only if the dispersion is fixed |
+| Zero-inflated Poisson | No | Yes | No |
+| Zero-inflated negative binomial | Yes | Yes | No |
+
+The practical line under the table: diagnose dispersion and extra zeros before you quote a rate ratio. An ill-matched family understates the uncertainty.
+
+::: {.notes}
+Table: extra variance, structural zeros, exponential family column. Practical line under table—diagnose before quoting a rate ratio. ZIP and ZINB are not GLMs in the strict sense.
+:::
+
+## The count measures a latent share {#sec-measure}
+
+[Sarkar and Stephens](https://doi.org/10.1038/s41588-021-00873-4) separate a [measurement model]{.mark} from a model for the latent intensity. The paper is about genes in single cells. The same split applies to any feature counted inside a sample of finite depth: a taxon, a transcript, a fragment.
+
+Let $s_i$ be the [library size]{.mark}, the total count in sample $i$, and let $\lambda_{i\ell}$ be the relative intensity of feature $\ell$, a share of that sample. The measurement model is
+
+$$
+Y_{i\ell} \mid s_i, \lambda_{i\ell} \sim \mathrm{Poisson}(s_i \lambda_{i\ell}).
+$$
+
+Dividing by the depth is this rate: the offset $\log s_i$, with its coefficient fixed at 1.
+
+::: {.notes}
+$Y_{i\ell}\mid s_i,\lambda_{i\ell}\sim\mathrm{Poisson}(s_i\lambda_{i\ell})$; offset $\log s_i$ with coefficient 1. Sarkar–Stephens single-cell paper, same logic for any feature in finite depth.
+
+**Going further.** An offset is a covariate whose coefficient is fixed at 1: $\log\mu_i = \log s_i + \mathbf{x}_i^{\top}\boldsymbol\beta$ is $\mu_i/s_i = \exp(\mathbf{x}_i^{\top}\boldsymbol\beta)$, so $\boldsymbol\beta$ acts on the rate per read. Entering $\log s_i$ as an ordinary covariate and testing its slope against 1 checks that proportionality. Modelling $y_i/s_i$ with a Gaussian model is not equivalent: it discards the fact that the variance of a proportion falls with depth. Differential-abundance software often replaces the raw library size by a robust size factor, such as the median-of-ratios of Anders and Huber (2010, *Genome Biology*), because a few dominant features can distort the total.
+:::
+
+## The measurement drawing {#sec-measure-dag}
+
+```{.tikz}
+%%| filename: dag-measurement
+%%| alt: Plate diagram of the measurement layer: inside a plate over samples i sits the size factor s i, a constant; inside a nested plate over features l sit the latent share lambda i l, the dotted mean mu i l equal to s i times lambda i l, and the observed count Y i l.
+%%| width: 80%
+\begin{tikzpicture}
+\node[stoch] (lam) {$\lambda_{i\ell}$};
+\node[det, right=14mm of lam] (mu) {$\mu_{i\ell}$};
+\node[obs, right=14mm of mu] (y) {$Y_{i\ell}$};
+\node[const, above=13mm of mu] (s) {$s_i$};
+\draw[edge] (lam) -- (mu); \draw[edge] (s) -- (mu); \draw[edge] (mu) -- (y);
+\node[note, below=2mm of mu] (n2) {$\mu_{i\ell} = s_i\lambda_{i\ell}$};
+\node[note, below=2mm of y] (n3) {$\mathrm{Poisson}(\mu_{i\ell})$};
+\plate{pl}{(lam)(mu)(y)(n2)(n3)}{$\ell$: feature}
+\plate{pi}{(s)(pl)(pl-lab)}{$i$: sample}
+\end{tikzpicture}
+```
+
+Library size and relative intensity meet in the Poisson mean. The Pearson-residual figure below is this regression, with the slope of $\log s_i$ fixed.
+
+::: {.notes}
+Graph: $\lambda$ and $s$ meet in the dotted node $\mu=s\lambda$, then the Poisson draw. Pearson-residual figure below is this regression with fixed log-depth slope.
+:::
+
+## Three assumptions in the measurement layer {#sec-box1}
+
+Box 1 of Sarkar and Stephens lists the assumptions behind that Poisson measurement model.
+
+::: {.incremental}
+- In each sample, each molecule is equally likely to be observed.
+
+- Each molecule is observed independently of the others.
+
+- Only a small proportion of the molecules present are observed. They cite 10–20% in a typical single-cell experiment.
+:::
+
+
+Assumptions 2 and 3 are the ones they treat as plausible. Assumption 1 fails when stability, cellular location, or sequence changes the chance that a molecule is seen. A bias that is shared across samples can enter the Poisson model as a covariate. A bias that changes from sample to sample is extra noise, and the measurement model that carries it is negative binomial. If a later protocol observes a larger share of the molecules, the measurement variance falls relative to a Poisson.
+
+::: {.notes}
+Step fragments: equal capture probability (often fails), independence (plausible), small observed fraction 10–20% (plausible). Sample-specific bias → NB measurement model per slide text.
+:::
+
+## A zero is an observation {#sec-zeros}
+
+:::: {.columns}
+::: {.column width="70%"}
+Sarkar and Stephens refuse the phrase "missing data" for a zero count. The picture: a minute with no cars at an intersection is a zero; an hour when the observer is away is a [missing record]{.mark}. A sequencing zero is the first of those. Imputing only the zeros treats them as holes.
+:::
+::: {.column width="30%"}
+![](figures/generated/sketch-nongauss-b-zeros.png){.sketch-sm fig-alt="Two hand-drawn empty crossroads: on the left a green observer with a note reading 0, labelled zero; on the right an empty red stool with a note reading a question mark, labelled missing."}
+:::
+::::
+
+They also drop the word "dropout" for a supposed device that writes a zero whatever the true intensity. Spike-in controls, in the papers they cite, did not support a zero-inflated *measurement* model. A zero-inflated *observation* model can still be the right margin when the latent intensity itself has a point mass at zero.
+
+::: {.notes}
+Cars-at-intersection versus absent observer—sequencing zero is the first. No impute-only-zeros; spike-in evidence against dropout measurement model. ZI on latent intensity can still be right.
+:::
+
+## The observation model is the margin {#sec-obs-model}
+
+An [expression model]{.mark} is a distribution $g_\ell$ for the latent share $\lambda_{i\ell}$. The [observation model]{.mark} is the distribution of $Y$ after $\lambda$ has been integrated out.
+
+```{.tikz}
+%%| filename: dag-observation-model
+%%| alt: Plate diagram: a feature-level distribution g l, a constant, gives the latent rate lambda i l; lambda i l and the size factor s i give the observed count Y i l, Poisson with mean s i lambda i l. Integrating lambda out gives the margin of Y i l.
+%%| width: 80%
+\begin{tikzpicture}
+\node[const] (g) {$g_\ell$};
+\node[stoch, right=14mm of g] (lam) {$\lambda_{i\ell}$};
+\node[obs, right=16mm of lam] (y) {$Y_{i\ell}$};
+\node[const, above=12mm of y] (s) {$s_i$};
+\draw[edge] (g) -- (lam); \draw[edge] (lam) -- (y); \draw[edge] (s) -- (y);
+\node[note, below=2mm of y] (n3) {$\mathrm{Poisson}(s_i\lambda_{i\ell})$};
+\node[note, below=2mm of lam] (n1) {$\lambda_{i\ell} \sim g_\ell$};
+\plate{pl}{(lam)(y)(n1)(n3)}{$\ell$: feature}
+\plate{pi}{(s)(pl)(pl-lab)}{$i$: sample}
+\end{tikzpicture}
+```
+
+A gamma $g_\ell$ produces a negative-binomial margin. A point-gamma $g_\ell$, a spike at zero plus a gamma, produces a zero-inflated negative-binomial margin. The Poisson recommendation is for the measurement layer. The margin is usually wider, because the latent share varies across samples.
+
+::: {.notes}
+$g_\ell$ for latent $\lambda$; integrate to margin of $Y$. Gamma → NB margin; point-gamma → ZINB. Poisson recommendation is measurement layer; margin usually wider.
+:::
+
+## One feature at a time {.smaller #sec-tbl-single}
+
+| Latent model for $\lambda$ | Margin of $Y$ | Methods they name |
+| --- | --- | --- |
+| Point mass | Poisson | Analytic |
+| Gamma | Negative binomial | MASS, edgeR, DESeq2, SAVER, BASiCS |
+| Point-gamma | Zero-inflated NB | PSCL |
+| Unimodal, nonparametric | Unimodal | ashr |
+| Point-exponential family | Flexible | DESCEND |
+| Fully nonparametric | Flexible | ashr |
+
+Table 1 of Sarkar and Stephens. Each row is a latent model for one feature, combined with the Poisson measurement model. The method column is the software they list for that margin.
+
+::: {.notes}
+Table 1 Sarkar–Stephens: latent model row drives margin and software column. Point mass → Poisson analytic; gamma → edgeR/DESeq2 class tools. One row per feature with Poisson measurement.
+:::
+
+## Several features together {#sec-tbl-multi}
+
+| Link $h$ | Noise on the latent scale | Methods they name |
+| --- | --- | --- |
+| Identity | None | NMF, scHPF |
+| Identity | Gamma | NBMF |
+| Log | None | GLM-PCA |
+| Log | Gamma | scNBMF, GLM-PCA |
+| Log | Point-gamma | ZINB-WaVE |
+| Neural network | Point-gamma | scVI, DCA |
+
+Table 2. A multi-feature model writes the share through a [low-rank factorisation]{.mark} and a link $h$, then adds a noise distribution for the stochastic piece. Overdispersion relative to the Poisson measurement changes the variance of $Y$ and leaves the mean of the structured part to be read with that measurement model in mind.
+
+::: {.notes}
+Table 2: link $h$, noise on latent scale, named methods. ZINB-WaVE and scVI are multivariate—not the single-feature GLM from earlier. Overdispersion changes $Y$ variance, mean read with measurement model.
+:::
+
+## Depth in the offset, dispersion in $\theta$ {.fit-fig #sec-pearson-nb}
+
+![Negative binomial observation model: latent state and sequencing depth, an offset regression on depth, Pearson residuals, and a shrinkage of the dispersion across features.](figures/sources/pearson-residuals-nb.svg){fig-alt="Panel A: a negative binomial observation model whose variance is mu plus mu squared over theta, with a biological latent state and technical sequencing depth. Panel B: log mu equals a feature intercept plus log depth, slope fixed at 1, and residuals after that regression. Panel C: the Pearson residual divides the raw residual by the negative-binomial standard deviation. Panel D: a shrinkage of the per-feature dispersion toward a trend in the mean." width="98%"}
+
+Read the gene labels as any feature. Depth is the offset. The quadratic term in $\theta_\ell$ is the extra variance.
+
+::: {.notes}
+Panel A: NB variance $\mu+\mu^2/\theta$ with biology and depth. B: offset regression; C: Pearson $r$; D: shrink $\hat\theta_\ell$. Gene labels stand in for any feature.
+:::
+
+## The Pearson residual for that fit
+
+$$
+\log \mu_{i\ell} = \beta_{0\ell} + \log s_i,
+\qquad
+r_{i\ell} = \frac{Y_{i\ell}-\mu_{i\ell}}{\sqrt{\mu_{i\ell}+\mu_{i\ell}^2/\theta_\ell}}.
+$$
+
+The coefficient of $\log s_i$ is fixed at 1. A Poisson model has no $\theta_\ell$, so the split between a latent intensity and a depth has a parameter in the negative binomial. The figure's last panel shrinks a noisy $\hat\theta_\ell$ toward a smooth of the mean.
+
+::: {.notes}
+Display $\log\mu_{i\ell}=\beta_{0\ell}+\log s_i$ and Pearson $r_{i\ell}$ formula. Coefficient on $\log s_i$ fixed at 1. Last panel shrinks noisy $\hat\theta_\ell$—split measurement from dispersion.
+
+**Going further.** Hafemeister and Satija (2019, *Genome Biology*, sctransform) fitted this regression feature by feature and regularised the parameters across features; Lause, Berens and Kobak (2021, *Genome Biology*) showed that with the slope of $\log s_i$ fixed at 1 and a shared $\theta$, the Pearson residuals have a closed form and need no per-feature fit. The residuals are usually clipped at about $\pm\sqrt{n}$, because a feature seen in a single sample gives one enormous value. Shrinking $\hat\theta_\ell$ toward a trend in the mean is an empirical-Bayes step, the same idea as the dispersion shrinkage in DESeq2 (Love, Huber and Anders, 2014, *Genome Biology*).
+:::
+
+## Condition on the total, or integrate a prior {.fit-fig #sec-count-map}
+
+![A map of six count distributions: Poisson to negative binomial by a gamma prior; gamma to Dirichlet by normalising; Poisson to multinomial, and negative binomial to Dirichlet-multinomial, by conditioning on the sum.](figures/sources/count-distribution-connections.svg){fig-alt="Poisson with mean equal to variance; a gamma prior integrated out gives the negative binomial with variance mu plus mu squared over alpha; normalising independent gammas gives a Dirichlet; conditioning independent Poissons on their sum gives a multinomial; conditioning independent negative binomials on their sum gives a Dirichlet-multinomial. Gamma and Dirichlet are the continuous members." width="92%"}
+
+[Townes](https://arxiv.org/abs/2001.04343). Vertical arrows condition on the sum. Horizontal arrows integrate a continuous prior. Gamma and Dirichlet are the continuous nodes.
+
+::: {.notes}
+Townes map: vertical condition on sum, horizontal integrate prior. Poisson→multinomial, NB→Dirichlet-multinomial; gamma↔Dirichlet. Continuous nodes are gamma and Dirichlet.
+:::
+
+## The first two moments, by the tower rule {#sec-tower}
+
+Write the Poisson rate as a latent $\lambda$ with $\mathbb{E}(\lambda) = \mu$. The law of total expectation and the [law of total variance]{.mark} give the margin without a new pmf:
+
+$$
+\mathbb{E}(Y) = \mathbb{E}\{\mathbb{E}(Y\mid\lambda)\} = \mu,
+\qquad
+\mathrm{Var}(Y) = \mathbb{E}(\lambda) + \mathrm{Var}(\lambda) = \mu + \mathrm{Var}(\lambda).
+$$
+
+::: {.notes}
+Read $\mathbb{E}(Y)=\mu$ and $\mathrm{Var}(Y)=\mu+\mathrm{Var}(\lambda)$ from the tower identities. No new pmf needed—variance inflation from latent $\lambda$.
+
+**Going further.** The law of total variance, $\mathrm{Var}(Y) = \mathbb{E}\{\mathrm{Var}(Y\mid\lambda)\} + \mathrm{Var}\{\mathbb{E}(Y\mid\lambda)\}$, holds for any latent $\lambda$ with finite variance, so every Poisson mixture is overdispersed: $\mathrm{Var}(Y) \geq \mathbb{E}(Y)$, with equality only when $\lambda$ is constant. That is why overdispersion is the default for counts pooled over heterogeneous units, and why an underdispersed count cannot be a Poisson mixture. A gamma $\lambda$ with $\mathrm{Var}(\lambda) = \mu^2/\theta$ gives the negative binomial; a log-normal with $\log\lambda \sim \mathrm{Normal}(m, \sigma^2)$ gives $\mathrm{Var}(\lambda) = \mu^2(e^{\sigma^2}-1)$. Karlis and Xekalaki (2005, *Mixed Poisson distributions*, *International Statistical Review*) review the family.
+:::
+
+## Compound, mixture, and the Tweedie line {visibility="hidden"}
+
+::: {.incremental}
+- $\lambda$ fixed: $\mathrm{Var}(\lambda) = 0$, and $Y$ is Poisson.
+
+- $\lambda$ continuous: a compound distribution. A gamma $\lambda$ is the negative binomial. A normal draw for $\log\lambda$ is the Poisson log-normal. Townes notes that this margin has a heavier tail than the negative binomial.
+
+- The latent discrete: a mixture. The zero-inflated model is the spike at a structural zero plus a count distribution.
+:::
+
+
+Townes's Poisson–Tweedie has $\mathrm{Var}(Y) = \mu + \phi\mu^{p}$. The negative binomial is $p = 2$. These margins generally have no closed likelihood.
+
+::: {.notes}
+Step three fragments: fixed $\lambda$ Poisson; continuous $\lambda$ compound (gamma NB, log-normal heavier tail); discrete latent mixture including ZIP. Tweedie $\mathrm{Var}=\mu+\phi\mu^p$, $p=2$ is NB; often no closed likelihood.
+:::
+
+## Independent counts, given their sum {#sec-multinomial-sum visibility="hidden"}
+
+Townes's identity: independent Poisson counts, conditioned on their total, are one multinomial draw. If $Y_\ell \sim \mathrm{Poisson}(\lambda_\ell)$ independently and $M = \sum Y_\ell$, then
+
+$$
+\mathbf{Y} \mid M \sim \mathrm{Multinomial}\!\left(M,\; \pi_\ell = \lambda_\ell \big/ \textstyle\sum_k \lambda_k\right).
+$$
+
+The same step with independent negative binomials that share a scale parameter returns a Dirichlet-multinomial. The shared scale is required. Negative binomials with a shared shape and different means do not, after conditioning, stay Dirichlet-multinomial.
+
+A sequencing library is this conditioning. The Sarkar rate $s_i\lambda_{i\ell}$ is the Poisson layer. Given the library size, the vector of features is multinomial. Modelling the counts as independent Poissons with an offset, or as one multinomial, are the two sides of that identity.
+
+::: {.notes}
+Poisson conditioned on $M$ → multinomial with $\pi_\ell=\lambda_\ell/\sum\lambda$. NB with shared scale → Dirichlet-multinomial; differing shapes break that. Library size conditioning is the sequencing identity.
+:::
+
+## A normal latent on the log mean {.fit-fig #sec-pln visibility="hidden"}
+
+![The Poisson log-normal model: counts and covariates enter a latent Gaussian layer, the counts are Poisson given the latent, and the same layer is constrained for a known grouping, a mixture, a low-rank covariance, or a sparse precision.](figures/sources/poisson-log-normal.webp){fig-alt="Standard Poisson log-normal. Counts Y and covariates X enter a latent Z drawn normal with mean mu and covariance Sigma. Given Z, the counts are Poisson with mean exp of Z. The mean of Z is X times a coefficient matrix. Extensions constrain that mean for known classes or unknown groups, and constrain Sigma to low rank or to a sparse precision." width="96%"}
+
+[Chiquet, Mariadassou, and Robin](https://doi.org/10.3389/fevo.2021.588292). The figure's $\mu$ is the mean of the latent Gaussian. Here that mean is $m$, and $\mu$ stays $\mathbb{E}(Y \mid x)$.
+
+::: {.notes}
+Chiquet figure: latent $Z$, Poisson on $\exp(Z)$, extensions constrain $\mathbf{m}$ or $\boldsymbol{\Sigma}$. Figure $\mu$ is latent mean $m$; slide $\mu$ stays $\mathbb{E}(Y\mid x)$.
+:::
+
+## The Poisson log-normal drawing {visibility="hidden"}
+
+$$
+\mathbf{Z}_i \sim \mathrm{Normal}(\mathbf{m}_i, \boldsymbol{\Sigma}),
+\quad
+m_{i\ell} = \mathbf{x}_i^{\top}\boldsymbol{\theta}_\ell,
+\quad
+Y_{i\ell}\mid Z_{i\ell} \sim \mathrm{Poisson}\!\left(\exp(o_{i\ell}+Z_{i\ell})\right).
+$$
+
+Townes: replace the gamma prior on the rate by a log-normal. The normal is the distribution of $\log$ of the Poisson mean.
+
+::: {.notes}
+Read $\mathbf{Z}_i\sim\mathrm{Normal}(\mathbf{m}_i,\boldsymbol{\Sigma})$ and Poisson on $\exp(o+Z)$. Townes: log-normal latent replaces gamma for rate.
+:::
+
+## The moments sit above the Poisson line {#sec-pln-moments visibility="hidden"}
+
+Aitchison and Ho, as quoted by Chiquet, Mariadassou, and Robin, give the margin after integrating the latent:
+
+$$
+\mathbb{E}(Y_{i\ell}) = \exp\!\left(o_{i\ell} + m_{i\ell} + \sigma_{\ell\ell}/2\right),
+$$
+
+$$
+\mathrm{Var}(Y_{i\ell}) = \mathbb{E}(Y_{i\ell}) + \mathbb{E}(Y_{i\ell})^2\left(e^{\sigma_{\ell\ell}}-1\right).
+$$
+
+The variance exceeds the mean. The covariance of two features has the sign of $\sigma_{\ell\ell'}$. Given $\mathbf{Z}_i$, the features are independent, so the dependence lives in $\boldsymbol{\Sigma}$. Twice the effort adds $\log 2$ to the offset $o_{i\ell}$.
+
+::: {.notes}
+The likelihood has no closed form once $\mathbf{Z}$ is integrated out. The paper fits it by a variational approximation, in the R package `PLNmodels`. The four corners of the figure constrain either $\mathbf{m}$ (a known class, or a mixture) or $\boldsymbol{\Sigma}$ (low rank, or a sparse precision).
+:::
+
+## Logistic regression {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #f6d6e0 100%)"}
+
+## A binary response, on the logit {#sec-glm-bernoulli}
+
+A binary response goes to a [logistic regression]{.mark}. Here $\mu = \pi = \Pr(Y = 1 \mid x)$. The logit is the link used here. The probit is the alternative they mention later, and it stays close to this curve.
+
+```{.tikz}
+%%| filename: dag-glm-logit
+%%| alt: Plate diagram of the logistic regression: x i and beta give eta i, pi i is the inverse logit of eta i, and Y i is Bernoulli with probability pi i.
+%%| width: 92%
+\begin{tikzpicture}
+\node[const] (x) {$x_i$};
+\node[det, right=14mm of x] (eta) {$\eta_i$};
+\node[det, right=14mm of eta] (mu) {$\pi_i$};
+\node[obs, right=14mm of mu] (y) {$Y_i$};
+\node[const, above=9mm of eta] (b) {$\boldsymbol\beta$};
+\draw[edge] (x) -- (eta); \draw[edge] (b) -- (eta);
+\draw[edge] (eta) -- (mu); \draw[edge] (mu) -- (y);
+\node[note, below=2mm of eta] (n1) {$\eta_i = \beta_0 + \beta_1 x_i$};
+\node[note, below=2mm of mu] (n2) {$\pi_i = \mathrm{logit}^{-1}(\eta_i)$};
+\node[note, below=2mm of y] (n3) {$Y_i \sim \mathrm{Bernoulli}(\pi_i)$};
+
+\plate{p}{(x)(eta)(mu)(y)(n1)(n2)(n3)}{$i = 1,\ldots,n$}
+\end{tikzpicture}
+```
+
+::: {.notes}
+$\mu=\pi=\Pr(Y=1\mid x)$; logit link in the diagram. Probit mentioned as later alternative—stay on logit for odds-ratio reading.
+:::
+
+## Detection depends on how hard you looked {#sec-casys-logit}
+
+![Fitted logit curves for Methylobacter presence against standardised log library size, one curve per tillage class, with 0/1 observations jittered.](figures/generated/casys-logit-detection.png){fig-alt="Two rising logistic curves for probability of detecting Methylobacter against standardised log library size, with confidence ribbons and jittered binary observations." width="92%"}
+
+*Methylobacter* is a methane oxidiser, present in 35% of samples. The odds of detecting it multiply by **1.74** per standard deviation of log library size.
+
+::: {.notes}
+This is the logit on a real response, and the result is uncomfortable in a useful way: the strongest predictor of presence is not a treatment, it is sequencing effort. The tillage odds ratio from the same fit is 1.34, with an interval of 0.95 to 1.91, so it is not separable from no effect here. Any presence-absence analysis of sequencing data has to carry library size, exactly as the count model carries the offset.
+:::
+
+## What $\beta_1$ does to a probability {#sec-density-logit}
+
+![Three logit curves of pi against x, for two slopes and a shifted intercept.](figures/generated/density-logit.png){fig-alt="Three sigmoid curves. A shallow slope, a steep slope through one half at x equals 0, and the same steep slope shifted left." width="78%"}
+
+$\pi = \mathrm{logit}^{-1}(\beta_0 + \beta_1 x)$. A larger $\beta_1$ makes the step steeper. $\beta_0$ slides it. The curve stays inside $(0, 1)$. Illustrative, from `scripts/generate-density-curves.R`.
+
+::: {.notes}
+The steep curve is not a larger probability everywhere. It is a faster change. Ask where $\pi$ is one half on the red curve.
+:::
+
+## Logit · only if $Y$ is really binary {auto-animate=true}
+
+Detection of a taxon in a core is binary. A flux cut at an arbitrary threshold is the [dichotomisation]{.mark} we have already rejected.
+
+::: {data-id="logit-eq"}
+$$
+\mu = \pi = \Pr(Y = 1 \mid x).
+$$
+:::
+
+The mean of a 0/1 response **is** the probability.
+
+::: {.notes}
+$\mu=\pi=\Pr(Y=1\mid x)$; flux dichotomisation rejected. Mean of 0/1 is probability—say it plainly before the simulated pH slide.
+:::
+
+## Logit · a simulated detection {auto-animate=true}
+
+$x$ is centred pH, from $-1.5$ to $1.5$. $Y$ is 1 if the taxon is detected.
+
+::: {data-id="logit-eq"}
+$$
+\mathrm{logit}(\pi) = \log \frac{\pi}{1-\pi} = \beta_0 + \beta_1 x.
+$$
+:::
+
+Fitted here: $\hat\beta_0 = -0.32$, $\hat\beta_1 = 1.44$.
+
+At $x = 0$, $\hat\pi = \mathrm{logit}^{-1}(-0.32) \approx 0.42$.
+
+Same seed, same script, still not a field dataset.
+
+::: {.notes}
+$\hat\beta_0=-0.32$, $\hat\beta_1=1.44$; at $x=0$, $\hat\pi\approx 0.42$. Centred pH $-1.5$ to $1.5$; same seed script, not field data.
+:::
+
+## Logit · the curve is the result
+
+The band is for $\pi$, not for a single core. A core is still 0 or 1.
+
+```{r}
+#| echo: true
+#| eval: false
+fit_bin <- glm(y_bin ~ ph, family = binomial)
+pi <- plogis(predict(fit_bin, type = "link"))
+```
+
+::: {.notes}
+Two lines: fit on the logit scale, back-transform with `plogis()`. The saved figure is on the next slide.
+:::
+
+## Logit · the curve is the result
+
+![Logit curve of detection probability against centred pH, with jittered binary points and a band for the probability.](figures/generated/logit-fit.png){fig-alt="Binary detections against centred pH, with a fitted logit curve and a Wald band on the probability scale." width="84%"}
+
+::: {.notes}
+Stress that the band is for $\pi$, not for a single 0/1 core. The code slide is excerpt only; the figure is the saved fit. Ask the room to say the estimand in words before they quote $\exp(\beta_1)$. About one minute.
+:::
+
+## Logit · odds move by a factor, probabilities do not
+
+:::: {.columns}
+::: {.column width="62%"}
+A one-unit increase in centred pH multiplies the **odds** by
+
+$$
+\exp(\hat\beta_1) = 4.2
+$$
+
+Wald 95% interval: **2.4 to 7.4**.
+
+In this fit, $\hat\pi$ goes from about **0.42** at $x = 0$ to about **0.75** at $x = 1$. That is a change of about 0.34 on the probability scale, not a 4.2-fold change in probability.
+
+The interval is symmetric on the logit scale. It is not symmetric on the probability scale.
+:::
+::: {.column width="38%"}
+![](figures/generated/sketch-nongauss-b-odds-steps.png){.sketch fig-alt="Hand-drawn S-shaped curve of pi against x with two unit steps in x: in the middle the blue rise in pi is large, near the top the orange rise is tiny, under the note same times odds."}
+:::
+::::
+
+::: {.notes}
+$\exp(\hat\beta_1)=4.2$, Wald interval 2.4 to 7.4 on odds scale. $\hat\pi$ about 0.42 to 0.75 is ~0.34 on probability scale—not a 4.2-fold change in $\pi$. Interval symmetric on logit, not on $\pi$.
+:::
+
+## The regression is for $\pi$ {#sec-logit-is-regression}
+
+[Olszewski](https://medium.com/@r.clin.res/is-logistic-regression-a-regression-46dcce4945dd) places logistic regression in the generalised linear model: the target is a function of $\mathbb{E}(Y \mid x)$. For a Bernoulli response that function is $\mathrm{logit}(\pi)$, and $\pi$ is the [conditional mean]{.mark}. A classifier that thresholds $\pi$ is one use of the fitted probability.
+
+He dates the logit to Berkson, as an alternative to the probit, and the unified GLM to Nelder and Wedderburn (1972, [their paper](http://www.medicine.mcgill.ca/epidemiology/hanley/bios601/Likelihood/NelderWedderburn1972.pdf)). In R the same statement is `glm(y ~ x, family = binomial(link = "logit"))`.
+
+::: {.notes}
+Olszewski: logistic regression targets $\mathrm{logit}(\pi)$; threshold classifier is one use. Berkson logit history and Nelder–Wedderburn GLM paper as on slide; R call `family=binomial(link="logit")`.
+:::
+
+## A test of two proportions is this model {#sec-proportion-tests}
+
+In the [first of the two follow-ups](https://medium.com/@r.clin.res/testing-hypotheses-about-proportions-through-the-logistic-regression-and-friends-57f4b4a8d93c), the Wald statistic for a difference of two proportions, with unpooled variances, matches the [average marginal effect]{.mark} of a logistic regression with one binary predictor. The sampling scheme is two independent binomials, without a small-sample correction. He calls the algebra a conceptual bridge: the statistics match, and the note does not re-prove the asymptotic distribution.
+
+The [second note](https://medium.com/@r.clin.res/testing-hypotheses-about-proportions-through-the-logistic-regression-and-friends-part-ii-b917f48da6f3) matches the pooled two-proportion $z$, the statistic behind `prop.test()`, to the [Rao score test]{.mark} of the same logistic model. Wald, score, and likelihood-ratio statistics agree asymptotically. The pooled statistic is the score test. Several grouping factors are an analysis of deviance for proportions, the GLM form of the [deviance partition](#sec-deviance). A numeric covariate beside the group is the [analysis-of-covariance](#sec-lm-ancova) analogue.
+
+::: {.notes}
+Part I: unpooled Wald matches logistic AME; part II: pooled `prop.test` matches Rao score. Several groups → deviance; numeric covariate → ANCOVA analogue links on slide.
+
+**Going further.** For one parameter with log-likelihood $\ell$, the Wald statistic uses the curvature at $\hat\beta$, the score statistic the slope and curvature at the null value, and the likelihood-ratio statistic $2\{\ell(\hat\beta)-\ell(\beta_0)\}$. Under the null all three are asymptotically $\chi^2_1$, and they agree to first order under local alternatives; in finite samples they differ. The Wald version is the least invariant: it changes with the parameterisation, and for a logit it can lose power as $|\hat\beta|$ grows (Hauck and Donner, 1977, *Journal of the American Statistical Association*). `prop.test()` applies Yates's continuity correction by default; with `correct = FALSE` its $X^2$ is the square of the pooled $z$. Agresti sets out the three tests for GLMs [@agrestiFoundationsLinearGeneralized2015].
+:::
+
+## One model, every test of proportions {#sec-proportion-map}
+
+![Olszewski's map: logistic regression at the centre, with branches to the z test and chi-squared test for proportions, n-way ANOVA and ANCOVA for proportions, Cochran–Mantel–Haenszel through conditional logistic regression, Cochran–Armitage for trend, Breslow–Day through the interaction term, McNemar, Cochran Q and Friedman through GEE, and Mann–Whitney and Kruskal–Wallis through ordinal logistic regression.](figures/sources/test-proportions-logistic.png){fig-alt="Mind map titled testing hypotheses about binary outcomes with the logistic regression and selected friends, Adrian Olszewski 2023. Each classic test sits in a coloured box with the R call that reproduces it: glm with a binomial family, clogit with strata, glm on an ordered factor, glm with an interaction and a Rao test, geeglm with an exchangeable correlation, and rms orm." width="86%"}
+
+A [logistic regression]{.mark}, with its conditional, ordinal, and GEE friends, reproduces the classic tests of proportions and extends them with covariates. The worked list is the [companion page](logistic-regression-is-regression.qmd).
+
+::: {.notes}
+Conclusion of the logistic block. Read the map clockwise from the blue box. What it replicates:
+
+- Wald's $z$ for two proportions with unpooled standard errors, via estimated marginal means on the probability scale, or the average marginal effect of the binary group indicator
+- Rao's score $z$ with pooled standard errors, which is `prop.test()`: `anova(m, test = "Rao")`
+- the $\chi^2$ test for two or more proportions
+- an ANOVA-like joint test for several categorical predictors, and ANCOVA with numeric covariates
+- Cochran–Mantel–Haenszel for stratified or matched data, via conditional logistic regression
+- Breslow–Day for homogeneous odds ratios, via the Rao test of the interaction term
+- Cochran–Armitage for a trend in ordered proportions
+- McNemar and Cochran's $Q$ for paired proportions, and Friedman, via GEE with an exchangeable working correlation
+- Mann–Whitney–Wilcoxon and Kruskal–Wallis via ordinal logistic regression, and the paired Wilcoxon via GEE
+
+The point is not to retire the named tests but to see them as special cases of one model, which can then take a covariate, a cluster, or an interaction.
+
+**Going further.** The equivalences are exact for the score statistics and asymptotic for the Wald and likelihood-ratio versions: the Mantel–Haenszel statistic is the score test of the common log odds ratio in the conditional likelihood, and the Cochran–Armitage statistic is the score test of the linear term in a logistic model with scores for the ordered levels (Agresti, *Categorical Data Analysis*, chapters 3 and 6). The ordinal model's link to Mann–Whitney is through the concordance probability: the proportional-odds coefficient for a binary group is a monotone function of $P(Y_B > Y_A) + \tfrac12 P(Y_B = Y_A)$, close to $\exp(\beta)^{0.66}/(1 + \exp(\beta)^{0.66})$ under that model (Harrell, *Regression Modeling Strategies*).
+:::
+
+## The fitting criterion is cross-entropy {#sec-cross-entropy}
+
+:::: {.columns}
+::: {.column width="62%"}
+Denis Burakov, in the chapter embedded below, starts from Fisher's binomial likelihood and writes the average negative log-likelihood. For $y_i \in \{0,1\}$ and fitted probabilities $\hat\pi_i$,
+:::
+::: {.column width="38%"}
+![](figures/generated/sketch-nongauss-b-logloss.png){.sketch-sm fig-alt="Hand-drawn falling curve of cost against pi-hat for y equals 1: a red point at pi-hat 0.19 costs 1.66 and a green point at 0.79 costs 0.23."}
+:::
+::::
+
+$$
+-\frac{1}{n}\sum_{i=1}^{n}\left[y_i\log\hat\pi_i + (1-y_i)\log(1-\hat\pi_i)\right].
+$$
+
+The factor $1/n$ does not move the maximiser. This is the [log loss]{.mark}, also called cross-entropy. In his table, $y = 1$ and $\hat\pi = 0.19$ costs $-\log 0.19 = 1.66$; $\hat\pi = 0.79$ costs $0.23$. With an intercept in the model, the fitted probabilities add up to the number of observed events.
+
+::: {.notes}
+Burakov log loss: $-\frac1n\sum[y\log\hat\pi+(1-y)\log(1-\hat\pi)]$. Table row $\hat\pi=0.19$ costs 1.66 versus 0.79 costs 0.23. Intercept-only fitted probs sum to event count.
+
+**Going further.** For 0/1 data the saturated log-likelihood is 0, so the binomial deviance is exactly $2n$ times this average log loss: minimising cross-entropy and maximising the likelihood are the same fit. The log loss is a strictly proper scoring rule: its expectation under the true $\pi$ is minimised only by reporting $\hat\pi = \pi$ (Gneiting and Raftery, 2007, *Journal of the American Statistical Association*). The intercept property is one row of the canonical-link score equations $\mathbf{X}^{\top}(\mathbf{y}-\hat{\boldsymbol\pi}) = \mathbf{0}$, so the fit is also calibrated in the mean within every level of a categorical covariate. The loss is unbounded as $\hat\pi_i \to 0$ for an event, which is why one confident mistake can dominate the average.
+:::
+
+## The logit, rather than the probit {#sec-logit-not-probit}
+
+Burakov quotes Berkson's reasons for the logistic curve over the probit: a closed-form derivative, fits that on Berkson's data were as close as the probit or closer, and coefficients that exponentiate to odds ratios. A probit coefficient is a change in a standard normal deviate.
+
+Angelino and Marcone add the [complementary log-log]{.mark} link, $\log\{-\log(1-\pi)\} = \mathbf{x}^{\top}\boldsymbol{\beta}$, for a curve that is asymmetric about $1/2$. They report that probit and complementary log-log fits are often close to the logit. The link on these slides stays the logit, so that $\beta_1$ remains a change in log odds.
+
+::: {.notes}
+Berkson reasons on slide: derivative, fit quality, odds ratios. Complementary log-log for asymmetry at 1/2—probit and cloglog often close to logit. Deck stays logit for $e^{\beta_1}$ reading.
+
+**Going further.** All three links come from a latent continuous $Y^* = \mathbf{x}^{\top}\boldsymbol\beta + \varepsilon$ with $Y = 1$ when $Y^* > 0$: a logistic $\varepsilon$ gives the logit, a normal one the probit, an extreme-value one the complementary log-log. The standard logistic has standard deviation about 1.81, so logit coefficients are roughly 1.6 to 1.8 times probit ones (Amemiya, 1981, *Journal of Economic Literature*). The complementary log-log has a direct reading for detection: if the hidden count is Poisson with $\log\mu = \mathbf{x}^{\top}\boldsymbol\beta$, then $\Pr(Y > 0) = 1 - e^{-\mu}$ and $\log\{-\log(1-\pi)\} = \log\mu$, so a library-size offset keeps its meaning and $\exp(\beta_1)$ is a rate ratio. Near $\pi = 1/2$ the links are close; they separate in the tails, where the data are usually thin.
+:::
+
+## One-hot coding is a contrast with a reference {#sec-one-hot}
+
+:::: {.columns}
+::: {.column width="62%"}
+Burakov's worked table has 700 borrowers, 100 defaults. High delinquency: 80 defaults out of 180. Low delinquency: 20 out of 520. The model is $\mathrm{logit}(\pi) = \beta_0 + \beta_1 x$, with $x = 1$ for high delinquency.
+
+The intercept $\hat\beta_0 = -3.219$ is the log-odds in the [reference group]{.mark}, a probability of $0.0385$. The slope $\hat\beta_1 = 2.996$ multiplies the odds by $e^{2.996} = 20$. One category is absorbed into the intercept. The coefficient is the contrast with that category.
+:::
+::: {.column width="38%"}
+![](figures/generated/sketch-nongauss-b-onehot.png){.sketch fig-alt="Hand-drawn log-odds axis: a blue reference point far left of zero, with a blue arrow from zero labelled beta-0 equals reference level, and an orange point labelled high with an orange arrow from the reference labelled beta-1 equals contrast."}
+:::
+::::
+
+::: {.notes}
+700 borrowers, 100 defaults; high delinquency $\hat\beta_0=-3.219$ → $p=0.0385$; $\hat\beta_1=2.996$ → odds $\times 20$. One category absorbed into intercept.
+:::
+
+## Softmax is the logit for $K$ classes {#sec-softmax}
+
+For $K$ mutually exclusive classes, $\sum_k \pi_k = 1$, Burakov writes the [softmax]{.mark}
+
+$$
+\Pr(Y = k \mid \mathbf{x})
+  = \frac{\exp(\mathbf{x}^{\top}\boldsymbol{\beta}_k)}{\sum_{j=1}^{K}\exp(\mathbf{x}^{\top}\boldsymbol{\beta}_j)}.
+$$
+
+Fixing $\boldsymbol{\beta}_K = \mathbf{0}$ leaves $K-1$ vectors. Estimating all $K$ is the unconstrained softmax. The probabilities match. $K = 2$ with a zero reference class is binary logistic regression.
+
+::: {.notes}
+Display softmax with $\boldsymbol{\beta}_K=\mathbf{0}$ identification. $K=2$ with zero reference recovers binary logit. Cross-entropy loss with 1-of-$K$ indicators on slide.
+
+**Going further.** The softmax probabilities do not change when the same vector is added to every $\boldsymbol\beta_k$, so only $K-1$ contrasts are identified; a reference class, or a penalty, resolves that. The fit is the multinomial logit, a GLM for a multinomial response (`nnet::multinom` in R). The odds between two classes, $\pi_k/\pi_{k'} = \exp\{\mathbf{x}^{\top}(\boldsymbol\beta_k - \boldsymbol\beta_{k'})\}$, do not depend on the other classes: this independence of irrelevant alternatives is a strong assumption when two classes are near-substitutes (McFadden, 1974). For ordered categories, McCullagh's cumulative-logit or proportional-odds model (1980, *Journal of the Royal Statistical Society, Series B*) uses $K-1$ intercepts and one slope vector.
+:::
+
+## The chapter, on this slide {#sec-burakov}
+
+Denis Burakov, *Logistic Regression: From Maximum Likelihood to Machine Learning*, is the source of the loss, the weight-of-evidence arithmetic, and the softmax. The viewer scrolls the chapter.
+
+{{< pdf references/burakov-logistic-regression.pdf width=100% height=500 >}}
+
+::: {.notes}
+Embedded PDF—students scroll Burakov for loss, WOE, softmax details. One sentence: this is reference material, not a live read-through. Keep timing short unless asked.
+:::
+
+## A Wald interval is a large-sample interval for $\pi$ {#sec-wald-pi}
+
+:::: {.columns}
+::: {.column width="62%"}
+Burakov builds the interval for a new covariate row $\mathbf{x}_0$ on the logit, then inverts it. The covariance of $\hat{\boldsymbol{\beta}}$ is $(\mathbf{X}^{\top}\mathbf{W}\mathbf{X})^{-1}$, with $w_i = \hat\pi_i(1-\hat\pi_i)$.
+:::
+::: {.column width="38%"}
+![](figures/generated/sketch-nongauss-b-wald-asym.png){.sketch fig-alt="Hand-drawn S-curve mapping a blue interval that is symmetric on the logit axis to an orange interval on the pi axis whose two halves have different lengths."}
+:::
+::::
+
+$$
+\mathbf{x}_0^{\top}\hat{\boldsymbol{\beta}}
+  \pm 1.96\sqrt{\mathbf{x}_0^{\top}\widehat{\mathrm{Cov}}(\hat{\boldsymbol{\beta}})\,\mathbf{x}_0}.
+$$
+
+The endpoints are symmetric on the logit. After the inverse logit they sit inside $(0,1)$ and they are not symmetric on the probability scale. The justification is the [asymptotic normality]{.mark} of the maximum-likelihood estimator. A small sample, or the perfect separation on the [checks figure](#sec-glm-checks), is outside that justification.
+
+::: {.notes}
+Build on logit with $(\mathbf{X}^{\top}\mathbf{W}\mathbf{X})^{-1}$; invert to $(0,1)$, asymmetric on $\pi$. Separation and small $n$ break asymptotics—link checks figure.
+
+**Going further.** The interval is the delta method on the link scale, $\mathrm{Var}(\mathbf{x}_0^{\top}\hat{\boldsymbol\beta}) = \mathbf{x}_0^{\top}\,\mathrm{Cov}(\hat{\boldsymbol\beta})\,\mathbf{x}_0$; inverting the endpoints is exact because the inverse logit is monotone, which is why the band is built on the logit rather than on $\pi$. A profile-likelihood interval, the set of values whose likelihood-ratio statistic stays below the $\chi^2_1$ quantile, is invariant to reparameterisation and behaves better in small samples; `confint()` on a `glm` returns it in R (the method moved from MASS into stats in R 4.4.0). Under separation the profile is flat on one side and the interval is half-infinite, which is honest; the Wald interval is finite and wrong. Pawitan's *In All Likelihood* develops the comparison.
+:::
+
+## Hold the other covariates still
+
+:::: {.columns}
+::: {.column width="62%"}
+With several covariates,
+
+$$
+g(\mu) = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots
+$$
+
+$\exp(\beta_1)$ is the multiplicative change in the mean, or in the odds, for a one-unit step in $x_1$ **with the other covariates held at the same values**.
+
+If $x_2$ is a [mediator]{.mark} or a [collider]{.mark}, "held still" is a different estimand, not a more adjusted one.
+:::
+::: {.column width="38%"}
+![](figures/generated/sketch-nongauss-b-hold-still.png){.sketch fig-alt="Two hand-drawn sliders: the blue x1 knob moves one step to the right, the grey x2 knob stays put under a padlock, labelled held still."}
+:::
+::::
+
+::: {.notes}
+$\exp(\beta_1)$ with $x_2,\ldots$ fixed at chosen values. Mediator or collider makes "held still" a different estimand—not "more adjusted is always better".
+
+**Going further.** The odds ratio is non-collapsible: adding a covariate $x_2$ that predicts $Y$ changes the coefficient of $x_1$ even when $x_2$ is independent of $x_1$, and so is not a confounder, because averaging a logistic curve over $x_2$ does not give a logistic curve with the same slope (Gail, Wieand and Piantadosi, 1984, *Biometrika*). The rate ratio under a log link and the risk difference under the identity are collapsible in that case. A conditional and a marginal odds ratio are both legitimate estimands, but they are different numbers, and comparing them across studies with different adjustment sets mixes the two. Greenland, Robins and Pearl (1999, *Statistical Science*) separate collapsibility from confounding; the mediator and collider cases are the causal-graph arguments of the Bayesian and causal section.
+:::
+
+## Two tiers of checks for a logit {.fit-fig #sec-glm-checks}
+
+![Two tiers of logistic-regression checks: linearity of the log-odds, VIF, independence, Cook's distance; then separation, events per variable, and sparse categories.](figures/sources/logistic-model-checks.svg){fig-alt="Tier 1: a straight line on the log-odds scale, a VIF warning above 5 and a red flag above 10, independence as a design problem, and Cook's distance above 1. Tier 2: a zero cell and huge odds ratios, at least 10 events per variable as a rule of thumb that some recent work relaxes, and a category with no events to collapse." width="96%"}
+
+🔗 [The checks figure](https://www.linkedin.com/feed/update/urn:li:activity:7483052950236401665/). A bent log-odds line, a variance-inflation factor above 5, [separation]{.mark}, and fewer than ten events per variable are its warnings. Firth's penalised likelihood is the remedy it names for separation. The next six slides take the checks one at a time.
+
+::: {.notes}
+The LinkedIn post is behind a login wall, so the thresholds are the figure's own wording: VIF above 5 is a warning and above 10 a red flag; Cook's distance above 1 is a cause for concern; ten events per variable is a rule of thumb the figure says some recent work relaxes. Angelino and Marcone's Cook cut for a GLM is about $4/n$, stated on the previous influence slide.
+
+**Going further.** Albert and Anderson (1984, *Biometrika*) showed that the logistic maximum-likelihood estimate exists and is finite only when the two outcome classes overlap: under complete or quasi-complete separation some $\hat\beta$ runs to $\pm\infty$, and R reports fitted probabilities of 0 or 1 with huge standard errors. Firth (1993, *Biometrika*) penalises the log-likelihood by $\tfrac12\log|\mathbf{I}(\boldsymbol\beta)|$, the Jeffreys prior, which removes the first-order bias and always gives finite estimates; Heinze and Schemper (2002, *Statistics in Medicine*) proposed it for separation, and `logistf` implements it with profile penalised-likelihood intervals. The ten-events-per-variable rule comes from simulation studies (Peduzzi and colleagues, 1996); van Smeden and colleagues (2016) argued that no single threshold guarantees good performance.
+:::
+
+## Logit check 1 · The log-odds are linear in each continuous $x$ {.logit-check #sec-logit-check-linear}
+
+:::: {.columns}
+::: {.column width="34%"}
+![](figures/sources/logistic-check-linearity.png){fig-alt="Card: linearity. A scatter of log-odds against a predictor with a straight orange line and a bending dashed curve; the advice is to consider a polynomial or spline if the line bends."}
+:::
+::: {.column width="66%"}
+The model assumes a straight line on the [log-odds]{.mark} scale, not on the probability scale.
+
+Fit a spline, `splines::ns(x, 3)`, and compare it with the straight term. If the curve bends, keep the spline.
+:::
+::::
+
+::: {.notes}
+Card one of the figure. The check is about $\eta$, not about $\pi$: an S-shaped probability is exactly what a straight log-odds line gives.
+
+**Going further.** The Box–Tidwell check adds $x \log x$ and tests its coefficient; a natural spline with a likelihood-ratio test against the linear term is the more general version. Binned empirical logits, $\log\{(y_k + 0.5)/(n_k - y_k + 0.5)\}$ against the bin mean of $x$, give a quick picture. A missed bend biases the slope and also miscalibrates the predicted probabilities at the ends of the $x$ range.
+:::
+
+## Logit check 2 · The covariates are not collinear {.logit-check #sec-logit-check-vif}
+
+:::: {.columns}
+::: {.column width="34%"}
+![](figures/sources/logistic-check-collinearity.png){fig-alt="Card: multicollinearity. Interlocking gears; VIF above 5 is a warning and above 10 a red flag for unstable coefficients."}
+:::
+::: {.column width="66%"}
+A [variance inflation factor]{.mark} above 5 is a warning; above 10 the coefficients are unstable. `car::vif(fit)`.
+
+Collinearity inflates the standard errors of the coefficients. It does not spoil the predicted probabilities.
+:::
+::::
+
+::: {.notes}
+Card two. Students often drop a variable because its coefficient flipped sign; collinearity is the usual reason, and the fix depends on the question, not on the VIF alone.
+
+**Going further.** $\mathrm{VIF}_k = 1/(1 - R_k^2)$, where $R_k^2$ comes from regressing $x_k$ on the other covariates; in a GLM `car::vif` uses the weighted information matrix. For a factor with several columns the generalised VIF of Fox and Monette (1992, *Journal of the American Statistical Association*) is raised to the power $1/(2\,\mathrm{df})$ to be comparable. Centring removes the collinearity between $x$ and $x^2$ or an interaction, but not between two distinct covariates.
+:::
+
+## Logit check 3 · The rows are independent {.logit-check #sec-logit-check-independence}
+
+:::: {.columns}
+::: {.column width="34%"}
+![](figures/sources/logistic-check-independence.png){fig-alt="Card: independence. One stick figure on its own and three chained together; this is a design issue handled by mixed-effects models or clustered standard errors."}
+:::
+::: {.column width="66%"}
+This is a [design question]{.mark}, not a test. Repeated cores, plots, or dates need a random intercept, `lme4::glmer(y ~ x + (1 | plot), family = binomial)`, or a cluster-robust standard error.
+:::
+::::
+
+::: {.notes}
+Card three. Point back to $i$ inside $j$: the number of independent units is the number of plots, not the number of rows.
+
+**Going further.** A random intercept gives cluster-specific odds ratios; GEE (`geepack::geeglm`) gives population-averaged ones, which are smaller in absolute value by roughly $1/\sqrt{1 + 0.346\,\sigma_u^2}$. On the latent scale the intraclass correlation of a logit model is $\sigma_u^2/(\sigma_u^2 + \pi^2/3)$, because the standard logistic distribution has variance $\pi^2/3$.
+:::
+
+## Logit check 4 · No single row drives the fit {.logit-check #sec-logit-check-influence}
+
+:::: {.columns}
+::: {.column width="34%"}
+![](figures/sources/logistic-check-influence.png){fig-alt="Card: influential outliers. A scatter with a dashed line and one point far above it; a Cook's distance above 1 is a cause for concern."}
+:::
+::: {.column width="66%"}
+[Cook's distance]{.mark} above 1 flags a row to inspect; $4/n$ is a looser screen. `cooks.distance(fit)`.
+
+Refit without the row. If the conclusion moves, report both fits; do not delete the row silently.
+:::
+::::
+
+::: {.notes}
+Card four. The question is whether the conclusion depends on one plot, not whether the point looks odd.
+
+**Going further.** Pregibon (1981, *Annals of Statistics*) gives one-step approximations to the change in $\hat{\boldsymbol\beta}$ and in the deviance when row $i$ is deleted, built from the leverage of the weighted hat matrix at convergence and the Pearson residual. In logistic regression a high-leverage row is one with an extreme covariate value and a fitted probability not close to 0 or 1; rows with $\hat\pi_i$ near 0 or 1 have small weight and therefore small leverage, even far out in $x$.
+:::
+
+## Logit check 5 · There are enough events for the covariates {.logit-check #sec-logit-check-epv}
+
+:::: {.columns}
+::: {.column width="34%"}
+![](figures/sources/logistic-check-events.png){fig-alt="Card: too few events. Ten events support one predictor but are spread thin over seven predictors; aim for at least ten events per variable as a rule of thumb."}
+:::
+::: {.column width="66%"}
+About ten [events per variable]{.mark} is a rule of thumb, counted in the rarer outcome.
+
+With fewer, simplify the model, or penalise it. Some recent work relaxes the rule; none removes the need to count.
+:::
+::::
+
+::: {.notes}
+Card five. Count the rarer of the two outcomes, not the number of rows, and count parameters, not variables: a five-level factor is four.
+
+**Going further.** The rule comes from simulations by Peduzzi and colleagues (1996, *Journal of Clinical Epidemiology*); van Smeden and colleagues (2016, *BMC Medical Research Methodology*) showed that no single threshold controls bias. Riley and colleagues (2019–2020, *BMJ* and *Statistics in Medicine*) replaced it with sample-size calculations that target a small optimism in the fit and a precise intercept, implemented in the `pmsampsize` package. Penalised likelihood (Firth, ridge, lasso) reduces small-sample bias and overfitting but needs its own validation.
+:::
+
+## Logit check 6 · No separation, and no empty category {.logit-check #sec-logit-check-separation}
+
+:::: {.columns}
+::: {.column width="27%"}
+![](figures/sources/logistic-check-separation.png){fig-alt="Card: perfect separation. A two-by-two table where group A has 20 events and 0 non-events; look for odds ratios in the hundreds with huge confidence intervals and consider Firth's penalised likelihood."}
+:::
+::: {.column width="27%"}
+![](figures/sources/logistic-check-empty-category.png){fig-alt="Card: one in the box. A three-level factor whose third level has 0 events out of 10; collapse categories with very low counts."}
+:::
+::: {.column width="46%"}
+A zero cell, an odds ratio in the hundreds, and a huge standard error are the signs of [separation]{.mark}.
+
+Collapse a category that has no events, or use Firth's penalised likelihood, `logistf::logistf()`.
+:::
+::::
+
+::: {.notes}
+Cards six and seven of the figure: perfect separation, and the "one in the box" category with no events. Both are the same problem, one cell of the table is empty. R warns that fitted probabilities numerically 0 or 1 occurred; do not ignore that warning.
+
+**Going further.** Albert and Anderson (1984, *Biometrika*) showed that the maximum-likelihood estimate is finite only when the outcome classes overlap in covariate space. Firth (1993, *Biometrika*) penalises the log-likelihood by $\tfrac12\log|\mathbf{I}(\boldsymbol\beta)|$, the Jeffreys prior, which always gives finite estimates; Heinze and Schemper (2002, *Statistics in Medicine*) proposed it for separation, with profile penalised-likelihood intervals. The `detectseparation` package checks for separation before the fit by linear programming.
+:::
+
+## What these three models do not cover
+
+- a zero-inflated count is the [mixture](#sec-count-zip) already named, and it sits outside the exponential family
+- a composition is the [conditioning on the library size](#sec-multinomial-sum); a log-ratio, after a deliberate treatment of the zeros, is a further model
+- a continuous flux: often a positive continuous distribution, or a Gaussian model on a scale you can defend
+- dependence in space or in time: the design block is next
+
+Quasi-Poisson is a [variance fix]{.mark}, not a full likelihood. Use it only if you can say what the interval means. 📄 A joint model for many species is the Poisson log-normal of Chiquet, Mariadassou, and Robin ([the paper](references/chiquet-poisson-lognormal-2021.pdf)).
+
+::: {.notes}
+Bullet list: ZI mixture, composition conditioning, continuous flux, space-time design next. Quasi-Poisson variance fix only if you can interpret the interval—closing honesty slide.
+
+**Going further.** Wedderburn (1974, *Biometrika*) showed that the estimating equations $\sum_i (y_i-\mu_i)\,(\partial\mu_i/\partial\boldsymbol\beta)/V(\mu_i) = \mathbf{0}$ need only a mean and a variance function, not a distribution: this quasi-likelihood gives the Poisson estimates with $\mathrm{Var}(Y) = \phi\mu$ and standard errors scaled by $\sqrt{\hat\phi}$. With no likelihood there is no AIC; Burnham and Anderson's QAIC divides the log-likelihood by $\hat\phi$ as a workaround. The quasi-Poisson weights observations in proportion to $\mu_i$, the negative binomial by $\mu_i/(1+\mu_i/\theta)$, so on the same data they can give different estimates, not only different intervals (Ver Hoef and Boveng, 2007). For dependence in space or time, the generalised estimating equations of Liang and Zeger (1986, *Biometrika*) extend the same idea with a working correlation.
+:::
+
+## Two names, one role each {#sec-lm-names visibility="hidden"}
+
+[Angelino and Marcone](https://www.sib.swiss/training/course/20260907_ADDMG) (SIB, Lausanne, September 2026) use two roles. The **response**, also called the dependent variable, is what the model describes or predicts. That is $Y$ on the [notation](#sec-notation) slide.
+
+The **explanatory variable** is also called an independent variable, a predictor, or a covariate. That is $x$. The question picks it. The general line is $Y = f(x) + \text{error}$. A function $g(Y)$ on the left is a transformed response, which is the case the [previous slides](#sec-log-estimand) treat as a change of estimand.
+
+::: {.notes}
+Response $Y$ versus explanatory $x$; $g(Y)$ on the left is the transformed-response case from earlier. Angelino and Marcone SIB attribution. Link notation slide if someone asks for $\mathbf{x}$.
+:::
+
+## The link keeps $\mu$ in range {#sec-glm-link-range visibility="hidden"}
+
+:::: {.columns}
+::: {.column width="62%"}
+$\mathbf{x}^{\top}\boldsymbol{\beta}$ can be any real number. The [inverse link]{.mark} maps it into the support of $\mu$.
+
+- $\operatorname{logit}(\pi) = \mathbf{x}^{\top}\boldsymbol{\beta}$ forces $0 < \pi < 1$
+- $\log(\mu) = \mathbf{x}^{\top}\boldsymbol{\beta}$ forces $\mu > 0$
+:::
+::: {.column width="38%"}
+![](figures/generated/sketch-nongauss-a-link-map.png){.sketch fig-alt="A long double arrow labelled x transpose beta, any real number, with blue arrows labelled g inverse funnelling every point into a short green segment from 0 to 1."}
+:::
+::::
+
+A straight line on a transformed $Y$ does not give the same guarantee on the mean of the original response. That is why the [link stays on the mean](#sec-glm-versus-transform), not on $Y$.
+
+::: {.notes}
+Logit forces $0<\pi<1$; log link forces $\mu>0$. A line on $\log Y$ does not guarantee a valid mean on the original scale—inverse link does on $\mu$.
+
+**Going further.** The fit is by iteratively reweighted least squares, which is Fisher scoring: regress the working response $z_i = \eta_i + (Y_i - \mu_i)\, g'(\mu_i)$ on $\mathbf{X}$ with weights $w_i = 1/\{V(\mu_i)\, g'(\mu_i)^2\}$, and repeat until $\hat{\boldsymbol{\beta}}$ settles. With the canonical link (logit for binomial, log for Poisson, inverse for gamma), the observed and expected information coincide, so Fisher scoring equals Newton–Raphson and $\mathbf{X}^{\top}\mathbf{Y}$ is sufficient. The working response is a linearised $g(Y)$, which is why the link never needs $g(Y_i)$ to exist at $Y_i = 0$. Asymptotically $\hat{\boldsymbol{\beta}} \approx \mathcal{N}\{\boldsymbol{\beta}, \phi(\mathbf{X}^{\top}\mathbf{W}\mathbf{X})^{-1}\}$.
+:::
+
+## Equidispersion is one parameter doing two jobs {#sec-count-equi visibility="hidden"}
+
+StatHarbor Analytics, *Count Data Models: From Poisson to Zero-Inflated Models*, starts from $Y \sim \mathrm{Poisson}(\mu)$ with $\mathbb{E}(Y) = \mathrm{Var}(Y) = \mu$. One rate controls the centre and the spread. The log link makes a one-unit step in $x_j$ multiply $\mu$ by $e^{\beta_j}$, a [rate ratio]{.mark}.
+
+The Poisson fit is the one they keep when the conditional mean is close to the conditional variance, the zeros are no more numerous than the Poisson predicts, and events are independent inside a fixed exposure. When $\mathrm{Var}(Y) > \mathbb{E}(Y)$, the same fit understates the standard errors. They name [unobserved heterogeneity]{.mark}, omitted covariates, and clustering as the usual sources.
+
+::: {.notes}
+Poisson: $\mathbb{E}(Y)=\mathrm{Var}(Y)=\mu$; $e^{\beta_j}$ is rate ratio on log link. StatHarbor list when Poisson is OK versus when SEs are too small. Heterogeneity, omitted covariates, clustering as sources on the slide.
+
+**Going further.** Dean and Lawless (1989) derived the score test of $\mathrm{Var}(Y)=\mu$ against $\mathrm{Var}(Y)=\mu+\alpha\mu^2$; it needs only the Poisson fit, and its statistic is $\sum_i\{(y_i-\hat\mu_i)^2 - y_i\}/\sqrt{2\sum_i\hat\mu_i^2}$, approximately standard normal under the Poisson. Cameron and Trivedi (1990, *Journal of Econometrics*) recast it as an auxiliary regression of $\{(y_i-\hat\mu_i)^2-y_i\}/\hat\mu_i$ on $\hat\mu_i$, without intercept, and test the slope. Overdispersion is not always heterogeneity: a missing offset, clustering, an excess of zeros, or a misspecified mean all inflate $X^2$. Underdispersion, $\hat\phi < 1$, also occurs, for counts bounded above for instance, and the negative binomial cannot represent it.
+:::
+
+## Weight of evidence centres on the sample {#sec-woe visibility="hidden"}
+
+[Weight of evidence]{.mark} asks a different contrast with the same fit. The sample default rate is $100/700 = 0.1429$, and its logit is $-1.7918$. A category's weight of evidence is its own log-odds minus that overall logit.
+
+The difference of the two weights equals the one-hot slope: $\Delta\mathrm{WOE} = 2.9957 = \hat\beta_1$. Subtracting a constant does not change a variance, so the standard error of a weight of evidence equals the standard error of that category's log-odds.
+
+With a single categorical predictor the two codings describe one model. With several categorical predictors, Burakov notes that one-hot coefficients move when the reference level changes, while the weights of evidence stay centred on the overall event rate.
+
+::: {.notes}
+Overall default rate 100/700, logit $-1.7918$. $\Delta\mathrm{WOE}=2.9957=\hat\beta_1$. SE of WOE equals SE of category log-odds; with several factors, WOE stays centred when one-hot slopes move.
+:::
+
+## Softmax, drawn {visibility="hidden"}
+
+```{.tikz}
+%%| filename: dag-softmax
+%%| alt: Plate diagram of multinomial logistic regression: x i and the class coefficients beta k give a dotted score eta i k inside a plate over classes k; the scores give dotted probabilities pi i k through the softmax, and those give the observed class Y i.
+%%| width: 80%
+\begin{tikzpicture}
+\node[const] (x) {$\mathbf{x}_i$};
+\node[det, right=14mm of x] (eta) {$\eta_{ik}$};
+\node[det, right=14mm of eta] (pi) {$\pi_{ik}$};
+\node[const, above=9mm of eta] (b) {$\boldsymbol\beta_k$};
+\node[obs, right=18mm of pi] (y) {$Y_i$};
+\draw[edge] (x) -- (eta); \draw[edge] (b) -- (eta); \draw[edge] (eta) -- (pi); \draw[edge] (pi) -- (y);
+\node[note, below=2mm of pi] (n2) {softmax};
+\plate{pk}{(b)(eta)(pi)(n2)}{$k = 1,\ldots,K$}
+\plate{pi2}{(x)(pk)(pk-lab)(y)}{$i = 1,\ldots,n$}
+\end{tikzpicture}
+```
+
+The class probabilities sum to 1. The cross-entropy is $-\sum_i\sum_k t_{ik}\log\pi_{ik}$, with $t_{ik}$ the 1-of-$K$ indicator.
+
+::: {.notes}
+Ordered categories are a cumulative model. Burakov notes them and stays with the unordered softmax.
+:::
+
+## A conformal interval uses a calibration set {#sec-conformal visibility="hidden"}
+
+The same chapter then builds an interval whose coverage is finite-sample, under [exchangeability]{.mark}, from a [calibration set]{.mark} that was not used to fit $\boldsymbol{\beta}$.
+
+::: {.incremental}
+- Fit the logit on the training rows.
+
+- On the calibration rows, score each residual. The Pearson form he uses is $(y - \hat\pi)/\sqrt{\hat\pi(1-\hat\pi)}$.
+
+- Add and subtract a quantile of those scores. On the logit scale the interval is symmetric around $\mathrm{logit}(\hat\pi)$, and the inverse logit brings it back to $(0,1)$ without clipping.
+:::
+
+
+A classical conformal prediction set for a binary label is a set of classes. The interval here is for $\pi$. Whether the 0/1 outcome falls inside a narrow band for $\pi$ is a different question, and he treats it as the wrong coverage check.
+
+::: {.notes}
+Step three fragments: train fit; calibration Pearson scores; symmetric band on logit then inverse logit. Coverage is for $\pi$, not for whether 0/1 falls in band—Burakov's distinction on slide.
+
+**Going further.** Split conformal prediction guarantees $\Pr\{Y_{n+1} \in C(\mathbf{x}_{n+1})\} \geq 1-\alpha$ in finite samples when calibration and test points are exchangeable, using the $\lceil (n_{\text{cal}}+1)(1-\alpha)\rceil$-th smallest calibration score (Vovk, Gammerman and Shafer, *Algorithmic Learning in a Random World*; Lei and colleagues, 2018, *Journal of the American Statistical Association*). The guarantee is marginal, averaged over $\mathbf{x}$; coverage conditional on a given $\mathbf{x}$ cannot be guaranteed distribution-free (Foygel Barber and colleagues, 2021, *Information and Inference*). For a binary label the conformal object is a set of classes, $\{0\}$, $\{1\}$ or $\{0,1\}$; Angelopoulos and Bates's *A Gentle Introduction to Conformal Prediction* is the accessible entry.
+:::

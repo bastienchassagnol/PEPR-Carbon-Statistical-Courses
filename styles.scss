@@ -142,6 +142,18 @@ $presentation-h3-font-size: 1.02em;
   max-height: 310px !important;
 }
 
+/* Causal-role diagrams (05) and the drug–mouse–cell layouts (04): the TikZ
+   SVGs are small at their natural size, so fix the rendered height. */
+.reveal .slides section.dag-role img {
+  height: 240px !important;
+  max-height: 240px !important;
+}
+
+.reveal .slides section.design-layouts img {
+  height: 420px !important;
+  max-height: 420px !important;
+}
+
 .reveal .slides section.literacy-row {
   text-align: center;
 }
@@ -234,4 +246,35 @@ $presentation-h3-font-size: 1.02em;
 
 .reveal .slides section.eq-fig .math.display {
   font-size: 0.9em;
+}
+
+// Fragment quiz of four QQ shapes (#sec-qq-shapes).
+.reveal .slides section.qq-quiz img {
+  max-height: 300px !important;
+  margin: 0 auto 0.2em;
+}
+
+.reveal .slides section.qq-quiz .column {
+  font-size: 0.72em;
+  text-align: center;
+}
+
+// Divider slides: show only the gradient background, no cream box behind
+// the title (the level-2 rule above paints every slide's own box).
+.reveal .slides section section.slide.level2.pitfall-divider {
+  background-color: transparent !important;
+}
+
+// Olszewski's four comparison cards, one per slide, shown large.
+.reveal .slides section.four-card {
+  text-align: center;
+}
+
+.reveal .slides section.four-card img {
+  max-height: 540px !important;
+}
+
+// Logistic-regression checks: one cropped card beside the text.
+.reveal .slides section.logit-check img {
+  max-height: 360px !important;
 }

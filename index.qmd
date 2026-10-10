@@ -3,129 +3,8 @@ title: "From the question to the model"
 subtitle: "A four-hour workshop on carbon data when the response is not Gaussian"
 author: "Bastien Chassagnol"
 institute: "PEPR Carbon statistical workshop"
-lang: en-GB
-from: markdown+emoji
 date: today
 date-format: "D MMMM YYYY"
-bibliography:
-  - "Statistical classes.bib"
-resources:
-  - references/burakov-logistic-regression.pdf
-  - references/sampl-guidelines.pdf
-  - references/against-boxplots.pdf
-  - references/against-transformation.pdf
-  - references/anova-interpreation.pdf
-  - references/bmj-2024-082440.pdf
-  - references/chiquet-poisson-lognormal-2021.pdf
-  - references/count-data-models.pdf
-  - references/day1a-linear-regression-and-beyond-2026.pdf
-  - references/day1b-beyond-linearity-2026.pdf
-  - references/day2-logistic-regression-and-glm-2026.pdf
-  - references/day3-longitudinal-data-analysis-2026.pdf
-  - references/econometrie-panels.pdf
-  - references/egu26-how-to-feed-machine-learning.pdf
-  - references/large-sample-size-fallacy.pdf
-  - references/multiple-testing-model.pdf
-  - references/nonparametric-methods.pdf
-  - references/on-the-ubiquity-of-skewness.pdf
-  - references/qin-ma-ad-hoc-post-hoc-and-intrinsic-hoc-in.pdf
-  - references/random-versus-systematic-error.pdf
-  - references/reproducibility-practices.pdf
-  - references/sarkar-measurement-and-expression-2021.pdf
-  - references/schielzeth-nakagawa-2013.pdf
-  - references/townes-count-distributions-2020.pdf
-  - scripts/prepare-teaching-data.R
-  - scripts/generate-data-figures.R
-  - scripts/generate-slide-figures.R
-  - data/derived/casys_teaching.csv
-  - data/derived/spruce_teaching.csv
-  - data/16s_RNA_sequencing/casys_phyloseq_clean.rds
-  - data/16s_RNA_sequencing/README.txt
-  - data/SPRUCE/SPRUCE_qPCR_copy_numbers_2021.csv
-citeproc: true
-link-citations: true
-slide-level: 2
-filters:
-  - reveal-header
-  - custom-callout
-  - code-fullscreen
-custom-callout:
-  assumption:
-    title: "Assumption"
-    icon: true
-    icon-symbol: "⚖"
-    color: "#8a5a00"
-    appearance: simple
-  model:
-    title: "Model"
-    icon: true
-    icon-symbol: "μ"
-    color: "#1d4e89"
-    appearance: simple
-  theorem:
-    title: "Theorem"
-    icon: true
-    icon-symbol: "⊢"
-    color: "#5c3d7a"
-    appearance: simple
-execute:
-  echo: false
-  warning: false
-  message: false
-format:
-  revealjs:
-    theme: [default, styles.scss]
-    slide-number: c/t
-    width: 1050
-    height: 700
-    margin: 0.08
-    center: false
-    transition: fade
-    background-transition: fade
-    hash-type: number
-    navigation-mode: vertical
-    controls: true
-    progress: true
-    preview-links: auto
-    footnotes-hover: true
-    code-line-numbers: false
-    code-overflow: wrap
-    highlight-style: github
-    code-block-height: 260px
-    fig-align: center
-    auto-stretch: false
-    auto-animate-duration: 0.6
-    auto-animate-easing: ease
-    chalkboard: true
-    mermaid:
-      theme: forest
-      securityLevel: loose
-    header: "From the question to the model"
-    header-logo: figures/pepr-mark.svg
-    hide-from-titleSlide: all
-    sc-sb-title: true
-    logo: figures/footer-logos.svg
-    footer: "[PEPR Carbon statistical workshop](https://github.com/bastienchassagnol/PEPR-Carbon-Statistical-Courses)"
-    lightbox:
-      match: auto
-      effect: zoom
-    title-slide-attributes:
-      data-background-color: "#f7f4ef"
-    quiz:
-      checkKey: "x"
-      resetKey: "q"
-      shuffleOptions: false
-      defaultCorrect: "Yes. That is the claim."
-      defaultIncorrect: "Not this one."
-    flashcards:
-      flipKey: "f"
-      shuffleKey: "t"
-      showFlipButton: true
-      resetOnSlideChange: true
-    revealjs-plugins:
-      - quiz
-      - tabset
-      - flashcards
 ---
 
 {{< include sections/00-opening.qmd >}}
@@ -144,21 +23,21 @@ format:
 
 # When Y is not Gaussian {.center}
 
-:microscope: About seventy minutes. QQ plots, transformations, three GLMs, then a smooth mean.
+:microscope: About thirty minutes. QQ plots, six reasons not to transform $Y$, then four guidelines.
 
 {{< include sections/03-non-gaussian.qmd >}}
 
+# Linear and generalised linear models {.center}
+
+:chart_with_upwards_trend: About forty minutes. Least squares, ANOVA and ANCOVA, the Poisson and logistic families, then a smooth mean.
+
+{{< include sections/03a-models.qmd >}}
+
 {{< include sections/03b-smoothing.qmd >}}
-
-# Nonlinear regression {.center visibility="hidden"}
-
-A named curve in the parameters. Hidden from the audience deck.
-
-{{< include sections/03c-nonlinear.qmd >}}
 
 # Experimental design {.center}
 
-:abacus: Words, contrasts, designs, then a mixed model. Ten minutes on the units, then a short application after each block. The worked answer is SPRUCE, except for the contrasts, which use CA-SYS.
+:abacus: Four blocks: contrasts in R, post-hoc tests and multiple testing, experimental designs, then mixed models in `lme4`. A short application closes each block. The worked answer is SPRUCE, except for the contrasts, which use CA-SYS.
 
 {{< include sections/04-design.qmd >}}
 

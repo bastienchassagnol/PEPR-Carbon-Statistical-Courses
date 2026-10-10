@@ -852,4 +852,94 @@ p_cor <- ggplot(cors, aes(x, Y)) +
   theme(axis.text = element_blank())
 save_fig(p_cor, "opening-correlation.png", width = 11, height = 3.6)
 
+
+# Four QQ shapes, one panel each, for the fragment slide #sec-qq-shapes.
+# Shapes: Gaussian, heavy tails, right skew, light tails. Dark style after figures/sources/qq-four-shapes.png. Samples standardised.
+set.seed(seed)
+n_qq <- 60
+std <- function(v) (v - mean(v)) / sd(v)
+# Idealised shapes: each distribution's own quantiles, plus a little noise,
+# so the bend is visible at n = 60. The Gaussian panel is a real draw.
+p_grid <- (seq_len(n_qq) - 0.5) / n_qq
+wobble <- function(q) sort(std(q) + rnorm(n_qq, sd = 0.04))
+qq_samples <- list(
+  normal = std(rnorm(n_qq)),
+  heavy = wobble(qt(p_grid, df = 1.6)),
+  skew = wobble(qexp(p_grid)),
+  light = wobble(qunif(p_grid))
+)
+qq_style <- list(
+  normal = list(col = "#3ddc97", title = "Panel A"),
+  heavy = list(col = "#f06292", title = "Panel B"),
+  skew = list(col = "#f5a623", title = "Panel C"),
+  light = list(col = "#4fc3f7", title = "Panel D")
+)
+for (nm in names(qq_samples)) {
+  y_s <- sort(qq_samples[[nm]])
+  p_i <- (seq_len(n_qq) - 0.5) / n_qq
+  d_qq <- data.frame(theo = qnorm(p_i), samp = y_s)
+  # pointwise 95% band from the Beta law of uniform order statistics
+  d_qq$lo <- qnorm(qbeta(0.025, seq_len(n_qq), n_qq + 1 - seq_len(n_qq)))
+  d_qq$hi <- qnorm(qbeta(0.975, seq_len(n_qq), n_qq + 1 - seq_len(n_qq)))
+  st <- qq_style[[nm]]
+  p_qq <- ggplot(d_qq, aes(theo, samp)) +
+    geom_ribbon(aes(ymin = lo, ymax = hi), fill = st$col, alpha = 0.18) +
+    geom_abline(slope = 1, intercept = 0, linetype = "dashed",
+                colour = "#c9ccd6", linewidth = 0.6) +
+    geom_point(colour = st$col, size = 2.4) +
+    coord_cartesian(xlim = c(-2.7, 2.7), ylim = c(-4.4, 4.4)) +
+    labs(title = st$title, x = expression("theoretical " * Phi^-1 * (p)),
+         y = expression("sample " * y[(i)])) +
+    theme_minimal(base_size = 18, base_family = "mono") +
+    theme(
+      plot.background = element_rect(fill = "#12141c", colour = NA),
+      panel.background = element_rect(fill = "#1a1d27", colour = NA),
+      panel.grid = element_blank(),
+      plot.title = element_text(colour = st$col, face = "bold",
+                                hjust = 0.5),
+      axis.title = element_text(colour = "#e6e8ef"),
+      axis.text = element_text(colour = "#9aa0b0")
+    )
+  ggsave(file.path(out_dir, sprintf("qq-shape-%s.png", nm)), p_qq,
+         width = 3.6, height = 4.2, dpi = 200, device = ragg::agg_png,
+         bg = "#12141c")
+}
+
+
+# The CLT as repeated convolution: the density of a sum of n independent
+# exponential(1) draws, computed numerically, standardised, against N(0, 1).
+dx <- 0.01
+grid_x <- seq(0, 80, by = dx)
+f1 <- dexp(grid_x)
+conv_density <- function(f, g) {
+  out <- stats::convolve(f, rev(g), type = "open") * dx
+  out[seq_along(grid_x)]
+}
+dens <- list(`1` = f1)
+f_n <- f1
+for (n_conv in 2:16) {
+  f_n <- conv_density(f_n, f1)
+  if (n_conv %in% c(2, 4, 16)) dens[[as.character(n_conv)]] <- f_n
+}
+conv_df <- do.call(rbind, lapply(names(dens), function(k) {
+  n_k <- as.numeric(k)
+  z <- (grid_x - n_k) / sqrt(n_k)
+  keep <- z > -4 & z < 5
+  data.frame(n = sprintf("n = %s", k), z = z[keep],
+             density = dens[[k]][keep] * sqrt(n_k))
+}))
+conv_df$n <- factor(conv_df$n, levels = sprintf("n = %s", c(1, 2, 4, 16)))
+z_grid <- seq(-4, 5, length.out = 400)
+p_conv <- ggplot(conv_df, aes(z, density)) +
+  geom_line(data = data.frame(z = z_grid, density = dnorm(z_grid)),
+            colour = "#9aa39d", linewidth = 1, linetype = "dashed") +
+  geom_line(colour = "#1d4e89", linewidth = 1.2) +
+  facet_wrap(~n, nrow = 1) +
+  coord_cartesian(ylim = c(0, 0.75)) +
+  labs(x = "standardised sum", y = "Density",
+       subtitle = "Density of a sum of n exponential(1) draws, by repeated numerical convolution. Dashed: N(0, 1).") +
+  theme_slide() +
+  theme(plot.subtitle = element_text(size = 11))
+save_fig(p_conv, "clt-convolution.png", width = 11, height = 3.6)
+
 message("Wrote figures to ", out_dir)

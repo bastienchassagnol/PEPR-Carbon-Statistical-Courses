@@ -304,9 +304,26 @@ This slide used to be two, which said the same thing twice. The one idea is that
 A Type I error rejects the null when it is true; its long-run rate, when the test is calibrated, is $\alpha$. A Type II error fails to reject the null when it is false; its rate is $\beta$, and the [power]{.mark} is $1 - \beta$ ([Biswas](https://medium.com/@biswajit.apee10/type-i-and-type-ii-error-and-p-values-938ee3716ef8)).
 
 ::: {.notes}
-The table is a decision table, and it only makes sense once you have agreed to make a yes-or-no decision. That is a choice, not an obligation. The two rates are properties of the procedure across many replicates, not statements about the study in front of you. Keep that distinction, because the next slide needs it.
+The table is a decision table, and it only makes sense once you have agreed to make a yes-or-no decision. That is a choice, not an obligation. The two rates are properties of the procedure across many replicates, not statements about the study in front of you. The next slide is the same table as a smoke alarm.
 
 **Going further.** This is the Neyman–Pearson framework: fix $\alpha$, then choose the rejection region that maximises power $1 - \beta(\theta)$ at each alternative. The Neyman–Pearson lemma gives the most powerful test of a simple null against a simple alternative, the likelihood-ratio test; uniformly most powerful tests exist only in special cases, such as one-sided tests in a one-parameter exponential family. Power depends on the true effect, the noise and the sample size: for a two-sample $z$ test with $n$ per arm and standard deviation $\sigma$, $1-\beta \approx \Phi\left(|\delta|\sqrt{n/2}/\sigma - z_{1-\alpha/2}\right)$. The Type I and Type II rates are not the error rates of the claims made; that needs the prior share of true nulls, as on the $\alpha$ slide.
+:::
+
+## 2 · A smoke alarm {#sec-alarm}
+
+The null is: there is no fire.
+
+::: {.incremental}
+- [Type I]{.mark}: the alarm rings, and the building is empty. You evacuate for nothing.
+- [Type II]{.mark}: the building is burning, and the alarm stays quiet.
+:::
+
+[Power]{.mark} is the alarm ringing when there is a fire. $\alpha$ is how often a quiet building still sets it off. A soil-carbon test has the same two cells, and a different cost for each one.
+
+::: {.notes}
+Ask which failure they would rather live with in a hallway, then which one they would rather live with in a management decision. The costs are not symmetric, and the table does not choose them. Do not turn this into a lecture on alarms.
+
+**Going further.** The alarm is a Neyman–Pearson test with a fixed false-alarm rate $\alpha$. Making it more sensitive, a smaller threshold, lowers $\beta$ and raises $\alpha$: fewer silent fires, more empty evacuations. No threshold removes both. The same trade is the receiver operating characteristic, power against the false-alarm rate as the threshold moves.
 :::
 
 ## 2 · $p$ is not that rate {#sec-p-not-alpha}
@@ -420,7 +437,23 @@ Lantz lists five things a $p$-value is not:
 The first three confuse a probability about the data with a probability about the hypothesis ([the definition](#sec-pvalue)). The last two are the [effect and the interval](#sec-effect).
 
 ::: {.notes}
-Read two items, ask the room to finish the list from memory, then show the rest. This slide is a vocabulary purge before Type M. Forty seconds.
+Read two items, ask the room to finish the list from memory, then show the rest. The next slide puts one situation on each line. Forty seconds.
+:::
+
+## 2 · Five situations, none of them $p$ {#sec-five-situations .smaller}
+
+::: {.incremental}
+- **Due to chance.** A rise in soil carbon with $p = 0.04$ is not "a 96% chance it was not luck". The 4% is how often a flat field would look this steep.
+- **A repeat will match.** That $p$ does not give the next enclosure a 96% chance of the same call. A repeat is a new experiment.
+- **The null is false.** $p = 0.01$ is not a 99% chance that the treatment works.
+- **The result matters.** A drug can clear $p < 0.05$ and still fall short of a change a patient would feel. Statistical significance is not [therapeutic value]{.mark}.
+- **It generalises.** A small $p$ on one bog, in one year, does not carry the result to the next site.
+:::
+
+::: {.notes}
+The $p$ values are made up, to show the misreading. Linger on the drug: the missing number is the smallest change that would alter a prescription, written before the test. The bog is the same point in their own units. Then Type M.
+
+**Going further.** "Matters" is a comparison of the estimate and its interval with a minimal important difference, fixed in advance. "Generalises" is a question about the population the sample represents, which no tail probability answers. A prediction interval for a new site, or a new trial, is a different functional from the $p$ of the fitted contrast.
 :::
 
 ## 2 · A small study can detect the wrong size {#sec-type-m}
@@ -554,7 +587,7 @@ The absurd pairing is the teaching point: 131 with 220, not with 129. Ask if any
 - $10.1^\circ\mathrm{C}$ and $25^\circ\mathrm{C}$ become the same regime
 - a second cut, chosen because it was "significant", will not travel
 
-Keep warming, moisture, and pH continuous unless the threshold is itself the [scientific object]{.mark}. SPRUCE kept the warming gradient: [do not bin it](#sec-spruce-bins).
+Keep warming, moisture, and pH continuous unless the threshold is itself the [scientific object]{.mark}. SPRUCE kept the warming gradient rather than binning it.
 :::
 ::: {.column width="38%"}
 ![](figures/generated/sketch-pitfalls-cut.png){.sketch fig-alt="Hand-drawn sketch: a temperature axis with a red cut at 10 degrees. The points 9.9 and 10.1 sit on either side of the cut and are marked unequal; 10.1 and 25 are joined and marked equal."}
@@ -722,46 +755,39 @@ Close the arithmetic on the table. A regression on site means is a separate trap
 ::: {.column width="50%"}
 **Fixed effect.** One true effect. Sites differ only by noise, so $\tau^2 = 0$.
 
-```{mermaid}
-%%| fig-height: 2.3
-flowchart TD
-  mu["$$\mu$$"]
-  subgraph platef ["$$i = 1,\ldots,k$$"]
-    direction TB
-    th["$$\theta_i = \mu$$"]
-    y[("$$y_i$$")]
-    th --> y
-  end
-  mu --> th
-  classDef fixed fill:#f7f4ef,stroke:#1c2b24,color:#1c2b24
-  classDef observed fill:#1b7a4e,stroke:#0e4d3a,color:#f7f4ef
-  class mu,th fixed
-  class y observed
+```{.tikz}
+%%| filename: dag-meta-fixed
+%%| alt: Plate diagram of a fixed-effect meta-analysis. The constant mu points to a dotted deterministic node theta i equal to mu inside a plate over k studies; theta i and the known sampling variance s i squared point to the observed estimate y i.
+%%| width: 88%
+\begin{tikzpicture}
+\node[const] (mu) {$\mu$};
+\node[det, below=9mm of mu] (th) {$\theta_i$};
+\node[obs, below=9mm of th] (y) {$y_i$};
+\node[const, right=9mm of y] (s) {$s_i^2$};
+\node[note, right=2mm of th] {$\theta_i = \mu$};
+\draw[edge] (mu) -- (th); \draw[edge] (th) -- (y); \draw[edge] (s) -- (y);
+\plate{p}{(th)(y)(s)}{$i = 1,\ldots,k$}
+\end{tikzpicture}
 ```
 :::
 
 ::: {.column width="50%"}
 **Random effects.** Each site has its own true effect, drawn around $\mu$ with spread $\tau^2$.
 
-```{mermaid}
-%%| fig-height: 2.3
-flowchart TD
-  mu["$$\mu$$"]
-  tau["$$\tau^{2}$$"]
-  subgraph plater ["$$i = 1,\ldots,k$$"]
-    direction TB
-    th(("$$\theta_i$$"))
-    y[("$$y_i$$")]
-    th --> y
-  end
-  mu --> th
-  tau --> th
-  classDef fixed fill:#f7f4ef,stroke:#1c2b24,color:#1c2b24
-  classDef latent fill:#9a3412,stroke:#7a2910,color:#f7f4ef
-  classDef observed fill:#1b7a4e,stroke:#0e4d3a,color:#f7f4ef
-  class mu,tau fixed
-  class th latent
-  class y observed
+```{.tikz}
+%%| filename: dag-meta-random
+%%| alt: Plate diagram of a random-effects meta-analysis. The constants mu and tau squared point to the latent true effect theta i inside a plate over k studies; theta i and the known sampling variance s i squared point to the observed estimate y i.
+%%| width: 88%
+\begin{tikzpicture}
+\node[const] (mu) {$\mu$};
+\node[const, right=10mm of mu] (tau) {$\tau^2$};
+\node[stoch, below=9mm of $(mu)!0.5!(tau)$] (th) {$\theta_i$};
+\node[obs, below=9mm of th] (y) {$y_i$};
+\node[const, right=9mm of y] (s) {$s_i^2$};
+\draw[edge] (mu) -- (th); \draw[edge] (tau) -- (th);
+\draw[edge] (th) -- (y); \draw[edge] (s) -- (y);
+\plate{p}{(th)(y)(s)}{$i = 1,\ldots,k$}
+\end{tikzpicture}
 ```
 :::
 ::::
@@ -769,7 +795,7 @@ flowchart TD
 The [random-effects]{.mark} model is how $\tau^2$ enters a pooled analysis. A site-level covariate can then explain part of $\tau^2$. The same two-level structure returns in the design block: [fixed and random name the target](#sec-fixed-random-target).
 
 ::: {.notes}
-Green is observed, red is latent, a rectangle is fixed, and the plate is the site index $i$. Do not say the random-effects mean is automatically the causal effect. One minute on each column.
+Grey is observed, blue is latent, a square is fixed, a dotted circle is computed from its parents, and the dashed plate repeats over the site index $i$. Do not say the random-effects mean is automatically the causal effect. One minute on each column.
 
 **Going further.** Random-effects weights are $1/(s_i^2 + \hat\tau^2)$ instead of $1/s_i^2$, so heterogeneity stops the most precise site from deciding the pooled mean alone: with $s_i^2 = 0.01$ and $\tau^2 = 0.09$ the weight falls from 100 to 10. Adding a moderator gives a mixed-effects meta-regression, $\theta_i = \beta_0 + \beta_1 x_i + u_i$, with the residual $\tau^2$ fitted by REML (the metafor package of Viechtbauer). Thompson and Higgins (Statistics in Medicine, 2002) warn that study-level moderators are observational even when every study is a randomised trial.
 :::
@@ -856,14 +882,19 @@ Green is "worth using"; red is "worse than ignoring the score". Threshold $t$ is
 
 ## 9 · Repeated rows are not replicates {#sec-clusters}
 
-```{mermaid}
-%%| fig-width: 10
-%%| fig-height: 2.6
-flowchart TD
-  j["cluster j (enclosure, site, patient)"]
-  j --> i1["observation i"]
-  j --> i2["observation i"]
-  j --> i3["observation i"]
+```{.tikz}
+%%| filename: dag-cluster-rows
+%%| alt: Plate diagram. An outer plate over clusters j holds the treatment x j, a constant, and the cluster effect u j, latent. A nested plate over rows i holds the observed response Y i j. Every row in a cluster shares x j and u j.
+%%| width: 56%
+\begin{tikzpicture}
+\node[const] (x) {$x_j$};
+\node[stoch, right=14mm of x] (u) {$u_j$};
+\node[obs, below=13mm of $(x)!0.5!(u)$] (y) {$Y_{ij}$};
+\draw[edge] (x) -- (y); \draw[edge] (u) -- (y);
+\node[note, right=9mm of y, align=left] (ns) {rows share\\ $x_j$ and $u_j$};
+\plate{pi}{(y)}{$i$: row}
+\plate{pj}{(x)(u)(pi)(pi-lab)(ns)}{$j$: cluster}
+\end{tikzpicture}
 ```
 
 $$Y_{ij} = \beta_0 + u_j + \beta^\top \mathbf{x}_{ij} + \epsilon_{ij}, \qquad u_j \sim N(0,\sigma_u^2), \qquad \rho = \frac{\sigma_u^2}{\sigma_u^2 + \sigma^2}$$
@@ -921,28 +952,6 @@ For an explanatory model, screening on $p$-values is the wrong gate. Draw the pa
 The table is not exhaustive; the next slide is the picture. If someone asks "stepwise AIC?", answer: same problem — the gate is the DAG and the estimand, not the lowest AIC.
 
 **Going further.** Pearl's back-door criterion (Causality, 2009) gives a sufficient adjustment set: no member is a descendant of the exposure, and the set blocks every path from exposure to $Y$ that enters the exposure through an arrowhead. Selection by $p$-value or stepwise AIC ignores these roles, biases the retained coefficients away from zero and makes their nominal intervals too narrow (Harrell, Regression Modeling Strategies, ch. 4). The lasso minimises $\sum_i (Y_i - \mathbf{x}_i^\top\boldsymbol\beta)^2 + \lambda \sum_k |\beta_k|$ and selects variables for prediction; when covariates are correlated it keeps one of them arbitrarily, so a dropped confounder is not evidence of no confounding. Double/debiased machine learning (Chernozhukov and colleagues, Econometrics Journal, 2018) is the principled way to use the lasso inside a causal estimate. Westreich and Greenland's "Table 2 fallacy" (American Journal of Epidemiology, 2013) warns that the coefficients of the adjustment covariates are not themselves causal effects.
-:::
-
-## 10 · Three arrows, three estimands {#sec-arrows}
-
-```{mermaid}
-%%| fig-width: 10
-%%| fig-height: 3.2
-flowchart LR
-  moisture[Soil moisture]
-  carbon[Organic carbon]
-  taxon[Taxon count Y]
-  moisture --> carbon
-  moisture --> taxon
-  carbon --> taxon
-```
-
-If the question is the effect of carbon on the taxon, moisture is a confounder: it feeds both. Adjusting for a mediator, or for a collider, answers a different question. The same diagram, as a causal claim, is [a confounder in the soil table](#sec-confounder).
-
-::: {.notes}
-Trace the three arrows with your cursor. The estimand question is: do you want total, direct, or predictive association? Ninety seconds.
-
-**Going further.** In this graph moisture opens the back-door path carbon $\leftarrow$ moisture $\rightarrow Y$, so $\{\text{moisture}\}$ is a sufficient adjustment set for the total effect of carbon. The set is read off the graph by d-separation, not from the data: the same joint distribution is compatible with several graphs, and the data can only rule out graphs whose implied conditional independences fail. Conditioning on a collider, a common effect of exposure and outcome, induces an association between its causes (Berkson's bias); conditioning on a mediator removes the indirect part of a total effect. The free tool DAGitty (Textor and colleagues) lists the adjustment sets and the testable implications of a drawn graph.
 :::
 
 ## 11 · Sensitivity is part of the result {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #f6d4ea 100%)"}

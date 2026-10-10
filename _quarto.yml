@@ -3,13 +3,220 @@ project:
   output-dir: docs
   render:
     - index.qmd
+    - logistic-regression-is-regression.qmd
+  # Files copied next to the deck so the slide links work once published.
+  resources:
+    - references/burakov-logistic-regression.pdf
+    - references/sampl-guidelines.pdf
+    - references/against-boxplots.pdf
+    - references/against-transformation.pdf
+    - references/anova-interpreation.pdf
+    - references/bmj-2024-082440.pdf
+    - references/chiquet-poisson-lognormal-2021.pdf
+    - references/count-data-models.pdf
+    - references/day1a-linear-regression-and-beyond-2026.pdf
+    - references/day1b-beyond-linearity-2026.pdf
+    - references/day2-logistic-regression-and-glm-2026.pdf
+    - references/day3-longitudinal-data-analysis-2026.pdf
+    - references/econometrie-panels.pdf
+    - references/egu26-how-to-feed-machine-learning.pdf
+    - references/large-sample-size-fallacy.pdf
+    - references/multiple-testing-model.pdf
+    - references/nonparametric-methods.pdf
+    - references/on-the-ubiquity-of-skewness.pdf
+    - references/qin-ma-ad-hoc-post-hoc-and-intrinsic-hoc-in.pdf
+    - references/random-versus-systematic-error.pdf
+    - references/reproducibility-practices.pdf
+    - references/sarkar-measurement-and-expression-2021.pdf
+    - references/schielzeth-nakagawa-2013.pdf
+    - references/townes-count-distributions-2020.pdf
+    - scripts/prepare-teaching-data.R
+    - scripts/generate-data-figures.R
+    - scripts/generate-slide-figures.R
+    - data/derived/casys_teaching.csv
+    - data/derived/spruce_teaching.csv
+    - data/16s_RNA_sequencing/casys_phyloseq_clean.rds
+    - data/16s_RNA_sequencing/README.txt
+    - data/SPRUCE/SPRUCE_qPCR_copy_numbers_2021.csv
+
+# https://quarto.org/docs/reference/projects/websites.html
+website:
+  title: "From the question to the model"
+  description: "PEPR Carbon statistical workshop: carbon data when the response is not Gaussian."
+  site-url: "https://bastienchassagnol.github.io/PEPR-Carbon-Statistical-Courses/"
+  # https://quarto.org/docs/websites/website-navigation.html#github-links
+  repo-url: "https://github.com/bastienchassagnol/PEPR-Carbon-Statistical-Courses"
+  repo-branch: main
+  repo-actions: [source, issue]
+  # https://quarto.org/docs/websites/website-llms.html
+  llms-txt: true
+  # https://quarto.org/docs/websites/website-search.html
+  search:
+    location: navbar
+    type: overlay
+  navbar:
+    title: "From the question to the model"
+    left:
+      - text: "Slides"
+        href: index.qmd
+      - text: "Logistic regression is regression"
+        href: logistic-regression-is-regression.qmd
+    right:
+      - icon: github
+        href: "https://github.com/bastienchassagnol/PEPR-Carbon-Statistical-Courses"
+        aria-label: GitHub repository
 
 lang: en-GB
+from: markdown+emoji
 
 bibliography:
   - "Statistical classes.bib"
+citeproc: true
+link-citations: true
+
+filters:
+  - diagram
+  - reveal-header
+  - custom-callout
+  - code-fullscreen
+
+# TikZ graphical models (pandoc-ext/diagram). Conventions are in AGENTS.md.
+# The SVG cache is committed, so CI renders without TeX; set TIKZ_BIN in
+# _environment.local to scripts/tikz-pdflatex.sh (absolute path) to compile.
+# Delete _diagram-cache/ after changing the styles below: the cache key is
+# the diagram source only.
+diagram:
+  cache: true
+  cache-dir: _diagram-cache
+  engine:
+    tikz:
+      header-includes: |
+        \usepackage{amsmath}
+        \usepackage{amssymb}
+        \usepackage{amsfonts}
+        \usepackage{bm}
+        \usetikzlibrary{arrows.meta,positioning,fit,backgrounds,calc,shapes.geometric}
+        \definecolor{ink}{HTML}{1F2937}
+        \definecolor{latfill}{HTML}{DAE9FB}
+        \definecolor{latdraw}{HTML}{4477B5}
+        \definecolor{obsfill}{HTML}{C9CDD3}
+        \definecolor{obsdraw}{HTML}{747B86}
+        \definecolor{platedraw}{HTML}{98A2B3}
+        \tikzset{
+          every node/.style={text=ink},
+          const/.style={rectangle, draw=ink, fill=white, minimum size=9mm, line width=0.8pt},
+          stoch/.style={circle, draw=latdraw, fill=latfill, minimum size=11mm, line width=0.9pt},
+          obs/.style={circle, draw=obsdraw, fill=obsfill, minimum size=11mm, line width=0.9pt},
+          det/.style={circle, draw=ink, densely dotted, fill=white, minimum size=11mm, line width=0.9pt},
+          var/.style={ellipse, draw=obsdraw, fill=obsfill, minimum height=9mm, inner xsep=2mm, line width=0.9pt},
+          plate/.style={draw=platedraw, dashed, rounded corners=5pt, inner sep=4mm, line width=0.8pt},
+          platelabel/.style={anchor=north east, font=\small\itshape, text=obsdraw, inner sep=1mm},
+          note/.style={font=\small, text=ink!80},
+          edge/.style={-{Stealth[length=2.6mm]}, line width=0.8pt, draw=ink}
+        }
+        \newcommand{\plate}[3]{%
+          \begin{scope}[on background layer]
+            \node[plate, fit=#2] (#1) {};
+          \end{scope}
+          \node[platelabel] (#1-lab) at (#1.south east) {#3};}
+        \definecolor{effect}{HTML}{1D4E89}
+        \definecolor{rolecol}{HTML}{C45C26}
+        \definecolor{rolefill}{HTML}{F6DFD0}
+        \tikzset{
+          role/.style={ellipse, draw=rolecol, fill=rolefill, minimum height=9mm, inner xsep=2mm, line width=1.2pt},
+          effectedge/.style={-{Stealth[length=3mm]}, line width=1.7pt, draw=effect},
+          roleedge/.style={-{Stealth[length=2.6mm]}, line width=1.1pt, draw=rolecol}
+        }
+        \newcommand{\rolelegend}{%
+          \coordinate (lg0) at ([xshift=14mm, yshift=-2mm]current bounding box.north east);
+          \node[var, anchor=west, minimum height=6mm, inner xsep=1mm, font=\small] (lg1) at (lg0) {$X$,\,$Y$};
+          \node[note, right=1.5mm of lg1] {explanatory, response};
+          \node[role, anchor=west, minimum height=6mm, inner xsep=1mm, font=\small] (lg2) at ([yshift=-10mm]lg0) {$Z$};
+          \node[note, right=1.5mm of lg2] {third variable};
+          \draw[effectedge] ([yshift=-20mm]lg0) -- ++(10mm,0) coordinate (lg3);
+          \node[note, right=1.5mm of lg3] {effect of $X$ on $Y$};}
+
+# One definition per callout type; see AGENTS.md, "Model statements".
+custom-callout:
+  assumption:
+    title: "Assumption"
+    icon: true
+    icon-symbol: "⚖"
+    color: "#8a5a00"
+    appearance: simple
+  model:
+    title: "Model"
+    icon: true
+    icon-symbol: "μ"
+    color: "#1d4e89"
+    appearance: simple
+  theorem:
+    title: "Theorem"
+    icon: true
+    icon-symbol: "⊢"
+    color: "#5c3d7a"
+    appearance: simple
 
 # CI publishes with Quarto only; commit _freeze after local renders.
 # https://quarto.org/docs/projects/code-execution.html#freeze
 execute:
   freeze: true
+  echo: false
+  warning: false
+  message: false
+
+format:
+  revealjs:
+    theme: [default, styles.scss]
+    slide-level: 2
+    slide-number: c/t
+    width: 1050
+    height: 700
+    margin: 0.08
+    center: false
+    transition: fade
+    background-transition: fade
+    hash-type: number
+    navigation-mode: vertical
+    controls: true
+    progress: true
+    preview-links: auto
+    footnotes-hover: true
+    code-line-numbers: false
+    code-overflow: wrap
+    highlight-style: github
+    code-block-height: 260px
+    fig-align: center
+    auto-stretch: false
+    auto-animate-duration: 0.6
+    auto-animate-easing: ease
+    chalkboard: true
+    mermaid:
+      theme: forest
+      securityLevel: loose
+    header: "From the question to the model"
+    header-logo: figures/pepr-mark.svg
+    hide-from-titleSlide: all
+    sc-sb-title: true
+    logo: figures/footer-logos.svg
+    footer: "[PEPR Carbon statistical workshop](https://github.com/bastienchassagnol/PEPR-Carbon-Statistical-Courses)"
+    lightbox:
+      match: auto
+      effect: zoom
+    title-slide-attributes:
+      data-background-color: "#f7f4ef"
+    quiz:
+      checkKey: "x"
+      resetKey: "q"
+      shuffleOptions: false
+      defaultCorrect: "Yes. That is the claim."
+      defaultIncorrect: "Not this one."
+    flashcards:
+      flipKey: "f"
+      shuffleKey: "t"
+      showFlipButton: true
+      resetOnSlideChange: true
+    revealjs-plugins:
+      - quiz
+      - tabset
+      - flashcards

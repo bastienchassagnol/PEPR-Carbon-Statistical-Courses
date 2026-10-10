@@ -62,3 +62,8 @@ rsconnect/
 
 /.quarto/
 **/*.quarto_ipynb
+
+# Machine-specific environment (TIKZ_BIN for the TikZ wrapper)
+_environment.local
+
+/_*.local

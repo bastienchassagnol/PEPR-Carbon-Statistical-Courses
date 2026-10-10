@@ -257,22 +257,22 @@ This is the pedagogical contract. Do not start a CLR derivation. If pressed, say
 
 ## The hierarchy in the sampling {#sec-casys-hierarchy}
 
-```{mermaid}
-%%| fig-width: 8
-%%| fig-height: 4.2
-flowchart TD
-  y0["2018, baseline"] --> p0["Plot"]
-  y1["2021"] --> p1["Plot"]
-  p0 --> u0["OTU counts"]
-  p0 --> u1["OTU counts"]
-  p1 --> u2["OTU counts"]
-  p1 --> u3["OTU counts"]
-  classDef year fill:#0e4d3a,color:#f7f4ef,stroke:#0e4d3a
-  classDef plot fill:#c4a35a,color:#1c2b24,stroke:#8a7040
-  classDef otu fill:#9a3412,color:#f7f4ef,stroke:#9a3412
-  class y0,y1 year
-  class p0,p1 plot
-  class u0,u1,u2,u3 otu
+```{.tikz}
+%%| filename: dag-casys-hierarchy
+%%| alt: Plate diagram. Inside a plate over 42 plots j sit the system x j, a constant, and the plot effect u j, latent. Inside a nested plate over 4 subplots i sits the observed count Y i j. The sampling year t is a constant outside both plates. Arrows run from x j, u j and t to Y i j.
+%%| width: 62%
+\begin{tikzpicture}
+\node[const] (x) {$x_j$};
+\node[stoch, right=14mm of x] (u) {$u_j$};
+\node[obs, below=13mm of $(x)!0.5!(u)$] (y) {$Y_{ij}$};
+\node[const, right=22mm of y] (t) {$t$};
+\draw[edge] (x) -- (y); \draw[edge] (u) -- (y); \draw[edge] (t) -- (y);
+\node[note, above=1mm of x] (nx) {system};
+\node[note, above=1mm of u] (nu) {plot effect};
+\node[note, above=1mm of t] {year};
+\plate{pi}{(y)}{$i = 1,\ldots,4$}
+\plate{pj}{(nx)(nu)(x)(u)(pi)(pi-lab)}{$j = 1,\ldots,42$}
+\end{tikzpicture}
 ```
 
 The cropping system is a property of the plot. Four subplots in one plot are not four [independent trials]{.mark} of that system. 2018 was sampled before the treatments were applied, so it is a [baseline]{.mark} rather than a treated year.
