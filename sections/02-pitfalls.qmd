@@ -208,11 +208,14 @@ Truth uses only $X_1$ and $X_2$. Three further covariates are noise. $n = 200$. 
 
 The flexible predictor. Held-out RMSE **2.40**.
 
+::: {.codewindow .r}
+forest.R
 ```{r}
 #| echo: true
 #| eval: false
 rf_fit <- randomForest(Y ~ ., data = train)
 ```
+:::
 
 The trees chased the noise covariates. A more flexible fit predicted worse.
 :::
@@ -222,12 +225,15 @@ The trees chased the noise covariates. A more flexible fit predicted worse.
 
 The explanatory fit. Held-out RMSE **1.01**.
 
+::: {.codewindow .r}
+linear.R
 ```{r}
 #| echo: true
 #| eval: false
 Y <- 3 * X1 - 2 * X2 + rnorm(n)
 lm_fit <- lm(Y ~ ., data = train)
 ```
+:::
 
 The coefficients are the explanatory object, and here they also predicted better.
 :::
@@ -630,6 +636,8 @@ You are not selling GAMs today; you are refusing a default line. Ask where a lin
 
 Illustrative simulation, seed 20261005. Not a SPRUCE fit. The clay line on the next slide is $\mathbb{E}(Y \mid x)$ forced to be linear.
 
+::: {.codewindow .r}
+hump.R
 ```{r}
 #| echo: true
 #| eval: false
@@ -637,6 +645,7 @@ mu <- 4 + 0.35 * temp - 0.08 * (temp - 4.5)^2
 y <- rnorm(length(temp), mu, 0.35)
 fit_line <- lm(y ~ temp)
 ```
+:::
 
 ::: {.notes}
 Point at `output-location: slide` if your build uses it — the figure is the next slide. Emphasise illustrative, not SPRUCE.

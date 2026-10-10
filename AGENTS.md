@@ -55,6 +55,7 @@ Reveal.js does not collapse callouts. Keep each one to a few lines. The callout 
   - `tabset` when one slide compares implementations of the same model
   - `custom-callout` for an assumption, a model equation, or a theorem
   - `code-fullscreen` for a fullscreen control on code blocks
+  - `codewindow` for an echoed R excerpt: wrap the chunk in `::: {.codewindow .r}` and put the file-tab name on the line before the fence
   - `flashcards` for a definition card (flip with `f`; do not reuse `q`, which resets a quiz item)
   - `fontawesome` for the social icons on the opening and closing slides
   - `embedpdf` for the SAMPL guideline

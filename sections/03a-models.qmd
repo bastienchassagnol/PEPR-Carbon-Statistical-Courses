@@ -539,6 +539,8 @@ Their pseudo-$R^2$ is $1 - D/D_0$. They say that several pseudo-$R^2$ exist, and
 
 These are [randomised quantile residuals]{.mark} for a Poisson mean: if the family is right, they should look Gaussian. A heavy upper tail is a reason to leave the Poisson, not a reason to run Shapiro–Wilk on the raw counts.
 
+::: {.codewindow .r}
+quantile-residuals.R
 ```{r}
 #| echo: true
 #| eval: false
@@ -546,6 +548,7 @@ lower <- ifelse(y <= 0, 0, ppois(y - 1L, lambda = mu_hat))
 upper <- ppois(y, lambda = mu_hat)
 residual <- qnorm(runif(length(y), min = lower, max = upper))
 ```
+:::
 
 ::: {.notes}
 Walk the code first: each count is spread uniformly over its step of the fitted distribution function, then mapped to the normal scale. The figure is on the next slide.
@@ -635,6 +638,8 @@ Point out that the equation changed in two places from the previous slide: year 
 
 ## Poisson · the call {#sec-casys-poisson-code}
 
+::: {.codewindow .r}
+poisson-dispersion.R
 ```{r}
 #| echo: true
 #| eval: false
@@ -650,6 +655,7 @@ fit_pois <- glm(
 sum(residuals(fit_pois, "pearson")^2) / fit_pois$df.residual
 #> 10.6
 ```
+:::
 
 A Poisson sets $\mathrm{Var}(Y \mid x) = \mu$. A [Pearson statistic]{.mark} of 10.6 per degree of freedom says the data are about ten times more variable than that.
 
@@ -1246,12 +1252,15 @@ $\hat\beta_0=-0.32$, $\hat\beta_1=1.44$; at $x=0$, $\hat\pi\approx 0.42$. Centre
 
 The band is for $\pi$, not for a single core. A core is still 0 or 1.
 
+::: {.codewindow .r}
+logit-curve.R
 ```{r}
 #| echo: true
 #| eval: false
 fit_bin <- glm(y_bin ~ ph, family = binomial)
 pi <- plogis(predict(fit_bin, type = "link"))
 ```
+:::
 
 ::: {.notes}
 Two lines: fit on the logit scale, back-transform with `plogis()`. The saved figure is on the next slide.

@@ -623,6 +623,8 @@ Figure 2 flows from two factors and their interaction into trait value, then dow
 
 One formula per panel. The data frames are placeholders; the point is which term each design needs.
 
+::: {.codewindow .r}
+layouts.R
 ```{r}
 #| eval: false
 #| echo: true
@@ -636,6 +638,7 @@ lmer(y ~ drug + (1 | mouse) + (1 | mouse:drug), data = d_c)
 # d  tissues inside mice, drug assigned to cells within a tissue
 lmer(y ~ drug + (1 | mouse/tissue), data = d_d)
 ```
+:::
 
 In b, give each mouse a [unique label]{.mark}: mouse 1 under drug 2 is not mouse 1 under drug 1. `lmerTest::lmer()` adds Satterthwaite tests; in b the drug test has about the number of mice minus two degrees of freedom.
 
@@ -826,6 +829,8 @@ Read the model callout: random intercept $u_{0j}$ and random slope $u_{1j}$ on t
 
 Warming sits on the enclosure. Time sits on the wave. The excerpt is from [generate-slide-figures.R](scripts/generate-slide-figures.R). The second call is the `nlme` version of the same mean, with an AR(1) residual. It is not the fit drawn on the next slide.
 
+::: {.codewindow .r}
+lmer-call.R
 ```{r}
 #| eval: false
 #| echo: true
@@ -841,6 +846,7 @@ nlme::lme(
   method = "REML"
 )
 ```
+:::
 
 A farm block under a split-plot is the same `(1 | cluster)` term. [Chapter 29 of *A Guide on Data Analysis*](https://mike-data-analysis.share.connect.posit.cloud/sec-experimental-design.html#sec-experimental-design) fits that term by REML, and tests the whole-plot factor against the farm variance.
 

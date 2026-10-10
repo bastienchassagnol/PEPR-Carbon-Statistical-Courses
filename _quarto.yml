@@ -220,3 +220,4 @@ format:
       - quiz
       - tabset
       - flashcards
+      - codewindow

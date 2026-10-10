@@ -220,6 +220,48 @@ $presentation-h3-font-size: 1.02em;
   margin-bottom: 0.3em;
 }
 
+// Incremental lists: each item rises slightly as it appears, and the current
+// item keeps a bar. Past items stay at full strength so the list can be read.
+.reveal .slides section .incremental > ul > li.fragment,
+.reveal .slides section .incremental > ol > li.fragment {
+  box-shadow: inset 3px 0 0 transparent;
+  padding-left: 0.35em;
+  transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.reveal .slides section .incremental > ul > li.fragment:not(.visible),
+.reveal .slides section .incremental > ol > li.fragment:not(.visible) {
+  transform: translateY(0.35em);
+}
+
+.reveal .slides section .incremental > ul > li.fragment.visible,
+.reveal .slides section .incremental > ol > li.fragment.visible {
+  transform: none;
+}
+
+.reveal .slides section .incremental > ul > li.fragment.current-fragment,
+.reveal .slides section .incremental > ol > li.fragment.current-fragment {
+  box-shadow: inset 3px 0 0 #c45c26;
+}
+
+// codewindow (Emil Hvitfeldt): match the deck's cream code background.
+.reveal {
+  --codewindow-bg: #efeae2;
+  --codewindow-header-bg: #e4ddd2;
+  --codewindow-tab-bg: #d9d2c6;
+  --codewindow-tab-active-bg: #efeae2;
+  --codewindow-color: #1c2b24;
+  --codewindow-shadow-color: transparent;
+  --codewindow-radius: 8px;
+}
+
+.reveal .slides section .codewindow {
+  font-size: 0.62em;
+  margin-bottom: 0.35em;
+  border: 1px solid #cfc6b8;
+  box-shadow: none;
+}
+
 // Highlighter for [term]{.mark}: a term the room must keep.
 .reveal .slides section mark {
   background: linear-gradient(transparent 52%, #ffe08a 52%);

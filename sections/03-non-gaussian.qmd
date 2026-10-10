@@ -39,6 +39,8 @@ Name Quetilismus once, then list the three repairs: trim tails, wait for $n$, tr
 
 Points along the line support the reference shape. A curve, or a tail that leaves the line, is a [departure]{.mark}. Illustrative residuals, seed 20261005.
 
+::: {.codewindow .r}
+qq-residuals.R
 ```{r}
 #| echo: true
 #| eval: false
@@ -51,6 +53,7 @@ ggplot(qq_gaussian, aes(sample = residual)) +
   stat_qq() +
   facet_wrap(~model)
 ```
+:::
 
 ::: {.notes}
 This slide is code only; the figure is next. Point at `facet_wrap(~model)` and the two residual columns—Gaussian $Y$ versus Poisson $Y$ through the same `lm`. Ask which panel they expect to bend before you advance. Seed 20261005 is illustrative, not field data.
@@ -190,6 +193,8 @@ Lightbox the gallery if time allows; otherwise name beta, uniform, bimodal, disc
 
 The ribbon to draw is the simultaneous [tail-sensitive band]{.mark} of [Aldor-Noiman and colleagues (2013)](https://doi.org/10.1080/00031305.2013.847865). In [`qqplotr`](https://cran.r-project.org/package=qqplotr) that is `bandType = "ts"`. It is implemented for a **normal** QQ plot. A pointwise ribbon is a different object.
 
+::: {.codewindow .r}
+qq-band.R
 ```{r}
 #| echo: true
 #| eval: false
@@ -198,6 +203,7 @@ ggplot(residuals, aes(sample = residual)) +
   qqplotr::stat_qq_line() +
   qqplotr::stat_qq_point()
 ```
+:::
 
 Points outside that band are the departure. A $p$-value from a normality test is not a summary of the same picture. The workshop residuals are the [two QQ plots](#sec-qq-read) above, read this way.
 
@@ -901,6 +907,8 @@ Read the table row by row: equal variances → ordinary $t$; unequal → Welch w
 
 [Olszewski](https://www.linkedin.com/feed/update/urn:li:activity:7490552621573922816/): `MKinfer::perm.t.test` uses the Welch–Satterthwaite statistic unless you set `var.equal = TRUE`. Leave the default. Do not pretest the variances with an $F$ test.
 
+::: {.codewindow .r}
+perm-test.R
 ```{r}
 #| echo: true
 #| eval: false
@@ -911,6 +919,7 @@ result <- MKinfer::perm.t.test(
 )
 MKinfer::h0plot(result)
 ```
+:::
 
 ::: {.notes}
 The call returns the classical $p$ and the permutation $p$. Compare them, and look at the null distribution of the permuted statistic as well as the residual QQ plot. Use more than 9999 draws for a stable $p$, and on the order of 50,000 if the level of interest is below 0.001. Record the seed. Permuting the raw difference of means quietly assumes equal variances. The studentized statistic is the one Janssen (1997) gives for unequal variances; he lists that paper under the post. A reported permutation $p$ of exactly 0 is a convention about the draws, not a probability.

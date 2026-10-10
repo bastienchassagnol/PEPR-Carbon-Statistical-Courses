@@ -46,6 +46,8 @@ Use the picture to fix the two contrasts: tillage runs left to right, nitrogen i
 
 ## Reading the published object {#sec-casys-code}
 
+::: {.codewindow .r}
+casys.R
 ```{r}
 #| echo: true
 #| eval: false
@@ -65,6 +67,7 @@ casys <- tibble(
   nitrospira_reads = colSums(counts[taxonomy$Genus == "Nitrospira", ])
 )
 ```
+:::
 
 The deposit is a phyloseq object, built to be read with Bioconductor. This excerpt reads the same slots. [prepare-teaching-data.R](scripts/prepare-teaching-data.R) writes [casys_teaching.csv](data/derived/casys_teaching.csv) and leaves [the raw object](data/16s_RNA_sequencing/casys_phyloseq_clean.rds) untouched. Column meanings are in [the dataset README](data/16s_RNA_sequencing/README.txt).
 
@@ -304,6 +307,8 @@ All treatment numbers on the following slides are taken from that page, which ci
 
 Ambient and elevated $\mathrm{CO}_2$, each at $+0$, $+2.25$, $+4.5$, $+6.75$, and $+9^\circ\mathrm{C}$.
 
+::: {.codewindow .r}
+spruce-grid.R
 ```{r}
 #| echo: true
 #| eval: false
@@ -313,6 +318,7 @@ spruce |>
 #> plots 4, 10, 11, 16, 19 are the elevated-CO2 enclosures
 #> plots 7 and 21 are unchambered ambient plots, with no assigned warming
 ```
+:::
 
 Twelve plots: ten chambered [enclosures]{.mark} on the warming grid, and two ambient plots that were never assigned a level. The teaching table is [spruce_teaching.csv](data/derived/spruce_teaching.csv), built by [prepare-teaching-data.R](scripts/prepare-teaching-data.R) from [the published copy-number file](data/SPRUCE/SPRUCE_qPCR_copy_numbers_2021.csv).
 
@@ -346,6 +352,8 @@ Be explicit that this is not a count, even though it looks like one. Treating a 
 
 ## The sentinel is a documented rule {#sec-spruce-missing}
 
+::: {.codewindow .r}
+sentinels.R
 ```{r}
 #| echo: true
 #| eval: false
@@ -355,6 +363,7 @@ for (nm in numeric_cols) {
   spruce_raw[[nm]][spruce_raw[[nm]] == -9999] <- NA_real_
 }
 ```
+:::
 
 Fifteen values across the nine numeric columns are [sentinels]{.mark}. One of the 216 bacterial measurements is missing.
 

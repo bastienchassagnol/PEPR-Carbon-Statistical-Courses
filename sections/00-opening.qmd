@@ -256,6 +256,8 @@ Read both formulas once. The common mistake is reporting $s$ where the reader ex
 
 The draw is [M. Fatih Tüzen's](https://www.r-bloggers.com/2025/07/standard-deviation-vs-standard-error-meaning-misuse-and-the-math-behind-the-confusion/): $Y \sim N(100, 15)$, $n = 50$, then 1,000 independent means. Seed 42 is his. It is not the workshop seed, and it is not a carbon series.
 
+::: {.codewindow .r}
+sd-versus-se.R
 ```{r}
 #| echo: true
 #| eval: false
@@ -263,6 +265,7 @@ set.seed(42)
 sd_sample <- rnorm(50, mean = 100, sd = 15)
 sd_means <- replicate(1000, mean(rnorm(50, mean = 100, sd = 15)))
 ```
+:::
 
 ::: {.notes}
 Credit Tüzen for the seed and the blog post. Say explicitly that this draw is illustrative, not workshop data. You do not need to run the chunk live.

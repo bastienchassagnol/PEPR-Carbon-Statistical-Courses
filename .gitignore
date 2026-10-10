@@ -43,6 +43,10 @@ vignettes/*.pdf
 # Instagram carousel fetch helper
 .venv-instagram/
 
+# Quarto render artefacts. The published site is docs/; diagrams are cached in _diagram-cache/.
+index_files/
+site_libs/
+
 # Rendered Quarto site (published by GitHub Actions, not committed)
 docs/
 .quarto/
