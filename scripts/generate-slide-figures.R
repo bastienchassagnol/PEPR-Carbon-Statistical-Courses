@@ -428,6 +428,8 @@ save_lm_pair(fit_ok, fit_curve, 1, "lm-resid-fitted.png")
 save_lm_pair(fit_ok, fit_tail, 2, "lm-qq.png")
 save_lm_pair(fit_ok, fit_het, 3, "lm-scale-location.png")
 save_lm_pair(fit_ok, fit_lev, 5, "lm-leverage.png")
+save_lm_pair(fit_ok, fit_lev, 4, "lm-cooks-distance.png")
+save_lm_pair(fit_ok, fit_lev, 6, "lm-cooks-leverage.png")
 
 # Longitudinal illustration. Own seed, so a full rerun does not move earlier draws.
 set.seed(seed)
@@ -469,8 +471,8 @@ if (requireNamespace("lme4", quietly = TRUE)) {
 # Pooled Y is a two-component mixture. Each component is Gaussian.
 set.seed(seed)
 n_height <- 2000L
-mu_f <- 163
-mu_h <- 177
+mu_f <- 158
+mu_h <- 182
 sd_f <- 6.5
 sd_h <- 7
 height <- data.frame(
@@ -480,65 +482,60 @@ height <- data.frame(
     rnorm(n_height / 2, mu_h, sd_h)
   )
 )
-height_grid <- seq(140, 200, length.out = 400)
-height_curves <- rbind(
-  data.frame(
-    sex = "F",
-    Y = height_grid,
-    density = 0.5 * dnorm(height_grid, mu_f, sd_f)
-  ),
-  data.frame(
-    sex = "H",
-    Y = height_grid,
-    density = 0.5 * dnorm(height_grid, mu_h, sd_h)
-  )
+# Three ridges: each conditional distribution, then the pooled one. The pooled
+# ridge reuses every row, so its mean falls between the two modes.
+height_ridges <- rbind(
+  data.frame(panel = ifelse(height$sex == "F", "F only", "H only"), Y = height$Y),
+  data.frame(panel = "Both sexes pooled", Y = height$Y)
 )
-p_height <- ggplot(height, aes(Y)) +
-  geom_histogram(
-    aes(y = after_stat(density)),
-    bins = 32,
-    fill = "#d9d3c7",
-    colour = "white",
-    linewidth = 0.2
+height_ridges$panel <- factor(
+  height_ridges$panel,
+  levels = c("Both sexes pooled", "H only", "F only")
+)
+height_means <- aggregate(Y ~ panel, data = height_ridges, FUN = mean)
+p_height <- ggplot(height_ridges, aes(x = Y, y = panel, fill = panel)) +
+  ggridges::geom_density_ridges(
+    scale = 0.92,
+    alpha = 0.9,
+    colour = "#1c2b24",
+    linewidth = 0.35,
+    quantile_lines = TRUE,
+    quantile_fun = function(x, ...) mean(x),
+    vline_linetype = "dashed",
+    vline_colour = "#1c2b24"
   ) +
-  geom_line(
-    data = height_curves,
-    aes(y = density, colour = sex),
-    linewidth = 1.15
+  geom_text(
+    data = height_means,
+    aes(
+      x = Y + ifelse(panel == "Both sexes pooled", 1.2, 11),
+      y = as.numeric(panel) + ifelse(panel == "Both sexes pooled", 0.62, 0.45),
+      label = sprintf("mean %.0f cm", Y)
+    ),
+    hjust = 0,
+    size = 4.2,
+    colour = "#1c2b24",
+    inherit.aes = FALSE
   ) +
-  geom_vline(
-    xintercept = c(mu_f, mu_h),
-    linetype = "dashed",
-    linewidth = 0.6,
-    colour = "#1c2b24"
+  scale_fill_manual(
+    values = c(
+      "F only" = "#1d4e89",
+      "H only" = "#c45c26",
+      "Both sexes pooled" = "#d9d3c7"
+    )
   ) +
-  annotate(
-    "text",
-    x = c(mu_f - 1.2, mu_h + 1.2),
-    y = 0.034,
-    label = c("mu[F]", "mu[H]"),
-    parse = TRUE,
-    size = 4.5,
-    hjust = c(1, 0),
-    colour = "#1c2b24"
-  ) +
-  scale_colour_manual(values = c(F = "#1d4e89", H = "#c45c26")) +
+  scale_y_discrete(expand = expansion(add = c(0.15, 0.95))) +
   labs(
-    subtitle = "Illustrative. Seed 20261005. Grey bars pool both sexes.",
+    subtitle = "Illustrative. Seed 20261005. Dashed lines: the mean of each ridge.",
     x = "Height Y (cm)",
-    y = "Density",
-    colour = "Sex x"
+    y = NULL
   ) +
-  theme_slide()
-save_fig(p_height, "height-by-sex.png", width = 9.2, height = 4.4)
+  theme_slide() +
+  theme(legend.position = "none", panel.grid.major.y = element_blank())
+save_fig(p_height, "height-by-sex.png", width = 9.2, height = 4.8)
+cat("Height ridge means:", sprintf("%s %.1f", height_means$panel, height_means$Y), "\n")
 
-# Four functions of one standard normal. The 0.05 quantile is exact.
-x_norm <- seq(-4, 4, length.out = 401)
-q05 <- qnorm(0.05)
-shade <- data.frame(
-  x = c(-4, seq(-4, q05, length.out = 80), q05),
-  y = c(0, dnorm(seq(-4, q05, length.out = 80)), 0)
-)
+# Four views of one distribution, each as a pair: a fair die on the left
+# (discrete), a standard Gaussian on the right (continuous). One figure per slide.
 panel_theme <- function() {
   theme_slide() +
     theme(
@@ -548,74 +545,131 @@ panel_theme <- function() {
       axis.text = element_text(size = 10)
     )
 }
-p_dnorm <- ggplot(data.frame(x = x_norm, y = dnorm(x_norm)), aes(x, y)) +
-  geom_line(colour = "#1d4e89", linewidth = 1.1) +
-  labs(title = "Density, dnorm", x = "z", y = "f(z)") +
-  panel_theme()
-p_qnorm <- ggplot(data.frame(x = x_norm, y = dnorm(x_norm)), aes(x, y)) +
-  geom_polygon(data = shade, fill = "#1d4e89", alpha = 0.28) +
-  geom_line(colour = "#1d4e89", linewidth = 1.1) +
-  geom_vline(xintercept = q05, linetype = "dashed", colour = "#1c2b24") +
-  annotate(
-    "text", x = -3.15, y = 0.28,
-    label = "area = 0.05", size = 3.6, colour = "#1c2b24"
-  ) +
+save_pair <- function(p_left, p_right, filename, width = 8.6, height = 3.3) {
+  ragg::agg_png(
+    file.path(out_dir, filename),
+    width = width, height = height, units = "in", res = 200,
+    background = "white"
+  )
+  grid::grid.newpage()
+  grid::pushViewport(grid::viewport(layout = grid::grid.layout(1, 2)))
+  print(p_left, vp = grid::viewport(layout.pos.row = 1, layout.pos.col = 1))
+  print(p_right, vp = grid::viewport(layout.pos.row = 1, layout.pos.col = 2))
+  invisible(grDevices::dev.off())
+}
+die <- data.frame(k = 1:6, p = rep(1 / 6, 6))
+z_grid <- seq(-4, 4, length.out = 401)
+q05 <- qnorm(0.05)
+
+# 1. Mass and density. Shaded: Pr(2 <= Y <= 4) and Pr(-1 <= Z <= 1).
+die$in_band <- die$k >= 2 & die$k <= 4
+band <- data.frame(
+  z = c(-1, seq(-1, 1, length.out = 80), 1),
+  y = c(0, dnorm(seq(-1, 1, length.out = 80)), 0)
+)
+p_die_d <- ggplot(die, aes(k, p, colour = in_band)) +
+  geom_segment(aes(xend = k, yend = 0), linewidth = 1.6) +
+  geom_point(size = 3) +
+  scale_colour_manual(values = c(`FALSE` = "#1d4e89", `TRUE` = "#c45c26"), guide = "none") +
+  scale_x_continuous(breaks = 1:6) +
+  scale_y_continuous(limits = c(0, 0.25)) +
   labs(
-    title = "Quantile, qnorm(0.05)",
-    subtitle = sprintf("z = %.2f", q05),
+    title = "Die: a mass at each face",
+    subtitle = "Pr(2 ≤ Y ≤ 4) = 3/6",
+    x = "Face k", y = "p(k)"
+  ) +
+  panel_theme()
+p_norm_d <- ggplot(data.frame(z = z_grid, y = dnorm(z_grid)), aes(z, y)) +
+  geom_polygon(data = band, fill = "#c45c26", alpha = 0.35) +
+  geom_line(colour = "#1d4e89", linewidth = 1.1) +
+  labs(
+    title = "Gaussian: a density, dnorm",
+    subtitle = sprintf("Pr(−1 ≤ Z ≤ 1) = %.2f, the shaded area", diff(pnorm(c(-1, 1)))),
     x = "z", y = "f(z)"
   ) +
   panel_theme()
-p_pnorm <- ggplot(data.frame(x = x_norm, y = pnorm(x_norm)), aes(x, y)) +
+save_pair(p_die_d, p_norm_d, "distribution-density.png")
+
+# 2. Cumulative distribution. Marked: F(4) = 4/6 and F(-1.64) = 0.05.
+die_cdf <- data.frame(k = 0:6, F = c(0, cumsum(die$p)))
+p_die_p <- ggplot() +
+  geom_segment(
+    data = data.frame(x = 0:6, xend = c(1:6, 7), F = die_cdf$F),
+    aes(x = x, xend = xend, y = F, yend = F),
+    colour = "#1d4e89", linewidth = 1.1
+  ) +
+  geom_point(data = die_cdf[-1, ], aes(k, F), colour = "#1d4e89", size = 2.4) +
+  geom_point(
+    data = data.frame(k = 1:6, F = die_cdf$F[1:6]), aes(k, F),
+    shape = 21, fill = "white", colour = "#1d4e89", size = 2.4
+  ) +
+  annotate("segment", x = 4, xend = 4, y = 0, yend = 4 / 6, linetype = "dashed", colour = "#1c2b24") +
+  annotate("point", x = 4, y = 4 / 6, colour = "#c45c26", size = 3) +
+  scale_x_continuous(breaks = 0:7, limits = c(0, 7)) +
+  labs(title = "Die: a staircase", subtitle = "F(4) = 4/6", x = "y", y = "F(y)") +
+  panel_theme()
+p_norm_p <- ggplot(data.frame(z = z_grid, y = pnorm(z_grid)), aes(z, y)) +
   geom_line(colour = "#1d4e89", linewidth = 1.1) +
-  annotate(
-    "segment",
-    x = q05, xend = q05, y = 0, yend = 0.05,
-    linetype = "dashed", colour = "#1c2b24"
-  ) +
-  annotate(
-    "segment",
-    x = -4, xend = q05, y = 0.05, yend = 0.05,
-    linetype = "dashed", colour = "#1c2b24"
-  ) +
-  annotate(
-    "point", x = q05, y = 0.05, colour = "#c45c26", size = 2.4
-  ) +
-  labs(title = "Cumulative distribution, pnorm", x = "z", y = "F(z)") +
-  panel_theme()
-set.seed(seed)
-sample_z <- data.frame(z = rnorm(400))
-p_rnorm <- ggplot(sample_z, aes(z)) +
-  geom_histogram(
-    aes(y = after_stat(density)),
-    bins = 24,
-    fill = "#d9d3c7",
-    colour = "white",
-    linewidth = 0.2
-  ) +
-  geom_line(
-    data = data.frame(z = x_norm, y = dnorm(x_norm)),
-    aes(y = y),
-    colour = "#1d4e89",
-    linewidth = 1.1
-  ) +
+  annotate("segment", x = q05, xend = q05, y = 0, yend = 0.05, linetype = "dashed", colour = "#1c2b24") +
+  annotate("segment", x = -4, xend = q05, y = 0.05, yend = 0.05, linetype = "dashed", colour = "#1c2b24") +
+  annotate("point", x = q05, y = 0.05, colour = "#c45c26", size = 3) +
   labs(
-    title = "Sample, rnorm",
-    subtitle = "n = 400. Seed 20261005.",
-    x = "z", y = "Density"
+    title = "Gaussian: a smooth curve, pnorm",
+    subtitle = sprintf("F(%.2f) = 0.05", q05),
+    x = "z", y = "F(z)"
   ) +
   panel_theme()
-ragg::agg_png(
-  file.path(out_dir, "normal-four-functions.png"),
-  width = 10.4, height = 7.2, units = "in", res = 180
-)
-grid::grid.newpage()
-grid::pushViewport(grid::viewport(layout = grid::grid.layout(2, 2)))
-print(p_dnorm, vp = grid::viewport(layout.pos.row = 1, layout.pos.col = 1))
-print(p_qnorm, vp = grid::viewport(layout.pos.row = 1, layout.pos.col = 2))
-print(p_pnorm, vp = grid::viewport(layout.pos.row = 2, layout.pos.col = 1))
-print(p_rnorm, vp = grid::viewport(layout.pos.row = 2, layout.pos.col = 2))
-grDevices::dev.off()
+save_pair(p_die_p, p_norm_p, "distribution-cumulative.png")
+
+# 3. Quantile function, the inverse of F. Marked: the die median and q(0.05).
+alpha_grid <- seq(0.001, 0.999, length.out = 999)
+die_q <- data.frame(a0 = (0:5) / 6, a1 = (1:6) / 6, q = 1:6)
+p_die_q <- ggplot(die_q) +
+  geom_segment(aes(x = a0, xend = a1, y = q, yend = q), colour = "#1d4e89", linewidth = 1.1) +
+  annotate("segment", x = 0.5, xend = 0.5, y = 0.5, yend = 3, linetype = "dashed", colour = "#1c2b24") +
+  annotate("point", x = 0.5, y = 3, colour = "#c45c26", size = 3) +
+  scale_y_continuous(breaks = 1:6, limits = c(0.5, 6.2)) +
+  labs(title = "Die: the face reached", subtitle = "q(0.5) = 3, the median", x = "α", y = "q(α)") +
+  panel_theme()
+p_norm_q <- ggplot(data.frame(a = alpha_grid, q = qnorm(alpha_grid)), aes(a, q)) +
+  geom_line(colour = "#1d4e89", linewidth = 1.1) +
+  annotate("segment", x = 0.05, xend = 0.05, y = -3.2, yend = q05, linetype = "dashed", colour = "#1c2b24") +
+  annotate("point", x = 0.05, y = q05, colour = "#c45c26", size = 3) +
+  coord_cartesian(ylim = c(-3.2, 3.2)) +
+  labs(
+    title = "Gaussian: qnorm",
+    subtitle = sprintf("q(0.05) = %.2f", q05),
+    x = "α", y = "q(α)"
+  ) +
+  panel_theme()
+save_pair(p_die_q, p_norm_q, "distribution-quantile.png")
+
+# 4. Simulation by inversion: Y = q(U), U uniform on (0, 1).
+set.seed(seed)
+u_die <- runif(600)
+rolls <- ceiling(6 * u_die)
+roll_freq <- as.data.frame(table(factor(rolls, levels = 1:6)) / length(rolls))
+names(roll_freq) <- c("k", "share")
+roll_freq$k <- as.integer(as.character(roll_freq$k))
+u_norm <- runif(400)
+draws <- data.frame(z = qnorm(u_norm))
+p_die_r <- ggplot(roll_freq, aes(k, share)) +
+  geom_col(fill = "#d9d3c7", colour = "white", width = 0.8) +
+  geom_hline(yintercept = 1 / 6, linetype = "dashed", colour = "#1d4e89", linewidth = 0.9) +
+  scale_x_continuous(breaks = 1:6) +
+  scale_y_continuous(limits = c(0, 0.25)) +
+  labs(title = "Die: 600 rolls", subtitle = "Dashed line: 1/6. Seed 20261005.", x = "Face k", y = "Share of rolls") +
+  panel_theme()
+p_norm_r <- ggplot(draws, aes(z)) +
+  geom_histogram(aes(y = after_stat(density)), bins = 24, fill = "#d9d3c7", colour = "white", linewidth = 0.2) +
+  geom_line(
+    data = data.frame(z = z_grid, y = dnorm(z_grid)), aes(z, y),
+    colour = "#1d4e89", linewidth = 1.1
+  ) +
+  labs(title = "Gaussian: 400 draws, rnorm", subtitle = "Curve: the density. Seed 20261005.", x = "z", y = "Density") +
+  panel_theme()
+save_pair(p_die_r, p_norm_r, "distribution-sampling.png")
+cat("Die roll shares:", round(roll_freq$share, 3), "\n")
 
 
 # Opening block: one figure per notion, in the order the slides introduce
@@ -943,3 +997,323 @@ p_conv <- ggplot(conv_df, aes(z, density)) +
 save_fig(p_conv, "clt-convolution.png", width = 11, height = 3.6)
 
 message("Wrote figures to ", out_dir)
+
+# Decision curves: net benefit of acting on a score at threshold t,
+# NB(t) = TP/n - FP/n * t / (1 - t) (Vickers and Elkin, 2006). Simulated sites.
+set.seed(seed)
+n_dec <- 4000L
+x_dec <- rnorm(n_dec)
+pi_dec <- plogis(-1.1 + 1.6 * x_dec)
+y_dec <- rbinom(n_dec, 1L, pi_dec)
+score_good <- pi_dec
+score_bad <- plogis(1.5 + 0.1 * qlogis(pi_dec) + rnorm(n_dec, sd = 1.2))
+net_benefit <- function(score, y, t) {
+  vapply(t, function(tt) {
+    act <- score >= tt
+    sum(act & y == 1L) / length(y) - sum(act & y == 0L) / length(y) * tt / (1 - tt)
+  }, numeric(1))
+}
+t_dec <- seq(0.02, 0.8, by = 0.01)
+prev_dec <- mean(y_dec)
+nb_curves <- rbind(
+  data.frame(
+    panel = "A miscalibrated, weak score",
+    t = t_dec,
+    score = net_benefit(score_bad, y_dec, t_dec)
+  ),
+  data.frame(
+    panel = "A calibrated, informative score",
+    t = t_dec,
+    score = net_benefit(score_good, y_dec, t_dec)
+  )
+)
+nb_curves$panel <- factor(nb_curves$panel, levels = unique(nb_curves$panel))
+nb_curves$all <- prev_dec - (1 - prev_dec) * nb_curves$t / (1 - nb_curves$t)
+nb_curves$best_ref <- pmax(nb_curves$all, 0)
+nb_curves$beats <- nb_curves$score > nb_curves$best_ref
+p_nb <- ggplot(nb_curves, aes(t)) +
+  geom_ribbon(
+    aes(ymin = best_ref, ymax = ifelse(beats, score, best_ref)),
+    fill = "#1d4e89", alpha = 0.18
+  ) +
+  geom_hline(yintercept = 0, colour = "#1c2b24", linewidth = 0.7) +
+  geom_line(aes(y = all), colour = "#1c2b24", linetype = "dashed", linewidth = 0.7) +
+  geom_line(aes(y = score, colour = panel), linewidth = 1.3) +
+  annotate("text", x = 0.62, y = 0.012, label = "act on none", size = 3.6, colour = "#1c2b24") +
+  annotate("text", x = 0.4, y = -0.045, label = "act on all", size = 3.6, colour = "#1c2b24", hjust = 0) +
+  facet_wrap(~panel) +
+  scale_colour_manual(values = c("#c45c26", "#1d4e89"), guide = "none") +
+  coord_cartesian(ylim = c(-0.06, prev_dec + 0.02)) +
+  labs(
+    subtitle = sprintf(
+      "Illustrative: %d simulated sites, prevalence %.2f. Seed 20261005. Shaded: the score beats both references.",
+      n_dec, prev_dec
+    ),
+    x = "Decision threshold t",
+    y = "Net benefit"
+  ) +
+  theme_slide() +
+  theme(plot.subtitle = element_text(size = 11))
+save_fig(p_nb, "utility-net-benefit.png", width = 9.6, height = 4.2)
+cat(
+  "Net benefit: bad score max excess over best reference =",
+  round(max(nb_curves$score[nb_curves$panel == levels(nb_curves$panel)[1]] -
+    nb_curves$best_ref[nb_curves$panel == levels(nb_curves$panel)[1]]), 4),
+  "; good score beats both for t in",
+  paste(range(nb_curves$t[nb_curves$panel == levels(nb_curves$panel)[2] & nb_curves$beats]), collapse = "-"),
+  "\n"
+)
+
+# Predictive probability of success for the next trial (Saint-Hilary,
+# Robert and Gasparini, 2018, section 3): d* | data ~ N(d, s^2 + s*^2), from
+# the phase 2 summaries. Significance needs d* > c = 1.96 s*, clinical
+# relevance d* > d_T = 3 points on HAM-D17. Exact normal formula, no simulation.
+s_star <- 0.93
+pos_dose <- data.frame(
+  dose = c("Low dose", "High dose"),
+  d = c(16.9 - 14.0, 16.9 - 12.6),
+  s = c(1.37, 1.41)
+)
+pos_dose$sd_pred <- sqrt(pos_dose$s^2 + s_star^2)
+c_sig <- 1.96 * s_star
+d_rel <- 3
+pos_dose$ppos1 <- 1 - pnorm((c_sig - pos_dose$d) / pos_dose$sd_pred)
+pos_dose$ppos2 <- 1 - pnorm((d_rel - pos_dose$d) / pos_dose$sd_pred)
+d_grid <- seq(-3, 10, length.out = 500)
+pos_curves <- do.call(rbind, lapply(seq_len(nrow(pos_dose)), function(k) {
+  data.frame(
+    dose = pos_dose$dose[k],
+    d = d_grid,
+    density = dnorm(d_grid, pos_dose$d[k], pos_dose$sd_pred[k])
+  )
+}))
+pos_curves$dose <- factor(pos_curves$dose, levels = pos_dose$dose)
+p_pos <- ggplot(pos_curves, aes(d, density, colour = dose)) +
+  geom_area(
+    data = subset(pos_curves, d > d_rel),
+    aes(fill = dose), alpha = 0.15, position = "identity", colour = NA
+  ) +
+  geom_line(linewidth = 1.2) +
+  geom_vline(xintercept = c(c_sig, d_rel), linetype = "dashed", colour = "#1c2b24") +
+  annotate("text", x = c_sig - 0.15, y = 0.3, label = "significance\nc = 1.82", hjust = 1, size = 4.6, colour = "#1c2b24") +
+  annotate("text", x = d_rel + 0.15, y = 0.3, label = "clinical relevance\nd_T = 3", hjust = 0, size = 4.6, colour = "#1c2b24") +
+  scale_colour_manual(values = c("Low dose" = "#1d4e89", "High dose" = "#c45c26")) +
+  scale_fill_manual(values = c("Low dose" = "#1d4e89", "High dose" = "#c45c26"), guide = "none") +
+  scale_y_continuous(limits = c(0, 0.33)) +
+  labs(
+    subtitle = sprintf(
+      "Pr(d* > c): low %.0f%%, high %.0f%%.  Pr(d* > 3), shaded: low %.0f%%, high %.0f%%.",
+      100 * pos_dose$ppos1[1], 100 * pos_dose$ppos1[2],
+      100 * pos_dose$ppos2[1], 100 * pos_dose$ppos2[2]
+    ),
+    x = "Next-trial difference versus placebo, d* (HAM-D17 points)",
+    y = "Predictive density",
+    colour = NULL
+  ) +
+  theme_slide() +
+  theme(plot.subtitle = element_text(size = 14))
+save_fig(p_pos, "decision-predictive-success.png", width = 7.4, height = 3.7)
+cat("PPoS1:", round(pos_dose$ppos1, 3), " PPoS2:", round(pos_dose$ppos2, 3), "\n")
+
+# Linear MCDA loss against Scale Loss Score (Saint-Hilary et al., 2019,
+# equations 4 and 6), one benefit u1 and one risk 1 - u2, weight 0.25 on benefit.
+w_br <- 0.25
+br_grid <- expand.grid(
+  benefit = seq(0.005, 1, length.out = 200),
+  risk = seq(0, 0.995, length.out = 200)
+)
+br_grid$linear <- 1 - (w_br * br_grid$benefit + (1 - w_br) * (1 - br_grid$risk))
+br_grid$slos <- (1 / br_grid$benefit)^w_br + (1 / (1 - br_grid$risk))^(1 - w_br)
+br_drugs <- data.frame(
+  drug = c("Drug 1", "Drug 2"),
+  benefit = c(0, 0.30),
+  risk = c(0.09, 0.20)
+)
+br_drugs$linear <- 1 - (w_br * br_drugs$benefit + (1 - w_br) * (1 - br_drugs$risk))
+br_drugs$slos <- (1 / br_drugs$benefit)^w_br + (1 / (1 - br_drugs$risk))^(1 - w_br)
+br_panel <- function(fill_var, title, subtitle, limits, breaks) {
+  ggplot(br_grid, aes(benefit, risk)) +
+    geom_raster(aes(fill = pmin(.data[[fill_var]], max(limits)))) +
+    geom_contour(aes(z = .data[[fill_var]]), breaks = breaks, colour = "white", linewidth = 0.4) +
+    geom_point(data = br_drugs, colour = "#1c2b24", fill = "white", shape = 21, size = 3.2, stroke = 1.1) +
+    geom_text(data = br_drugs, aes(label = drug), nudge_x = 0.04, nudge_y = 0.05, hjust = 0, size = 3.8, colour = "white") +
+    scale_fill_viridis_c(direction = -1, limits = limits, oob = scales::squish, name = "Loss") +
+    coord_cartesian(expand = FALSE) +
+    labs(title = title, subtitle = subtitle, x = "Benefit u1", y = "Risk 1 − u2") +
+    panel_theme() +
+    theme(legend.position = "right", legend.title = element_text(size = 11), legend.text = element_text(size = 9))
+}
+p_linear <- br_panel(
+  "linear", "Linear MCDA loss",
+  sprintf("Drug 1 %.3f < Drug 2 %.3f: drug 1 wins", br_drugs$linear[1], br_drugs$linear[2]),
+  c(0, 1), seq(0.1, 0.9, by = 0.1)
+)
+p_slos <- br_panel(
+  "slos", "Scale Loss Score",
+  sprintf("Drug 1 infinite, Drug 2 %.2f: drug 2 wins", br_drugs$slos[2]),
+  c(2, 5), seq(2.2, 4.8, by = 0.4)
+)
+save_pair(p_linear, p_slos, "decision-linear-vs-slos.png", width = 9.6, height = 3.8)
+cat("Linear loss drugs:", round(br_drugs$linear, 4), " SLoS drug 2:", round(br_drugs$slos[2], 3), "\n")
+
+# sctransform-style regularised negative binomial regression on a simulated
+# UMI matrix (Hafemeister and Satija, 2019; v2 regularisation, Choudhary and
+# Satija, 2022). Illustrative: genes and cells are simulated, not a dataset.
+set.seed(seed)
+n_cell <- 800L
+n_gene <- 1500L
+sct_depth <- round(10^rnorm(n_cell, 3.6, 0.25))
+sct_share <- 10^runif(n_gene, -5.5, -1.6)
+sct_mean_true <- sct_share * mean(sct_depth)
+sct_theta_true <- 10^(0.3 + 0.45 * log10(sct_mean_true)) * exp(rnorm(n_gene, 0, 0.25))
+sct_mu_true <- outer(sct_share, sct_depth)
+sct_y <- matrix(
+  rnbinom(length(sct_mu_true), mu = sct_mu_true, size = rep(sct_theta_true, n_cell)),
+  nrow = n_gene
+)
+
+# Step 1, per gene: offset model log mu = beta_0g + log n_c (slope fixed at 1),
+# whose maximum-likelihood intercept is log(sum_c y / sum_c n_c); then theta by
+# maximum likelihood for genes with evidence of overdispersion.
+sct_rate <- rowSums(sct_y) / sum(sct_depth)
+sct_mu_hat <- outer(sct_rate, sct_depth)
+sct_amean <- rowMeans(sct_y)
+sct_var <- apply(sct_y, 1, var)
+sct_gmean <- exp(rowMeans(log1p(sct_y))) - 1
+sct_keep <- sct_amean >= 0.001 & sct_var > sct_amean
+sct_theta_hat <- rep(Inf, n_gene)
+for (g in which(sct_keep)) {
+  sct_theta_hat[g] <- tryCatch(
+    suppressWarnings(MASS::theta.ml(sct_y[g, ], sct_mu_hat[g, ], limit = 100)),
+    error = function(e) NA_real_
+  )
+}
+sct_fit_ok <- sct_keep & is.finite(sct_theta_hat) & sct_theta_hat < 1e4
+
+# Step 2: regularise theta against gene abundance (geometric mean), loess on the
+# log10 scale. Genes without overdispersion keep theta = Inf (Poisson).
+sct_loess <- loess(
+  ly ~ lx,
+  data = data.frame(lx = log10(sct_gmean[sct_fit_ok]), ly = log10(sct_theta_hat[sct_fit_ok])),
+  span = 0.5
+)
+sct_theta_reg <- rep(Inf, n_gene)
+sct_theta_reg[sct_keep] <- 10^predict(
+  sct_loess,
+  newdata = data.frame(lx = log10(sct_gmean[sct_keep]))
+)
+sct_theta_reg[sct_keep & !is.finite(sct_theta_reg)] <- Inf
+
+# Step 3: Pearson residuals, clipped at sqrt(number of cells).
+sct_clip <- sqrt(n_cell)
+pearson_var <- function(theta) {
+  sd_hat <- sqrt(sct_mu_hat + sct_mu_hat^2 / theta)
+  r <- (sct_y - sct_mu_hat) / sd_hat
+  r <- pmin(pmax(r, -sct_clip), sct_clip)
+  apply(r, 1, var)
+}
+sct_resvar_nb <- pearson_var(matrix(sct_theta_reg, n_gene, n_cell))
+sct_resvar_pois <- pearson_var(Inf)
+
+sct_genes <- data.frame(
+  amean = sct_amean,
+  gmean = sct_gmean,
+  var = sct_var,
+  theta_hat = sct_theta_hat,
+  theta_reg = sct_theta_reg,
+  theta_true = sct_theta_true,
+  resvar_nb = sct_resvar_nb,
+  resvar_pois = sct_resvar_pois,
+  keep = sct_keep
+)
+
+# Panel B: one abundant gene, counts against depth, slope fixed at 1.
+g_top <- which.max(sct_amean)
+sct_top <- data.frame(
+  depth = sct_depth,
+  y = sct_y[g_top, ],
+  mu = sct_mu_hat[g_top, ]
+)
+p_sct_b1 <- ggplot(sct_top, aes(log10(depth), log10(y))) +
+  geom_point(colour = "#c45c26", alpha = 0.45, size = 1.4) +
+  geom_abline(
+    intercept = log10(sct_rate[g_top]), slope = 1,
+    colour = "#1d4e89", linewidth = 1.1
+  ) +
+  labs(
+    title = "Counts against depth",
+    subtitle = "Line: slope fixed at 1, intercept fitted",
+    x = "log10 total UMI per cell", y = "log10 UMI of the gene"
+  ) +
+  panel_theme()
+p_sct_b2 <- ggplot(sct_top, aes(log10(depth), log10(y / mu))) +
+  geom_hline(yintercept = 0, linetype = "dashed", colour = "#1c2b24") +
+  geom_point(colour = "#1d4e89", alpha = 0.45, size = 1.4) +
+  labs(
+    title = "After the offset",
+    subtitle = "No trend left with depth",
+    x = "log10 total UMI per cell", y = "log10 (count / fitted mean)"
+  ) +
+  panel_theme()
+save_pair(p_sct_b1, p_sct_b2, "sct-offset.png", width = 9, height = 3.6)
+
+# Panel C: variance of the raw counts against variance of Pearson residuals.
+p_sct_c1 <- ggplot(subset(sct_genes, amean > 0), aes(amean, var)) +
+  geom_point(colour = "#c45c26", alpha = 0.35, size = 1) +
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", colour = "#1c2b24") +
+  scale_x_log10() +
+  scale_y_log10() +
+  labs(
+    title = "Raw counts",
+    subtitle = "Variance grows with the mean; dashed: Poisson",
+    x = "Gene mean (UMI per cell)", y = "Variance"
+  ) +
+  panel_theme()
+sct_resid_long <- rbind(
+  data.frame(amean = sct_amean, resvar = sct_resvar_pois, model = "Poisson residuals"),
+  data.frame(amean = sct_amean, resvar = sct_resvar_nb, model = "Regularised NB residuals")
+)
+sct_resid_long <- subset(sct_resid_long, amean > 0)
+p_sct_c2 <- ggplot(sct_resid_long, aes(amean, resvar, colour = model)) +
+  geom_point(alpha = 0.35, size = 1) +
+  geom_hline(yintercept = 1, linetype = "dashed", colour = "#1c2b24") +
+  scale_x_log10() +
+  scale_y_log10() +
+  scale_colour_manual(values = c("Poisson residuals" = "#9aa0a6", "Regularised NB residuals" = "#1d4e89")) +
+  labs(
+    title = "Pearson residuals",
+    subtitle = "Variance near 1 at every mean",
+    x = "Gene mean (UMI per cell)", y = "Residual variance", colour = NULL
+  ) +
+  panel_theme() +
+  theme(legend.text = element_text(size = 10))
+save_pair(p_sct_c1, p_sct_c2, "sct-pearson.png", width = 9, height = 3.8)
+
+# Panel D: per-gene theta estimates, the loess trend, and the true curve.
+sct_fit_genes <- subset(sct_genes, is.finite(theta_hat) & theta_hat < 1e4 & keep)
+sct_grid <- data.frame(lx = seq(
+  log10(min(sct_fit_genes$gmean)), log10(max(sct_fit_genes$gmean)),
+  length.out = 200
+))
+sct_grid$sct_gmean <- 10^sct_grid$lx
+sct_grid$theta_reg <- 10^predict(sct_loess, newdata = sct_grid)
+p_sct_d <- ggplot(sct_fit_genes, aes(gmean, theta_hat)) +
+  geom_point(colour = "#9aa0a6", alpha = 0.5, size = 1.1) +
+  geom_line(data = sct_grid, aes(sct_gmean, theta_reg), colour = "#6a3d9a", linewidth = 1.4) +
+  scale_x_log10() +
+  scale_y_log10() +
+  labs(
+    subtitle = "Grey: one maximum-likelihood estimate per gene. Purple: the loess trend, used as the regularised theta.",
+    x = "Gene abundance (geometric mean, UMI per cell)",
+    y = expression(hat(theta)[g])
+  ) +
+  theme_slide() +
+  theme(plot.subtitle = element_text(size = 11))
+save_fig(p_sct_d, "sct-theta-regularisation.png", width = 8.6, height = 4.2)
+cat(
+  "sctransform sim: genes fitted", nrow(sct_fit_genes),
+  "; excluded", sum(!sct_keep),
+  "; median NB residual variance", round(median(sct_resvar_nb[sct_keep]), 2),
+  "; median Poisson residual variance (top decile mean)",
+  round(median(sct_resvar_pois[sct_amean > quantile(sct_amean, 0.9)]), 2), "\n"
+)
