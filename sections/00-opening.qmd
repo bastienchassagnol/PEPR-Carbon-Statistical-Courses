@@ -150,7 +150,6 @@ Not a catalogue of tests. A sequence you can reuse:
 - an [estimand]{.mark}, including its unit
 - a distribution for $Y$ that respects the [support]{.mark} of the data
 - a check you can show, preferably a plot
-- a sentence a colleague can re-implement
 :::
 
 
@@ -168,20 +167,68 @@ One row of the table holds both. $Y$ is the [response]{.mark}: what we measure a
 Every later symbol is built from these two. Ask which column in their own table is $Y$. The answer should be the measurement, not the treatment or the depth. About one minute.
 :::
 
-## A distribution says how often each value occurs {.eq-fig #sec-distribution}
+## A distribution says how often each value occurs {.eq-fig .dist-pair #sec-distribution}
 
 $$
-\Pr(a \le Y \le b) = \int_a^b f(y)\,dy
+\text{die: } \Pr(Y = k) = p(k) \qquad \text{Gaussian: } \Pr(a \le Y \le b) = \int_a^b f(y)\,dy
 $$
 
-![Four panels of a standard normal. Top left, the density. Top right, the same density with the left tail shaded up to the 0.05 quantile. Bottom left, the cumulative distribution, with the 0.05 quantile marked. Bottom right, a histogram of 400 draws with the density overlaid.](figures/generated/normal-four-functions.png){fig-alt="A two-by-two figure for a standard normal. The density is a blue bell curve. The quantile panel shades the left tail, whose area is 0.05, up to about minus 1.64. The cumulative distribution rises from 0 to 1 and passes through that same point at height 0.05. The sample panel is a histogram of 400 draws with the density overlaid." width="62%"}
+![Left, a fair die: a mass of 1/6 on each face, faces 2 to 4 highlighted. Right, a standard Gaussian density with the area between minus 1 and 1 shaded.](figures/generated/distribution-density.png){fig-alt="Two panels. Left: six vertical spikes of height one sixth at faces 1 to 6; the spikes at faces 2, 3 and 4 are orange, labelled Pr of 2 to 4 equals 3/6. Right: a blue bell curve with the area between minus 1 and 1 shaded orange, labelled Pr of minus 1 to 1 equals 0.68." width="92%"}
 
-$Y$ is [random]{.mark}: a new core gives a new value. The [density]{.mark} $f$ says which values are likely. R names its four tools `d`, `q`, `p`, and `r`.
+$Y$ is [random]{.mark}: a new core gives a new value. A die has a [mass]{.mark} $p(k)$ per face; a continuous $Y$ has a [density]{.mark} $f$, whose areas are the probabilities.
 
 ::: {.notes}
-Read the panels left to right, then down. `dnorm` is the height of the curve. The shaded tail is `qnorm(0.05)`, about $-1.64$, and its area is 0.05; `pnorm` adds that area from the left. `rnorm` draws 400 values, seed 20261005, so the histogram wobbles around the curve. A count has a probability for each integer instead of a density; the same four tools exist (`dpois`, `ppois`, ...).
+Left first: each face has probability 1/6, and faces 2 to 4 add up to 3/6. Right: the height of the curve at 0, about 0.40, is not a probability; the shaded area between $-1$ and 1 is, 0.68. R calls the height `dnorm`; for a count the mass is `dpois`. The next three slides keep the same two columns.
 
-**Going further.** Kolmogorov's axioms define $\Pr$ as a non-negative, countably additive measure with total mass one. The density is the derivative of $\Pr$ with respect to a reference measure: Lebesgue measure for a continuous $Y$, counting measure for a count. That is why a Poisson probability mass function and a Gaussian density sit in the same likelihood machinery. The four functions are linked by inversion: $F(q_\alpha) = \alpha$, and a draw is $F^{-1}(U)$ for $U$ uniform on $(0, 1)$.
+**Going further.** Kolmogorov's axioms define $\Pr$ as a non-negative, countably additive measure with total mass one. The density is the derivative of $\Pr$ with respect to a reference measure: Lebesgue measure for a continuous $Y$, counting measure for a die or a count. That is why a Poisson probability mass function and a Gaussian density sit in the same likelihood machinery.
+:::
+
+## The cumulative distribution adds from the left {.eq-fig .dist-pair #sec-cdf}
+
+$$
+F(y) = \Pr(Y \le y) = \textstyle\sum_{k \le y} p(k) \ \text{(die)} \quad \text{or} \quad \displaystyle\int_{-\infty}^{y} f(u)\,du \ \text{(Gaussian)}
+$$
+
+![Left, the die's cumulative distribution as a staircase, with F of 4 equal to 4/6 marked. Right, the Gaussian cumulative distribution as an S-shaped curve, with F of minus 1.64 equal to 0.05 marked.](figures/generated/distribution-cumulative.png){fig-alt="Two panels. Left: a blue staircase that jumps by one sixth at each face from 0 to 1, with closed dots on the left of each step and open dots at the right end; an orange dot marks F of 4 equal to 4/6. Right: a smooth blue S curve rising from 0 to 1; an orange dot marks the point at z equal to minus 1.64 and height 0.05." width="92%"}
+
+The [cumulative distribution]{.mark} $F$ rises from 0 to 1. The die jumps by 1/6 at each face, so $F(4) = 4/6$; the Gaussian climbs without a jump (`pnorm`).
+
+::: {.notes}
+Read the die staircase: the closed dot is the value at the face, the open dot the limit just before the next face. That is why $F(4)$ includes face 4. On the right, mark $F(-1.64) = 0.05$: the next slide reads that point backwards.
+
+**Going further.** A function is a cumulative distribution exactly when it is non-decreasing, right-continuous, and tends to 0 and 1 at $-\infty$ and $+\infty$. It characterises the distribution, discrete or continuous: $\Pr(a < Y \le b) = F(b) - F(a)$, and the jump of $F$ at $k$ is $p(k)$. The empirical cumulative distribution of the rows, $\hat F_n(y) = n^{-1}\sum_i \mathbf{1}(Y_i \le y)$, converges to $F$ uniformly (Glivenko–Cantelli), which is why the eCDF is the honest plot of a skewed carbon variable.
+:::
+
+## The quantile reads the cumulative backwards {.eq-fig .dist-pair #sec-quantile}
+
+$$
+q(\alpha) = F^{-1}(\alpha) = \min\{\, y : F(y) \ge \alpha \,\}
+$$
+
+![Left, the die's quantile function as a staircase from face 1 to face 6, with the median q of 0.5 equal to 3 marked. Right, the Gaussian quantile function, with q of 0.05 equal to minus 1.64 marked.](figures/generated/distribution-quantile.png){fig-alt="Two panels with the probability alpha from 0 to 1 on the horizontal axis. Left: six blue horizontal steps at faces 1 to 6, each one sixth wide; an orange dot marks alpha 0.5 at face 3. Right: a blue curve rising steeply at both ends; an orange dot marks alpha 0.05 at minus 1.64." width="92%"}
+
+The [quantile]{.mark} asks the reverse: which value leaves a share $\alpha$ below it? The median $q(0.5)$ is face 3 for the die; `qnorm(0.05)` is $-1.64$.
+
+::: {.notes}
+Same two objects, axes swapped. The die needs the "min" in the formula: $F$ is flat between faces, so several $y$ give the same $F$, and the quantile takes the smallest. Link to the vocabulary slide: a quantile is the cut point, not the group the cut creates.
+
+**Going further.** The generalised inverse is left-continuous and satisfies $q(\alpha) \le y \iff \alpha \le F(y)$, which is what makes the simulation on the next slide exact. Sample quantiles have several definitions that differ in how they interpolate between order statistics; R's `quantile()` offers nine (Hyndman and Fan, *The American Statistician*, 1996), and its default, type 7, is not the median-unbiased choice. For a test or an interval on a quantile, state the type.
+:::
+
+## A simulator draws through the quantile {.eq-fig .dist-pair #sec-sampling}
+
+$$
+Y_i = q(U_i), \qquad U_i \sim \mathcal{U}(0, 1), \qquad i = 1, \ldots, n
+$$
+
+![Left, the shares of 600 simulated die rolls around the dashed line at 1/6. Right, a histogram of 400 simulated Gaussian draws with the density curve.](figures/generated/distribution-sampling.png){fig-alt="Two panels. Left: six grey bars for the share of 600 rolls on each face, between 0.145 and 0.188, around a dashed blue line at one sixth. Right: a grey histogram of 400 draws that wobbles around a blue bell curve." width="92%"}
+
+Uniform numbers fed into the quantile are draws from $F$: `ceiling(6 * runif(n))` for the die, `qnorm(runif(n))` for the Gaussian. A [simulation]{.mark} wobbles around the distribution.
+
+::: {.notes}
+Left: 600 rolls give shares between 0.145 and 0.188, not exactly 1/6. Right: 400 draws give a histogram that wobbles around the curve. Both are seed 20261005, drawn by inversion as in the formula. The wobble is the sampling variability every later interval describes.
+
+**Going further.** Inversion is exact: if $U$ is uniform on $(0, 1)$, then $q(U)$ has cumulative distribution $F$, for a discrete or a continuous $Y$, by the equivalence on the previous slide. R's default normal generator is itself inversion (`RNGkind()` reports `"Inversion"`). The Monte Carlo standard error of a share of rolls is $\sqrt{p(1 - p)/n} = \sqrt{(1/6)(5/6)/600} \approx 0.015$, so 0.145 and 0.188 sit about 1.4 standard errors from 1/6.
 :::
 
 ## Mean and variance: the centre and the spread {.eq-fig #sec-mean-variance}
@@ -297,39 +344,24 @@ Repeat the experiment 2,000 times, $n = 10$ each, seed 20261005. The orange esti
 **Going further.** The decomposition is the mean squared error identity. Among unbiased estimators, the Cramér–Rao bound $\mathrm{Var}(\hat\theta) \ge 1/I(\theta)$ holds under regularity conditions: the support does not depend on $\theta$ and differentiation passes under the integral. Shrinkage, penalised smoothing, and priors deliberately trade a little bias for a larger cut in variance, as the orange curve does. Hogg, McKean and Craig state the bound [@hoggIntroductionMathematicalStatistics2019].
 :::
 
-## $\mu$ is the conditional mean {.smaller #sec-cond-mean}
+## $\mu$ is the conditional mean {.smaller .fit-fig #sec-cond-mean}
 
-![Illustrative adult heights. Grey bars pool both sexes and show two modes. A blue curve is the Gaussian for sex F and an orange curve is the Gaussian for sex H, each at half weight, with dashed lines at the two conditional means.](figures/generated/height-by-sex.png){fig-alt="Histogram of illustrative adult heights in centimetres. The pooled bars have two modes. A blue Gaussian curve for sex F is centred at 163 centimetres and an orange Gaussian curve for sex H is centred at 177 centimetres. Dashed lines mark those two conditional means." width="82%"}
+![Illustrative adult heights as three ridges: F only, H only, and both sexes pooled, each with a dashed line at its mean.](figures/generated/height-by-sex.png){fig-alt="Three density ridges of illustrative adult heights in centimetres. Top, blue: F only, one peak, with a dashed mean at 158. Middle, orange: H only, one peak, with a dashed mean at 182. Bottom, grey: both sexes pooled, two peaks, with its dashed mean at 170 in the valley between them." width="68%"}
 
 ::: model
 $\mu = \mathbb{E}(Y \mid x)$
 :::
 
-Read $\mid$ as "given". Sex is $x$, height is $Y$. Pooled, the histogram has [two modes]{.mark}. Given sex, each curve is a Gaussian, and the [conditional mean]{.mark} $\mu$ is its centre. Illustrative draw, seed 20261005: 163 cm for F, 177 cm for H.
+Read $\mid$ as "given". Sex is $x$, height is $Y$. Given sex, each ridge has one peak, and the [conditional mean]{.mark} $\mu$ is its centre: 158 cm for F, 182 cm for H. Pooled, the distribution has [two modes]{.mark}, and its mean, 170 cm, sits in the valley where few adults are. Illustrative draw, seed 20261005.
 
 ::: {.notes}
-Point at the grey bars first: one sample, two humps, not one Gaussian. Then one colour: given sex, the curve is Gaussian and the dashed line is its mean. The curves are drawn at half weight so that they add up to the pooled histogram. These centimetres are a teaching draw, not a census.
+Point at the grey ridge first: one sample, two humps, not one Gaussian, and a mean that describes almost nobody. Then each coloured ridge: given sex, one peak, and the dashed line is its mean. Each ridge is scaled to its own area, the pooled one included. These centimetres are a teaching draw, not a census.
 
 **Going further.** $\mu(\mathbf{x}) = \mathbb{E}(Y \mid \mathbf{x})$ is the function $m$ that minimises the expected squared error $\mathbb{E}\{(Y - m(\mathbf{x}))^2\}$; geometrically it is the $L^2$ projection of $Y$ onto functions of $\mathbf{x}$. Change the loss and the target changes: absolute error gives the conditional median, the check loss a conditional quantile. That is why "regression" without a named target is ambiguous for a skewed response. A standard treatment is in Rice, *Mathematical Statistics and Data Analysis* [@riceMathematicalStatisticsData].
 :::
 
-## A mean that changes with $x$ {.eq-fig #sec-cond-line}
 
-$$
-\mu(x) = \mathbb{E}(Y \mid x) = \beta_0 + \beta_1 x
-$$
-
-![Scatter of simulated points around a rising orange line, with three blue bell curves drawn sideways at x equal to 2, 5, and 8.](figures/generated/opening-conditional-line.png){fig-alt="Grey points scattered around a rising orange line labelled mu of x equals beta zero plus beta one x. At x equal to 2, 5 and 8, a blue Gaussian curve is drawn sideways, centred on the line." width="78%"}
-
-$\beta_0$ is the [intercept]{.mark}; $\beta_1$ is the change in $\mu$ per unit of $x$. We call $\eta = \beta_0 + \beta_1 x$ the [linear predictor]{.mark}. The model describes a whole distribution of $Y$ at each $x$, not only a line.
-
-::: {.notes}
-The sideways curves are the point: at each $x$ the model says how $Y$ scatters, and the line joins their centres. Simulated, seed 20261005. With several covariates the same sentence holds for the row $\mathbf{x}$: $\eta = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \cdots$.
-
-**Going further.** A parametric model is a family $\{P_\theta\}$ of conditional distributions of $Y$ given $\mathbf{x}$. When the truth is not in the family, the maximum-likelihood estimate still converges, to the $\theta^*$ closest to the truth in Kullback–Leibler divergence (White, 📄 *Maximum likelihood estimation of misspecified models*, Econometrica, 1982). The fitted line is then the best approximation in that family, and its standard errors need the sandwich form.
-:::
-
-## The link $g$ keeps $\mu$ in range {.eq-fig #sec-link-intro}
+## The link $g$ keeps $\mu$ in range {.eq-fig #sec-link-intro visibility="hidden"}
 
 $$
 g(\mu) = \eta = \beta_0 + \beta_1 x
@@ -449,6 +481,36 @@ The multivariable row is the figure already on [multivariable is not multivariat
 
 ::: {.notes}
 Do not redraw the multivariable figure. Read the association row. Ask for one sentence from the room that uses effect when nobody assigned $x$.
+:::
+
+## Essentials of statistical literacy {.literacy-row visibility="hidden"}
+
+[StatHarbor Analytics](https://www.linkedin.com/posts/statharbor-analytics_statistics-statisticalliteracy-datascience-activity-7461801635405627392-h4U1), 17 May 2026. Click a panel. The words we police are on the [opening cards](#sec-words).
+
+![1 Variability is normal](figures/generated/literacy-01.png){fig-alt="Panel 1. Variability is normal: randomness creates patterns, small samples fluctuate, and not every pattern is a signal."}
+![2 Data are not reality](figures/generated/literacy-02.png){fig-alt="Panel 2. Data are not reality: measurements depend on how, who, what, and what was missed."}
+![3 Correlation is not causation](figures/generated/literacy-03.png){fig-alt="Panel 3. Correlation is not causation: a relationship can be confounding, reverse causality, or coincidence."}
+![4 Uncertainty must be quantified](figures/generated/literacy-04.png){fig-alt="Panel 4. Uncertainty must be quantified with intervals, and more data reduces it without eliminating it."}
+![5 Sample is not population](figures/generated/literacy-05.png){fig-alt="Panel 5. A sample is not the population: we observe a subset, and representativeness matters."}
+![6 Probability is about uncertainty](figures/generated/literacy-06.png){fig-alt="Panel 6. Probability quantifies uncertainty, not certainty, and rare events still happen."}
+![7 Averages can mislead](figures/generated/literacy-07.png){fig-alt="Panel 7. Averages can mislead: the same mean can hide different shapes, outliers, and skew."}
+
+::: {.notes}
+Optional if you are behind. Click one panel rather than reading all seven. The vocabulary card is now in the opening, after expectation.
+:::
+
+## Essentials of statistical literacy {.literacy-row visibility="hidden"}
+
+![8 Models are simplifications](figures/generated/literacy-08.png){fig-alt="Panel 8. Models are simplifications, useful when the assumptions are reasonable, and no model is perfect."}
+![9 Significance is not importance](figures/generated/literacy-09.png){fig-alt="Panel 9. Statistical significance is not practical importance. A tiny effect can be significant in a large sample."}
+![10 Absence of evidence](figures/generated/literacy-10.png){fig-alt="Panel 10. Absence of evidence is not evidence of absence. A non-significant result can be low power or a poor design."}
+![11 Bias and complexity](figures/generated/literacy-11.png){fig-alt="Panel 11. Bias often matters more than complexity. A simple unbiased model can beat a complex biased one."}
+![12 Prediction and explanation](figures/generated/literacy-12.png){fig-alt="Panel 12. Prediction and explanation are different. A model can predict without explaining the mechanism."}
+![13 Decision under uncertainty](figures/generated/literacy-13.png){fig-alt="Panel 13. Statistics supports a decision under uncertainty: options, risk, and evidence."}
+![14 Critical thinking](figures/generated/literacy-14.png){fig-alt="Panel 14. Critical thinking matters more than computation: the question, the assumptions, and the biases."}
+
+::: {.notes}
+Panel 9 and panel 12 are the two this hour has already argued. Do not re-teach them. Point and move to the close.
 :::
 
 ## Linear algebra, before the statistics {#sec-algebra visibility="hidden"}

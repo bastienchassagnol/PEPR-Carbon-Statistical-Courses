@@ -342,34 +342,19 @@ The [getting-to-production](https://github.com/posit-conf-2024/dev-ops/blob/main
 Worth being concrete about this deck, because it is the live example in the room. The R code runs on a laptop, the results are committed under _freeze, and the Action installs Quarto only. That keeps the build fast and means a missing R package on the runner cannot break a published deck. The trade is that a changed chunk has to be re-rendered locally before the push.
 :::
 
-## Say which layer you are shipping {#sec-repro-layers}
-
-Before that deploy, separate three layers:
-
-::: {.incremental}
-- the **presentation** layer is what a person clicks
-- the **processing** layer is the work those clicks cause
-- the **data** layer is where the values are stored and read
-:::
-
-
-A data update then changes the data layer. It does not require a new copy of the report, which is the Quarto path from the first slides.
-
-![](figures/generated/sketch-repro-layers.png){.sketch-sm fig-alt="Hand-drawn stack of three layers, presentation in blue on top, processing in yellow, data in green at the bottom, with a mouse cursor clicking the top layer and an arrow pointing down through the stack." fig-align="center"}
-
 ## The short list to take back {#sec-repro-close}
 
 For any analysis:
 
-- an `assert` that refuses a bad input
-- a style guide, a formatter, and a linter
-- a pre-commit hook, so the check runs before the commit
+- an `assert` that refuses a [bad input]{.mark}
+- a [style guide]{.mark}, a formatter, and a [linter]{.mark}
+- a [pre-commit hook]{.mark}, so the check runs before the commit
 
 For a package other people will use:
 
-- a dependency manager and a lockfile
-- tests on more than one operating system and language version
-- a documentation site, a release, and a version number you keep maintaining
+- a dependency manager and a [lockfile]{.mark}
+- [tests]{.mark} on more than one operating system and language version
+- a [documentation site]{.mark}, a release, and a [version number]{.mark} you keep maintaining
 
 ::: {.notes}
 Close the block by mapping it back to the workshop: the derived-data script, the figure script, the estimates JSON, and the link checker are the first list applied to a slide deck. If the room takes one thing, it is that the number in the text and the number in the figure should come from the same run.

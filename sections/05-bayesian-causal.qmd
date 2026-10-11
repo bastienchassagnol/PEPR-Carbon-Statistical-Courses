@@ -155,59 +155,12 @@ The second sentence is his [causal Markov condition]{.mark}. The third is [faith
 Read the assumption callout slowly: causal DAG, Markov (independence given parents), faithfulness (only those independences). Incomplete measurement is the practical punchline—which nodes must enter the model? The six numbered role slides after the fork and the chain answer that question one third variable at a time.
 
 **Going further.** The causal Markov condition states that each variable is independent of its non-descendants given its parents, which is equivalent to the factorisation $p(v_1, \ldots, v_K) = \prod_k p(v_k \mid \mathrm{pa}_k)$ and to "d-separation implies independence". Faithfulness is the converse: every conditional independence in the distribution is a d-separation in the graph. It fails when two paths cancel exactly, for example a direct effect $+\beta$ and an indirect effect $-\beta$; the set of such parameter values has Lebesgue measure zero, which is the usual justification, but near-cancellation makes tests unreliable in finite samples (Uhler and colleagues, *Annals of Statistics*, 2013). A third, often implicit, condition is causal sufficiency: no unmeasured common cause of two measured variables. Spirtes, Glymour and Scheines, *Causation, Prediction, and Search* (2000), is the standard statement of all three.
-:::
 
-## One independence, two causal stories {#sec-same-ci}
-
-A [directed acyclic graph]{.mark} is what lets you check a correlation pattern against a causal theory. One pattern can belong to more than one theory.
-
-The shared statistical statement in Hertel's pair of examples: $T$ is correlated with $X$ and with $Z$ whether or not you condition, and $Z$ is conditionally independent of $X$ given $T$.
-
-::: {.notes}
 Set up the puzzle: one conditional-independence pattern, two directed stories. Read the shared statement about $T$, $X$, and $Z$ without showing arrows yet. Ask the room what differs between fork and chain if $Z\perp X\mid T$ in both—the next two slides answer with arrow direction.
 
 **Going further.** The graphical rule behind this is d-separation. A path between two nodes is blocked by a conditioning set $S$ when it contains a chain $A \to B \to C$ or a fork $A \leftarrow B \to C$ with $B \in S$, or a collider $A \to B \leftarrow C$ with neither $B$ nor any descendant of $B$ in $S$. Two nodes are d-separated given $S$ when every path between them is blocked; under the causal Markov condition, d-separation implies conditional independence in every distribution the graph generates. Fork and chain produce the same d-separation statements, so no test on observational data can tell them apart; only a collider leaves a distinct signature. The reference is Pearl, *Probabilistic Reasoning in Intelligent Systems* (1988), and Koller and Friedman, *Probabilistic Graphical Models* (2009), chapter 3.
 :::
 
-## $T$ is a common cause {#sec-fork}
-
-```{.tikz}
-%%| filename: dag-fork
-%%| alt: Causal graph: T points to X and to Z. T is a common cause.
-%%| width: 36%
-\begin{tikzpicture}
-\node[var] (t) {$T$};
-\node[var, below left=10mm and 6mm of t] (x) {$X$};
-\node[var, below right=10mm and 6mm of t] (z) {$Z$};
-\draw[edge] (t) -- (x); \draw[edge] (t) -- (z);
-\end{tikzpicture}
-```
-
-$T$ causes $X$ and $T$ causes $Z$. There is no direct arrow between $Z$ and $X$. Conditioning on $T$ leaves $Z$ independent of $X$.
-
-::: {.notes}
-Fork: $T\to X$ and $T\to Z$; no edge between $X$ and $Z$. Conditioning on the common cause $T$ blocks the non-causal $X$–$Z$ association. This is the skeleton of role 1, the confounder.
-:::
-
-## $Z$ acts through $T$ {#sec-chain}
-
-```{.tikz}
-%%| filename: dag-chain
-%%| alt: Causal graph: Z points to T, which points to X.
-%%| width: 44%
-\begin{tikzpicture}
-\node[var] (z) {$Z$};
-\node[var, right=14mm of z] (t) {$T$};
-\node[var, right=14mm of t] (x) {$X$};
-\draw[edge] (z) -- (t); \draw[edge] (t) -- (x);
-\end{tikzpicture}
-```
-
-$Z$ causes $T$ and $T$ causes $X$. The conditional independence is the same as in the fork. The arrows are not settled by that independence.
-
-::: {.notes}
-Chain: $Z\to T\to X$. Same $Z\perp X\mid T$ as the fork, but the adjustment rules differ: the chain is the skeleton of role 4, the mediator. Arrows are not identified by that independence alone. Pair with [#sec-same-ci] as the setup slide.
-:::
 
 ## Role 1 · A confounder causes both $X$ and $Y$ {.dag-role #sec-confounder}
 

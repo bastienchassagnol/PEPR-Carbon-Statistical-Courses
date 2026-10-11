@@ -286,6 +286,12 @@ $presentation-h3-font-size: 1.02em;
   max-height: 245px !important;
 }
 
+// Four distribution slides (#sec-distribution to #sec-sampling): a die and a
+// Gaussian side by side, so the figure can be taller than other eq-fig plots.
+.reveal .slides section.eq-fig.dist-pair img {
+  max-height: 290px !important;
+}
+
 .reveal .slides section.eq-fig .math.display {
   font-size: 0.9em;
 }
@@ -319,4 +325,50 @@ $presentation-h3-font-size: 1.02em;
 // Logistic-regression checks: one cropped card beside the text.
 .reveal .slides section.logit-check img {
   max-height: 360px !important;
+}
+
+// TikZ diagrams from the diagram filter land in the mediabag as SVG: centre
+// them on the slide, or in their column.
+.reveal .slides section img[src*="mediabag"][src$=".svg"] {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+// A slide with its own background image, iframe, colour, or gradient shows
+// that background only: no cream box from the level-2 rule above.
+.reveal .slides section section.slide.level2[data-background-image],
+.reveal .slides section section.slide.level2[data-background-iframe],
+.reveal .slides section section.slide.level2[data-background-color],
+.reveal .slides section section.slide.level2[data-background-gradient] {
+  background-color: transparent !important;
+}
+
+// Observable JS explorers in the ANOVA block.
+.reveal .slides section.anova-ojs form,
+.reveal .slides section.anova-ojs label,
+.reveal .slides section.anova-ojs input,
+.reveal .slides section.anova-ojs button {
+  font-size: 15px !important;
+}
+
+.reveal .slides section.anova-ojs table.ojs-types th,
+.reveal .slides section.anova-ojs table.ojs-types td {
+  font-size: 15px;
+  padding: 4px 8px;
+}
+
+// The redrawn map of six count distributions, shown large.
+.reveal .slides section.count-map img {
+  height: 430px !important;
+  max-height: 430px !important;
+}
+
+.reveal .slides section.dag-large img {
+  height: 270px !important;
+  max-height: 270px !important;
+}
+
+.reveal .slides section.fig-260 img {
+  max-height: 260px !important;
 }

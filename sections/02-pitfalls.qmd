@@ -180,7 +180,7 @@ Step the fragments slowly. The common mistake is to treat a small $p$ on $\hat\b
 **Going further.** Shmueli's article "To explain or to predict?" (Statistical Science, 2010) is the standard reference. The expected squared prediction error at a new $\mathbf{x}$ decomposes as $\sigma^2 + \mathrm{bias}^2\{\hat\mu(\mathbf{x})\} + \mathrm{Var}\{\hat\mu(\mathbf{x})\}$, so a deliberately biased but less variable model (dropped covariates, shrinkage) can predict better than the correctly specified one. Explanation instead needs $\hat\beta_j$ to be consistent for a named causal or structural quantity, which is a statement about bias, not about total error. Confirmatory inference adds a third requirement: the error rate of the test is only valid if the hypothesis, the covariates and the analysis were fixed before the data, otherwise the selection step must be accounted for (post-selection inference, Berk and colleagues, Annals of Statistics, 2013).
 :::
 
-## 1 · Two different scores
+## 1 · Two different scores {visibility="hidden"}
 
 Prediction, on new units:
 
@@ -332,22 +332,6 @@ Ask which failure they would rather live with in a hallway, then which one they 
 **Going further.** The alarm is a Neyman–Pearson test with a fixed false-alarm rate $\alpha$. Making it more sensitive, a smaller threshold, lowers $\beta$ and raises $\alpha$: fewer silent fires, more empty evacuations. No threshold removes both. The same trade is the receiver operating characteristic, power against the false-alarm rate as the threshold moves.
 :::
 
-## 2 · $p$ is not that rate {#sec-p-not-alpha}
-
-If the treatment has no effect, a $p$ of 0.03 means that 3% of replicate studies would obtain an effect this large or larger.
-
-- Comparing that number with $\alpha$ is the yes-or-no decision
-- The number itself is a probability about the [data]{.mark}, not about the hypothesis
-- $\alpha$ is fixed before the data; $p$ is computed from them
-
-The careful statement is [the replicate definition](#sec-pvalue), and the rate of false assertions is [$\alpha$](#sec-alpha).
-
-::: {.notes}
-The commonest error in the room will be to read p as the probability that the null is true. Say the two conditional probabilities out loud: P(data this extreme given no effect) against P(no effect given the data). Only the first is available from a frequentist test, and only the second is what most readers want.
-
-**Going further.** For a continuous test statistic $T$ with null distribution $F_0$, $p = 1 - F_0(T_{\mathrm{obs}})$ is itself a random variable, and under the null it is exactly uniform on $(0, 1)$ (probability integral transform). Rejecting when $p \le \alpha$ therefore has size $\alpha$, which is the only sense in which $p$ and $\alpha$ meet. Under an alternative, $p$ is stochastically smaller, but its distribution is wide unless power is high. Bayes' theorem gives $P(H_0 \mid \text{data}) = P(\text{data} \mid H_0) P(H_0) / P(\text{data})$: turning $p$ into a posterior requires a prior and a likelihood under the alternative, which a test does not supply.
-:::
-
 ## 2 · A p-value is about the data {#sec-pvalue}
 
 Under identical replicates of this experiment, with the effect set to zero, $p$ is the probability of a result [more extreme]{.mark} than the one in hand ([Harrell, ch. 22](https://hbiostat.org/bbr/alpha)). 📄 Thiese, Ronna, and Ott collect the same reading in [*P value interpretations and considerations*](references/random-versus-systematic-error.pdf).
@@ -360,6 +344,10 @@ A $p$ of 0.06 says that, under the model and the null, a replicate would be more
 Write "given $H_0$" on the board if you have one. The 0.06 example is deliberately awkward — neither side of 0.05 — to keep the focus on the conditional, not on the threshold ritual.
 
 **Going further.** Formally $p = P_{H_0}(T \ge t_{\mathrm{obs}})$, a tail area computed under every assumption of the model, not only the zero effect: independence, the error distribution, the sampling plan and the choice of $T$. "More extreme" needs an ordering of possible results, so a one-sided and a two-sided test give different $p$ for the same data. With a discrete statistic (counts, ranks) $p$ is not exactly uniform under the null and the test is conservative; mid-$p$ values correct part of this. Harrell's Biostatistics for Biomedical Research, chapter on hypothesis testing, and the ASA statement (Wasserstein and Lazar, The American Statistician, 2016) are the standard references.
+
+The commonest error in the room will be to read p as the probability that the null is true. Say the two conditional probabilities out loud: P(data this extreme given no effect) against P(no effect given the data). Only the first is available from a frequentist test, and only the second is what most readers want.
+
+**Going further.** For a continuous test statistic $T$ with null distribution $F_0$, $p = 1 - F_0(T_{\mathrm{obs}})$ is itself a random variable, and under the null it is exactly uniform on $(0, 1)$ (probability integral transform). Rejecting when $p \le \alpha$ therefore has size $\alpha$, which is the only sense in which $p$ and $\alpha$ meet. Under an alternative, $p$ is stochastically smaller, but its distribution is wide unless power is high. Bayes' theorem gives $P(H_0 \mid \text{data}) = P(\text{data} \mid H_0) P(H_0) / P(\text{data})$: turning $p$ into a posterior requires a prior and a likelihood under the alternative, which a test does not supply.
 :::
 
 ## 2 · α is a rate of false assertions {#sec-alpha}
@@ -474,7 +462,7 @@ Type M and Type S only apply when someone filters on "significant". The scatter 
 **Going further.** With an estimate $\hat\theta \sim N(\theta, s^2)$, the Type S rate is $P(\hat\theta < -z s) / \{P(\hat\theta > z s) + P(\hat\theta < -z s)\}$ for $\theta > 0$, and the exaggeration ratio is $\mathbb{E}(|\hat\theta| \mid |\hat\theta| > z s)/\theta$, both functions of $\theta/s$ only. Gelman and Carlin's retrodesign calculation evaluates them at a plausible effect size taken from outside the study, not at the observed estimate, which would be circular. This is the winner's curse: selecting on significance is a truncation, and the truncated mean is biased away from zero.
 :::
 
-## 2 · Those significant runs were about eleven times too big
+## 2 · Those significant runs were about eleven times too big {visibility="hidden"}
 
 [Olszewski](https://medium.com/@r.clin.res/type-m-and-type-s-errors-in-underpowered-studies-175291966f3b) drew the previous figure from two normal samples, $n = 10$ each, standard deviation 10, true difference 1, seed 1000, 10,000 $t$ tests.
 
@@ -486,7 +474,7 @@ The seed and sample sizes are on the slide so nobody thinks you made up the 11×
 **Going further.** The numbers follow from the retrodesign formulas: $\mathrm{SE} = 10\sqrt{2/10} \approx 4.47$, so $\theta/\mathrm{SE} \approx 0.22$, the two-sided power at $\alpha = 0.05$ is just above $5\%$, and only estimates beyond about $\pm 9.4$ (the $t_{18}$ critical value times the SE) can reach significance. A true difference of 1 can then only be declared through an estimate roughly ten times too large, in either direction, which is why the sign is so often wrong. Button and colleagues (Nature Reviews Neuroscience, 2013) document the same mechanism across a literature.
 :::
 
-## 2 · Power pulls the exaggeration down
+## 2 · Power pulls the exaggeration down {visibility="hidden"}
 
 ![Type M inflation factor against power, falling from several-fold at low power toward 1 as power approaches 1.](figures/sources/type-m-versus-power.png){fig-alt="Curve of the Type M inflation factor against power. The factor is several-fold below 20 percent power and close to 1 once power is near 80 percent." width="58%"}
 
@@ -700,8 +688,6 @@ This is the whole block in one slide. Keep the two words apart: heterogeneity is
 :::: {.columns}
 ::: {.column width="62%"}
 $\tau^2$ is an [absolute]{.mark} spread, on the squared scale of the effect. It is not a percentage.
-
-Arithmetic, not a carbon dataset: $\tau^2 = 0.09$ on a log risk ratio gives $\tau = 0.30$. A rough band for the site effects is the mean $\pm 1.96\tau \approx \pm 0.59$. Call that large or small only after you name the scale.
 :::
 ::: {.column width="38%"}
 ![](figures/generated/sketch-pitfalls-tau-spread.png){.sketch fig-alt="Hand-drawn sketch: a violet bell curve centred on mu, with red dots for the true site effects theta spread under it and a blue double arrow marking plus or minus 1.96 tau."}
@@ -849,42 +835,76 @@ In a bin of sites given the same $\hat\pi$, the event should occur about that of
 
 $$\bar{Y}_{\mathrm{bin}} \approx \hat\pi_{\mathrm{bin}}$$
 
-Teaching arithmetic: $\hat\pi = 0.80$ on 10 sites, and the event on only 3 of them, is a [miscalibrated]{.mark} bin. The ranks can still be right.
+![Two calibration sketches. Red points leave the diagonal. Green points stay near it.](figures/generated/calibration-bad-vs-good.jpg){fig-alt="Side-by-side calibration plots of predicted probability against observed frequency. Left, in red: points leave the diagonal. Right, in green: points track the diagonal." width="86%"}
 
 ::: {.notes}
 Give the 3-of-10 example verbally. Ask when a carbon team would care about calibration versus ranking (reporting stock change vs prioritising sites).
 
 **Going further.** Van Calster and colleagues (Journal of Clinical Epidemiology, 2016) define a hierarchy: mean calibration ($\bar Y = \bar{\hat\pi}$, the calibration-in-the-large), weak calibration (intercept 0 and slope 1 in the logistic recalibration model $\mathrm{logit}\,\pi = a + b\,\mathrm{logit}\,\hat\pi$), and moderate calibration ($\mathbb{E}(Y \mid \hat\pi) = \hat\pi$, checked with a smoothed curve rather than bins). A calibration slope $b < 1$ is the signature of overfitting: the predictions are too extreme on new data, which shrinkage (ridge, lasso, or a uniform shrinkage factor) corrects. Binned Hosmer–Lemeshow tests depend on the arbitrary number of bins and are not recommended.
-:::
-
-## 8 · Calibration, drawn
-
-![Two calibration sketches. Red points leave the diagonal. Green points stay near it.](figures/generated/calibration-bad-vs-good.jpg){fig-alt="Side-by-side calibration plots of predicted probability against observed frequency. Left, in red: points leave the diagonal. Right, in green: points track the diagonal." width="86%"}
-
-::: {.notes}
 Quick visual; the equation slide carries the definition. Red is the dangerous case: confident probabilities that are wrong.
 :::
 
-## 8 · Utility is whether the score changes the action
+## 8 · Utility is whether the score changes the action {.eq-fig #sec-utility}
 
-At a threshold $t$, [net benefit]{.mark} charges each false action at the odds $t/(1-t)$:
+$$\mathrm{NB}(t) = \frac{\mathrm{TP}}{n} - \frac{\mathrm{FP}}{n}\,\frac{t}{1 - t}$$
 
-$$\mathrm{NB}(t) = \frac{\mathrm{TP}}{N} - \frac{\mathrm{FP}}{N}\,\frac{t}{1-t}$$
+At threshold $t$, a wasted visit costs as much as a missed one. A useful score beats both "act on every site" and "act on none" on a band of $t$.
 
-$t$ need not be clinical. It is the chance of a peat source, or of a stock change, at which a wasted visit costs as much as a missed one. A useful score beats both "act on every site" and "act on none" on a band of $t$.
+![Two decision curves from simulated sites. Left, a miscalibrated, weak score never rises above the better reference. Right, a calibrated score beats both references, shaded, over almost every threshold.](figures/generated/utility-net-benefit.png){fig-alt="Two panels of net benefit against the decision threshold t, with a dashed line for acting on all sites and a flat line at zero for acting on none. Left, in orange: the score follows the act-on-all line, then drops below zero after t equal to 0.33. Right, in blue: the score stays above both lines from t equal to 0.03 to 0.8, and the gap is shaded." width="80%"}
 
 ::: {.notes}
-Net benefit is the hardest of the three for this audience; lean on the peat-source example. You do not need to derive the formula — point at TP and FP.
+Net benefit is the hardest of the three for this audience; lean on a carbon example: $t$ is the chance of a peat source, or of a stock change, at which a visit is worth making. Point at TP and FP in the formula: a true positive counts 1, a false positive costs $t/(1-t)$. Left: the score is too high everywhere and barely ranks the sites, so acting on it is acting on almost everyone. Right: the true probabilities, so the curve is the best any score can do on these data. 4000 simulated sites, prevalence 0.33, seed 20261005.
 
 **Going further.** Decision curve analysis is due to Vickers and Elkin (Medical Decision Making, 2006). The weight $t/(1-t)$ follows from expected-utility theory: acting at threshold $t$ is optimal when the harm of a false positive relative to the benefit of a true positive equals $t/(1-t)$, so the threshold encodes the trade-off and the formula needs no separate utilities. "Treat all" has net benefit $\bar{Y} - (1-\bar{Y})\,t/(1-t)$ and "treat none" has 0. Net benefit uses calibrated probabilities directly, so a miscalibrated model can have a good AUC and a negative net benefit.
 :::
 
-## 8 · Utility, drawn
+## 8 · Success can be a composite event {.eq-fig #sec-composite-success}
 
-![Two decision-curve sketches. The red score falls below both reference lines. The green score rises above both on a middle band of thresholds.](figures/generated/utility-bad-vs-good.jpg){fig-alt="Two net-benefit sketches against a decision threshold. Left, in red: the score drops below acting on none. Right, in green: the score rises above both acting on all sites and acting on none for a middle band of thresholds." width="78%"}
+📄 @saint-hilaryDecisionmakingDrugDevelopment2018 predict the success of the next trial:
+
+$$\mathrm{PPoS} = \Pr\{\, d^* > \max(c, d_T) \ \cap\ \Delta^* u > 0 \mid \text{data} \,\}$$
+
+![Predictive densities of the next-trial difference for a low and a high dose, with dashed lines at the significance threshold 1.82 and the clinical threshold 3.](figures/generated/decision-predictive-success.png){fig-alt="Two bell curves of the predicted difference versus placebo in the next trial: blue for the low dose, centred near 2.9, and orange for the high dose, centred near 4.3. Dashed vertical lines mark c equal to 1.82 and d T equal to 3; the area beyond 3 is shaded. The subtitle gives Pr of exceeding c as 74 and 93 percent, and Pr of exceeding 3 as 48 and 78 percent." width="78%"}
+
+Success needs a [significant]{.mark}, a [clinically relevant]{.mark}, and a favourable benefit–risk result. The high dose leads on the first two, yet its composite success is 24%, against 48% for the low dose.
 
 ::: {.notes}
-Green is "worth using"; red is "worse than ignoring the score". Threshold $t$ is a policy choice, not a property of the model.
+Their example is fictive but built on a real case: a phase 2 trial in major depressive disorder, a low and a high dose against placebo, primary endpoint the HAM-D17 score at six weeks. The figure is recomputed from the phase 2 summaries with their normal formula, $d^* \mid \text{data} \sim \mathcal{N}(d, s^2 + s^{*2})$, with $c = 1.96\,s^* = 1.82$ and $d_T = 3$; the four percentages match their Table 4. The benefit–risk part comes from a probabilistic multicriteria utility, simulated: 88% for the low dose, 24% for the high dose, because 71% of high-dose patients had hypokalaemia. Adding a potassium supplement raised the high dose to 78% composite success. The carbon translation: a management option succeeds only if the effect is detectable, large enough to matter, and worth its costs.
+
+**Going further.** $\Pr(d^* > c \mid \text{data})$ alone is Bayesian assurance, or predictive power: the power averaged over the posterior of the effect instead of evaluated at one assumed value. The composite is a joint probability, not the product of the three components, because all three depend on the same treatment effect $\delta$; the authors therefore report each component beside the composite. They warn against reading the probability as a chance of a successful development: with little evidence it stays near 50%.
+:::
+
+## 8 · A linear utility trades benefit and risk at a fixed rate {#sec-mcda-linear}
+
+Multicriteria decision analysis (MCDA) scores an option as a weighted sum of [partial values]{.mark} $u_j \in [0, 1]$, with weights $w_j$ that sum to one:
+
+$$u(\boldsymbol\xi, \mathbf{w}) = \sum_{j=1}^{n} w_j\, u_j(\xi_j)$$
+
+| Weight 0.25 on benefit | Benefit $u_1$ | Risk $1 - u_2$ | Utility $u$ |
+| --- | --- | --- | --- |
+| Drug 1 | 0.00 | 0.09 | 0.6825 |
+| Drug 2 | 0.30 | 0.20 | 0.6750 |
+
+The sum ranks drug 1 first: a drug that [treats nobody]{.mark}. Its contours are straight lines, so one unit of risk costs the same benefit at every level [@saint-hilaryNovelMeasureDrug2019a].
+
+::: {.notes}
+Do the arithmetic once: $0.25 \times 0 + 0.75 \times 0.91 = 0.6825$ against $0.25 \times 0.30 + 0.75 \times 0.80 = 0.675$. The weights put three times more importance on risk, so a small risk saving outweighs any benefit. Their second example is the mirror image: with these weights, a drug that harms every patient but cures 96% beats one that cures 50% with 85% risk. Changing the weight fixes one paradox and worsens the other.
+
+**Going further.** A linear additive utility has a constant marginal rate of substitution, $w/(1 - w)$ in the two-criterion case: the trade-off between benefit and risk does not depend on where the option sits. The probabilistic version of Waddingham and colleagues puts a posterior on each $\xi_j$ and reports $\Pr(\Delta u > 0 \mid \text{data})$, which carries the uncertainty but keeps the straight contours. Concave partial value functions would bend them, but the authors note that such shapes are hard to elicit from decision-makers.
+:::
+
+## 8 · A loss score can refuse a useless or toxic option {.eq-fig #sec-slos}
+
+$$l(\boldsymbol\xi, \tilde{\mathbf{w}}) = \sum_{j=1}^{n} \left(\frac{1}{u_j(\xi_j)}\right)^{\tilde w_j}$$
+
+![Contours of the linear MCDA loss and of the Scale Loss Score over benefit and risk, with the two drugs of the previous slide marked.](figures/generated/decision-linear-vs-slos.png){fig-alt="Two heat maps of loss over benefit u1 on the horizontal axis and risk one minus u2 on the vertical axis, lower loss in yellow and higher in purple. Left, linear MCDA loss: straight parallel contours; drug 1 at zero benefit has loss 0.318, lower than drug 2 at 0.325. Right, Scale Loss Score: contours bend and the loss rises sharply near zero benefit and near high risk; drug 1 is infinite and drug 2 is 2.53." width="92%"}
+
+The [Scale Loss Score]{.mark} is infinite when any $u_j = 0$: no benefit or certain harm never wins. Its contours bend, so low benefit tolerates more risk per gain [@saint-hilaryNovelMeasureDrug2019a].
+
+::: {.notes}
+Lower is better, with the minimum at $u_j = 1$ for every criterion. Same two drugs, same weight 0.25 on benefit: drug 2 scores 2.53, drug 1 is infinite. Both panels are computed from equations 4 and 6 of the paper. In their telithromycin case study, for acute bacterial sinusitis, the probability that the drug beats the comparator falls from 71% with linear MCDA to 55% with the loss score, which sits closer to the regulators' safety concerns; the FDA later removed that indication.
+
+**Going further.** The score comes from scale-symmetric and precautionary loss functions used for estimation in restricted parameter spaces, which stay away from the boundary $u_j = 0$. The authors map MCDA weights to loss-score weights by matching contour slopes at the centre of the square: $w = 0.25$ maps to $\tilde w \approx 0.30$. Two caveats they state: the result depends on the least preferred values that define $u_j = 0$, and a placebo-like option with no benefit is heavily penalised even when it is the safe choice. For a carbon decision, an option with no sequestration benefit should not win because it is cheap; a linear score can let it.
 :::
 
 ## 9 · Respect clusters and repeats {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #f0dcc8 100%)"}
@@ -1009,36 +1029,6 @@ SAMPL, on the [EQUATOR Network](https://www.equator-network.org/reporting-guidel
 
 ::: {.notes}
 SAMPL is the one they will see again in the reproducibility block. Pick one "avoid" row and ask for a rewrite from the room. One minute.
-:::
-
-## Essentials of statistical literacy {.literacy-row}
-
-[StatHarbor Analytics](https://www.linkedin.com/posts/statharbor-analytics_statistics-statisticalliteracy-datascience-activity-7461801635405627392-h4U1), 17 May 2026. Click a panel. The words we police are on the [opening cards](#sec-words).
-
-![1 Variability is normal](figures/generated/literacy-01.png){fig-alt="Panel 1. Variability is normal: randomness creates patterns, small samples fluctuate, and not every pattern is a signal."}
-![2 Data are not reality](figures/generated/literacy-02.png){fig-alt="Panel 2. Data are not reality: measurements depend on how, who, what, and what was missed."}
-![3 Correlation is not causation](figures/generated/literacy-03.png){fig-alt="Panel 3. Correlation is not causation: a relationship can be confounding, reverse causality, or coincidence."}
-![4 Uncertainty must be quantified](figures/generated/literacy-04.png){fig-alt="Panel 4. Uncertainty must be quantified with intervals, and more data reduces it without eliminating it."}
-![5 Sample is not population](figures/generated/literacy-05.png){fig-alt="Panel 5. A sample is not the population: we observe a subset, and representativeness matters."}
-![6 Probability is about uncertainty](figures/generated/literacy-06.png){fig-alt="Panel 6. Probability quantifies uncertainty, not certainty, and rare events still happen."}
-![7 Averages can mislead](figures/generated/literacy-07.png){fig-alt="Panel 7. Averages can mislead: the same mean can hide different shapes, outliers, and skew."}
-
-::: {.notes}
-Optional if you are behind. Click one panel rather than reading all seven. The vocabulary card is now in the opening, after expectation.
-:::
-
-## Essentials of statistical literacy {.literacy-row}
-
-![8 Models are simplifications](figures/generated/literacy-08.png){fig-alt="Panel 8. Models are simplifications, useful when the assumptions are reasonable, and no model is perfect."}
-![9 Significance is not importance](figures/generated/literacy-09.png){fig-alt="Panel 9. Statistical significance is not practical importance. A tiny effect can be significant in a large sample."}
-![10 Absence of evidence](figures/generated/literacy-10.png){fig-alt="Panel 10. Absence of evidence is not evidence of absence. A non-significant result can be low power or a poor design."}
-![11 Bias and complexity](figures/generated/literacy-11.png){fig-alt="Panel 11. Bias often matters more than complexity. A simple unbiased model can beat a complex biased one."}
-![12 Prediction and explanation](figures/generated/literacy-12.png){fig-alt="Panel 12. Prediction and explanation are different. A model can predict without explaining the mechanism."}
-![13 Decision under uncertainty](figures/generated/literacy-13.png){fig-alt="Panel 13. Statistics supports a decision under uncertainty: options, risk, and evidence."}
-![14 Critical thinking](figures/generated/literacy-14.png){fig-alt="Panel 14. Critical thinking matters more than computation: the question, the assumptions, and the biases."}
-
-::: {.notes}
-Panel 9 and panel 12 are the two this hour has already argued. Do not re-teach them. Point and move to the close.
 :::
 
 ## Where we go deeper {#sec-deeper}

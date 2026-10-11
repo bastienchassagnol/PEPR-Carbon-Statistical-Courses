@@ -33,7 +33,7 @@ date-format: "D MMMM YYYY"
 
 {{< include sections/03a-models.qmd >}}
 
-{{< include sections/03b-smoothing.qmd >}}
+<!-- {{< include sections/03b-smoothing.qmd >}} -->
 
 # Experimental design {.center}
 

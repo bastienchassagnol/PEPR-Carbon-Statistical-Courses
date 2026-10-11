@@ -35,37 +35,18 @@ Name Quetilismus once, then list the three repairs: trim tails, wait for $n$, tr
 
 ## Identify conditional non-Gaussian distributions {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d4efe8 100%)"}
 
-## How to read a QQ-plot :mag:
+## How to read a QQ-plot :mag: {#sec-qq-read}
 
 Points along the line support the reference shape. A curve, or a tail that leaves the line, is a [departure]{.mark}. Illustrative residuals, seed 20261005.
-
-::: {.codewindow .r}
-qq-residuals.R
-```{r}
-#| echo: true
-#| eval: false
-qq_gaussian <- bind_rows(
-  tibble(model = "Gaussian lm, Gaussian Y", residual = resid(fit_lm_gauss)),
-  tibble(model = "Gaussian lm, Poisson Y", residual = resid(fit_lm_count))
-)
-ggplot(qq_gaussian, aes(sample = residual)) +
-  stat_qq_line() +
-  stat_qq() +
-  facet_wrap(~model)
-```
-:::
-
-::: {.notes}
-This slide is code only; the figure is next. Point at `facet_wrap(~model)` and the two residual columns—Gaussian $Y$ versus Poisson $Y$ through the same `lm`. Ask which panel they expect to bend before you advance. Seed 20261005 is illustrative, not field data.
-:::
-
-## How to read a QQ-plot :mag: {#sec-qq-read}
 
 ![Two QQ plots. Left: residuals from a Gaussian response sit near the reference line. Right: residuals from a Gaussian linear model fitted to Poisson counts bend up in the right tail.](figures/generated/qq-gaussian-vs-count.png){fig-alt="QQ plots comparing Gaussian linear-model residuals when the response is Gaussian and when the response is a Poisson count." width="96%"}
 
 ::: {.notes}
+This slide is code only; the figure is next. Point at `facet_wrap(~model)` and the two residual columns—Gaussian $Y$ versus Poisson $Y$ through the same `lm`. Ask which panel they expect to bend before you advance. Seed 20261005 is illustrative, not field data.
+
 Pair with the previous code slide: left panel is the sanity check, right panel is the misspecified count. Finger the right-tail lift as variance growing with the mean, not "non-normality" in the abstract. The preceding slide showed how those panels were produced.
 :::
+
 
 ## Four shapes on the QQ plot {.qq-quiz #sec-qq-shapes}
 

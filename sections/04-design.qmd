@@ -291,31 +291,6 @@ Balanced means equal replication per combination so effects separate. Step the f
 **Going further.** In a linear model $\mathbb{E}(\mathbf{Y}) = \mathbf{X}\boldsymbol\beta$, a linear function $\mathbf{c}^{\top}\boldsymbol\beta$ is estimable when $\mathbf{c}^{\top}$ lies in the row space of $\mathbf{X}$; an empty cell, as in the right-hand grid, makes the corresponding interaction non-estimable. With equal replication the columns for different factors are orthogonal, so the sums of squares decompose uniquely and the order of terms does not matter. Unbalanced data break that orthogonality: sequential (type I), partial (type II) and marginal (type III) sums of squares then test different hypotheses, and type III tests on main effects in the presence of an interaction depend on the contrast coding. Searle, *Linear Models for Unbalanced Data* (1987), is the reference; Agresti covers estimability in *Foundations of Linear and Generalized Linear Models* [@agrestiFoundationsLinearGeneralized2015].
 :::
 
-## A pair is one block {#sec-pairing-picture}
-
-![Left, treatment and control in one pot, assigned by a coin. Right, both plants on the same side, so the side is mixed up with the treatment.](figures/generated/design-pairing.jpg){fig-alt="Two pots. The left pot has one treated seedling and one control seedling, with a coin above, labelled one pair. The right pot has both seedlings on the treated side, and an arrow saying the side of the pot is confounded with the treatment." width="88%"}
-
-The left pot is a [pair]{.mark}: the nuisance (the pot) is shared, and the treatment is assigned inside it. The right pot lets the side of the pot wear the treatment's name.
-
-::: {.notes}
-Cover the right pot first. Fisher's complaint about Darwin was this picture: every cross-pollinated plant on one side. The coin is the randomisation inside the block. Thirty seconds, then the Huber link on the next slide.
-:::
-
-## Pairing is the smallest block {#sec-pairing}
-
-[Block what you can, and randomise what you cannot](https://www.huber.embl.de/msmb/13-chap.html#blocking-and-pairing). A [paired design]{.mark} is the simplest block: twins, or the same person before and after.
-
-::: {.incremental}
-- Fisher criticised Darwin for putting every cross-pollinated plant on the same side of the pot. A coin flip for the side would have kept that side from masquerading as the cross.
-
-- When a natural pair does not exist, a [matched design]{.mark} builds pairs on age, sex, or health, and treats one of the pair.
-:::
-
-::: {.notes}
-Fisher's Darwin pot-side story is the vivid warning—blocking is about removing a directional nuisance. Fragment two: matched pairs when nature does not give you twins. Pairing is the smallest block; SPRUCE blocking discussion earlier is the same idea at enclosure scale.
-
-**Going further.** For a paired comparison, $\mathrm{Var}(\bar d) = 2\sigma^2(1 - \rho)/n$, where $\rho$ is the within-pair correlation, against $2\sigma^2/n$ for two independent groups of the same size. The relative efficiency of the paired design is therefore $1/(1 - \rho)$: with $\rho = 0.5$ pairing halves the number of units needed. The price is $n - 1$ instead of $2n - 2$ residual degrees of freedom, which matters only when $n$ is very small or $\rho$ is close to zero. More generally, the efficiency of a randomised complete block design relative to a completely randomised one is estimated from the block and residual mean squares (Cochran and Cox, *Experimental Designs*, 1957; Montgomery, *Design and Analysis of Experiments*, chapter 4). Matching without analysing the pairs throws the gain away, and for a binary $Y$ the matched analysis (McNemar, conditional logistic) targets a conditional, not a marginal, odds ratio.
-:::
 
 ## Two questions for every factor {#sec-nested-designs}
 
@@ -404,7 +379,7 @@ The paper itself is behind a paywall; the slide uses only its standfirst and its
 \end{tikzpicture}
 ```
 
-Colour marks a fixed factor, grey a random one. Historical source, kept for reference only: `figures/sources/crossed_versus_nested_design.jpg`, the figure "Factors may be crossed or nested" in Krzywinski, Altman and Blainey (2014). That file is too small to show at slide size, so the slide uses a TikZ redraw instead.
+Colour marks a fixed factor, grey a random one. from "Factors may be crossed or nested" in Krzywinski, Altman and Blainey (2014). 
 
 ::: {.notes}
 Walk the four panels left to right, top to bottom. a: three fixed factors, every combination present, a factorial; no random term at all. b: each mouse receives one drug and each cell belongs to one mouse—the drug comparison has as many replicates as mice. c: each mouse receives both drugs, so the mouse acts as a block and the drug contrast is made inside each mouse. d: tissues nested in mice, cells nested in tissues, and the drug assigned to cells, so drug is crossed with the hierarchy at the bottom. Ask where SPRUCE sits: panel b, with enclosure for mouse and warming for drug.
@@ -412,7 +387,7 @@ Walk the four panels left to right, top to bottom. a: three fixed factors, every
 The original is a small published figure; it is redrawn here because the copy available was too small to read. In the original, tissue is a fixed factor (two named tissues compared); that is why it is coloured.
 :::
 
-## Crossed, nested, blocked, split {#sec-schielzeth-fig1}
+## Crossed, nested, blocked, split {#sec-schielzeth-fig1 visibility="hidden"}
 
 ![Four layouts: crossed, nested, randomised block, and split-plot. Schielzeth and Nakagawa, Figure 1.](figures/sources/schielzeth-fig1-designs.png){width="96%" fig-alt="Four schematics. Crossed: each level of one factor meets several levels of the other. Nested: each lower level belongs to one upper level. Randomised block: each treatment appears in each block. Split-plot: one treatment on the large unit, another inside it."}
 
@@ -982,4 +957,3 @@ CA-SYS is the other shape: systems sit in zones, and two zones contain only one 
 ::: {.notes}
 Count parameters on the board: intercept, warming slope, CO2, interaction, against ten enclosures. Then say the CA-SYS missing cross in one sentence. Do not open JMP.
 :::
-
