@@ -1,0 +1,447 @@
+---
+title: "Atelier statistique PEPR Carbone"
+subtitle: "Compléments et messages à retenir"
+date: 2026-10-16
+lang: fr
+format:
+  pdf:
+    pdf-engine: lualatex
+    toc: true
+    toc-depth: 2
+    number-sections: false
+    colorlinks: true
+    documentclass: article
+    papersize: a4
+    geometry:
+      - margin=2.4cm
+bibliography:
+  - "Statistical classes.bib"
+citeproc: true
+link-citations: true
+---
+
+Bonjour à toutes et à tous,
+
+Merci encore pour votre participation à l'atelier. Cette note reprend des questions revenues pendant les séances. Les diapositives restent en ligne : [From the question to the model](https://bastienchassagnol.github.io/PEPR-Carbon-Statistical-Courses/).
+
+## Modèle de mélange ou modèle de convolution {#sec-melange}
+
+Ces deux modèles servent quand le signal est hétérogène, par exemple un mélange de composés chimiques, ou des OTU dans une étude de microbiome. Les deux reposent sur des variables latentes, c'est-à-dire non observées. Ils décrivent deux mécanismes de génération des données.
+
+### Mélange fini
+
+Chaque observation provient d'une seule composante. La variable latente $Z_i$ est une indicatrice : elle nomme la composante dont vient l'observation $i$.
+
+$$
+\Pr(Z_i = k) = \pi_k,
+\qquad
+Y_i \mid Z_i = k \sim f_k(y;\theta_k)
+$$ {#eq-melange}
+
+La densité marginale s'obtient en sommant sur l'étiquette :
+
+$$
+f(y) = \sum_k \pi_k\, f_k(y;\theta_k).
+$$ {#eq-melange-marginale}
+
+Si l'on connaît $Z_i$, la loi de $Y_i$ est exactement $f_k$. Toute la difficulté consiste à retrouver l'étiquette. C'est ce que fait l'algorithme EM. Les composantes $f_k$ sont souvent gaussiennes, mais ce n'est pas une obligation : le modèle à inflation de zéros vu en cours est un mélange entre une masse en 0 et une loi de Poisson ou une loi binomiale négative.
+
+### Convolution
+
+L'observation est une somme pondérée de plusieurs contributions latentes à la fois.
+
+$$
+Y_i = \sum_k w_k X_{ik} + \varepsilon_i
+$$ {#eq-convolution}
+
+Si les $X_{ik}$ sont indépendants, la loi de $Y_i$ est la convolution de leurs lois. Une somme de variables indépendantes est une convolution : c'est l'idée qui sous-tend le théorème central limite, rappelée dans le diaporama. Connaître une seule contribution ne détermine pas $Y_i$. Il faut toutes les contributions et leurs poids. Retrouver les $X_{ik}$ à partir de $Y_i$ s'appelle une déconvolution.
+
+Le filtre de Wiener cherche à retrouver un signal à partir d'une mesure qui est la somme du signal convolué et d'un bruit. Il pondère chaque composante, souvent chaque fréquence, selon la part de signal qu'elle contient par rapport au bruit. On reconstitue des contributions superposées à partir de leur somme, et cela n'est possible que si l'on dispose d'une information *a priori* sur ces contributions, leur signature.
+
+Un mélange de deux gaussiennes, au sens de @eq-melange-marginale, peut être bimodal. Une somme de deux gaussiennes indépendantes, au sens de @eq-convolution, reste une gaussienne. Les deux opérations produisent des formes de données différentes.
+
+### Microbiome
+
+On mesure l'abondance d'un gène, par exemple un gène fonctionnel du cycle de l'azote dosé en qPCR ou compté en métagénomique, dans des échantillons de sol où vivent de nombreux taxons.
+
+- **Lecture « mélange ».** Chaque copie ou chaque lecture du gène est attribuée à un seul taxon : c'est l'assignation taxonomique (*binning*). La variable latente est l'étiquette « de quel taxon vient cette lecture ? ». Une fois l'étiquette connue, la lecture est entièrement expliquée. Il faut des composantes bien séparées.
+- **Lecture « convolution ».** Le signal mesuré dans l'échantillon $i$ est la somme des contributions de plusieurs taxons : le nombre de copies du gène chez le taxon $t$, multiplié par l'abondance de ce taxon dans l'échantillon, plus un bruit. C'est la logique de la prédiction de fonctions à partir de la 16S, ou de la déconvolution de types cellulaires en transcriptomique. Il faut une matrice de signatures connue, comme le nombre de copies par génome, ou des contraintes de positivité et de rang (factorisation en matrices non négatives).
+
+Sans cette information extérieure, la décomposition n'est pas identifiable.
+
+## Pourquoi un GLM plutôt qu'une transformation de $Y$ {#sec-glm}
+
+L'argument central tient en une distinction, reprise au chapitre 1 de Agresti [-@agrestiFoundationsLinearGeneralized2015]. Transformer $Y$ modélise $\mathbb{E}[g(Y) \mid \mathbf{x}]$. Un modèle linéaire généralisé modélise $g(\mathbb{E}[Y \mid \mathbf{x}])$. Pour une fonction $g$ non linéaire, ces deux quantités diffèrent. Dans un GLM, le lien $g$ s'applique à l'espérance $\mu = \mathbb{E}(Y \mid \mathbf{x})$, donc à un paramètre, et non aux observations.
+
+### L'estimation porte sur $\mu$
+
+Pour obtenir l'espérance d'une variable transformée, il faut intégrer sur la loi d'origine. C'est la loi du statisticien inconscient (LOTUS) :
+
+$$
+\mathbb{E}[g(Y)] = \int g(y)\, f(y)\, dy.
+$$ {#eq-lotus}
+
+Cette intégrale n'est pas l'image de l'espérance par $g$ :
+
+$$
+g\bigl(\mathbb{E}[Y]\bigr) = g\!\left(\int y\, f(y)\, dy\right).
+$$ {#eq-g-esperance}
+
+L'écart entre @eq-lotus et @eq-g-esperance est donné par l'inégalité de Jensen. Pour $g = \log$, qui est concave,
+
+$$
+\mathbb{E}[\log Y] \le \log \mathbb{E}[Y].
+$$ {#eq-jensen}
+
+Ajuster un modèle sur $\log Y$ puis prendre l'exponentielle donne une moyenne géométrique, plus petite que la moyenne arithmétique. Si $\log Y$ suit une loi normale de variance $\sigma^2$, le rapport entre les deux est
+
+$$
+\exp(\sigma^2/2).
+$$ {#eq-facteur-lognormal}
+
+Ce facteur change entre les groupes dès que $\sigma^2$ change. Le GLM log-linéaire estime directement $\mathbb{E}(Y \mid \mathbf{x})$ sur l'échelle d'origine.
+
+### Les intervalles se transportent sur $\mu$
+
+Une fonction monotone conserve les quantiles et les probabilités. Elle ne conserve pas les espérances. Dans un GLM, on calcule l'intervalle sur l'échelle du lien, pour $\eta = g(\mu)$, puis on applique $g^{-1}$ aux deux bornes. Comme $g$ est monotone,
+
+$$
+\Pr\bigl(L \le g(\mu) \le U\bigr)
+=
+\Pr\bigl(g^{-1}(L) \le \mu \le g^{-1}(U)\bigr).
+$$ {#eq-intervalle}
+
+@eq-intervalle est un intervalle pour $\mu$, avec la même couverture. Il reste dans le domaine admissible : positif pour un taux, entre 0 et 1 pour une proportion. La même opération après une transformation des données donne un intervalle pour $g^{-1}(\mathbb{E}[g(Y)])$. Si $g(Y)$ est symétrique, c'est un intervalle pour la médiane de $Y$. C'est une autre question, et elle doit être annoncée comme telle.
+
+### La variance suit la moyenne
+
+Une famille de lois impose
+
+$$
+\operatorname{Var}(Y \mid \mathbf{x}) = \varphi\, V(\mu).
+$$ {#eq-variance}
+
+Par exemple $V(\mu) = \mu$ pour une loi de Poisson, et $V(\mu) = \mu + \mu^2/\theta$ pour une binomiale négative. Une transformation impose au contraire une variance constante sur l'échelle transformée, et modifie en même temps la moyenne et la dispersion.
+
+### Les zéros restent des données
+
+Avec un GLM, il n'est plus nécessaire d'utiliser $\log(Y + 1)$, dont la constante arbitraire change les résultats. Un offset, par exemple $\log$(profondeur de séquençage), $\log$(surface) ou $\log$(durée), intègre l'effort d'échantillonnage. Les coefficients se lisent comme des rapports de taux ($e^{\beta}$) ou des rapports de cotes. La déviance, le test du rapport de vraisemblance et l'AIC restent disponibles.
+
+## Messages pour des données de terrain {#sec-terrain}
+
+### Diagnostiquer avec un QQ-plot
+
+Il faut regarder les résidus du modèle, c'est-à-dire la loi de $Y \mid \mathbf{x}$, et non l'histogramme brut de $Y$. Des groupes gaussiens de moyennes différentes donnent un histogramme global asymétrique alors que le modèle est correct.
+
+Les tests de normalité (Shapiro–Wilk, entre autres) manquent de puissance quand $n$ est petit. Au-delà d'environ 150 à 200 observations, ils rejettent de petits écarts. Ils se contredisent entre eux.
+
+Pour lire un QQ-plot :
+
+- une courbure dans un seul sens indique une asymétrie ;
+- un S indique des queues lourdes ou légères ;
+- une marche d'escalier indique une variable discrète ou deux groupes mélangés.
+
+La bande de confiance *tail-sensitive* (`qqplotr::stat_qq_band(bandType = "ts")`) indique quels écarts sortent de ce que le hasard d'échantillonnage produit sous la loi de référence.
+
+### Préférer un modèle, et vérifier l'hypothèse nulle
+
+La plupart des tests classiques sont des modèles linéaires à un facteur. Le modèle donne un effet et un intervalle, et il accepte des covariables, des pondérations et une fonction de lien.
+
+Le test de Wilcoxon / Mann–Whitney n'est pas un remplacement du test de Student pour une médiane. Il estime la supériorité stochastique
+
+$$
+\Pr(B > A) + \tfrac{1}{2}\Pr(B = A).
+$$ {#eq-mann-whitney}
+
+Deux groupes de même médiane peuvent donner $p < 0{,}001$ sous @eq-mann-whitney.
+
+- Pour une médiane : régression quantile, `quantreg::rq(y ~ groupe, tau = 0.5)`.
+- Pour une moyenne : Welch, sans test préalable sur les variances, ou un Welch par permutation, `MKinfer::perm.t.test`.
+
+Pour des données de comptage (OTU, copies de gènes) :
+
+- le Poisson suppose que la variance est égale à la moyenne, le cas $V(\mu) = \mu$ de @eq-variance ;
+- la binomiale négative ajoute de la surdispersion (un taux gamma, intégré) ;
+- les modèles à inflation de zéros (ZIP, ZINB) ajoutent des zéros structurels : c'est un mélange, voir @sec-melange ;
+- le multinomial et le Dirichlet-multinomial traitent les compositions, c'est-à-dire des comptages conditionnés par leur total ;
+- le Poisson log-normal (`PLNmodels`) modélise les dépendances entre taxons.
+
+Un zéro est une observation. Vérifiez la surdispersion et l'excès de zéros avant d'interpréter un rapport de taux, et mettez la profondeur de séquençage en offset.
+
+### Les douze règles de la session « pièges » {#sec-douze}
+
+Ces douze règles sont celles de l'affiche de Riley et collègues [-@riley12thDayChristmas2022], dans l'ordre de la session. Le numéro de l'affiche est le numéro de l'atelier.
+
+#### Règle 1. Partir de la question
+
+Un coefficient significatif ne dit pas ce que l'analyse cherchait. Riley et collègues demandent de dire si le travail est descriptif ou causal, pronostique ou prédictif, exploratoire ou confirmatif. Six usages donnent six cibles différentes pour $\mu$ : décrire un motif, comparer des groupes, expliquer une intervention, prédire une nouvelle unité, explorer, confirmer une affirmation écrite à l'avance.
+
+La question vague « quel est l'effet de la sécheresse sur le carbone forestier ? » devient une question statistique quand elle nomme :
+
+- la différence de quoi, par exemple un flux net de $\mathrm{CO}_2$, avec ses unités ;
+- entre quelles conditions ;
+- sur quelle période et quelle population de sites ;
+- à quelle unité : la placette qui a reçu l'exclusion de pluie, pas le réplicat technique.
+
+L'estimand est cette quantité. Un écart en tonnes de C par hectare, un rapport de flux, une pente contre le réchauffement, une moyenne sur les saisons ou pour une saison, un effet propre à un site ou un effet que l'on veut transporter vers de nouveaux sites : changer l'unité, le contraste ou l'ensemble des covariables change l'estimand. Le logiciel ajuste une quantité ; c'est à l'analyse de la nommer. Pour une comparaison, le cadre PICO nomme la population, l'intervention ou l'exposition, le comparateur et le critère $Y$.
+
+Trois lignes se séparent ensuite.
+
+- **Expliquer.** Quelles covariables, et quelle est la taille de $\beta$ ? Le coefficient et son intervalle sont le résultat.
+- **Prédire.** À quelle distance $\hat{Y}$ tombe-t-il d'une unité que l'ajustement n'a pas vue ? Le score est une erreur de prédiction.
+- **Confirmer.** Le contraste, les covariables et l'affirmation ont été écrits avant l'ajustement. Une recherche jusqu'à obtenir un résultat significatif est exploratoire.
+
+Les deux premiers usages n'ont pas le même score. Sur de nouvelles unités, la prédiction se lit par
+
+$$
+\mathrm{RMSE}
+=
+\sqrt{\frac{1}{n}\sum_{i=1}^{n}(Y_i - \hat{Y}_i)^2}.
+$$ {#eq-rmse}
+
+Pour un coefficient, sous le modèle linéaire,
+
+$$
+\hat{\boldsymbol{\beta}}
+=
+(\mathbf{X}^{\top}\mathbf{X})^{-1}\mathbf{X}^{\top}\mathbf{Y},
+\qquad
+t = \hat\beta_j / \operatorname{SE}(\hat\beta_j).
+$$ {#eq-moindres-carres}
+
+Un petit RMSE (@eq-rmse) ne dit pas que $\hat\beta_j$ dans @eq-moindres-carres est l'effet d'un changement de $x_j$. Un score de validation croisée répond à la distance entre $\hat{Y}$ et $Y$ sur de nouvelles lignes. Il ne dit pas que $\hat\beta$ est sans biais, ni que le chemin de $x$ vers $Y$ est celui sur lequel on interviendrait. Quand l'affirmation porte sur $\beta$, on vérifie les hypothèses linéaires et l'on réajuste après avoir retiré les lignes influentes. Le score sur données tenues à l'écart reste réservé à la prédiction. La discrimination, la calibration et la décision sont trois questions supplémentaires, à la règle 8.
+
+Une illustration, reprise de [MetricGate (avril 2025)](https://metricgate.com/blogs/prediction-vs-explanation-models/), le montre sur un tirage où la vérité n'utilise que $X_1$ et $X_2$, avec trois covariables de bruit, $n = 200$, graine 123 pour le tirage et 42 pour la séparation. Une forêt aléatoire, plus souple, a un RMSE de validation de 2,40 : les arbres ont suivi le bruit. Le modèle linéaire a un RMSE de 1,01, et ses coefficients sont l'objet de l'explication. La forêt n'est pas un mauvais logiciel. Elle est le mauvais outil pour un coefficient explicatif quand la moyenne est vraiment linéaire. Ces chiffres sont ceux de cette simulation, pas un résultat CA-SYS ou SPRUCE.
+
+#### Règle 2. Rapporter l'effet, l'intervalle et les hypothèses
+
+L'intervalle et l'estimation restent dans la phrase, avec la raison pour laquelle la taille importe [@halseyFickleValueGenerates2015]. Riley et collègues donnent deux rapports de risque publiés. L'intervalle étroit 0,95 à 0,99 est précis et petit : l'effet est détecté, et il peut être sans conséquence pratique. L'intervalle large 0,40 à 1,10 traverse 1 : l'absence de détection n'est pas une preuve d'absence d'effet. Un intervalle de confiance à $100(1-\alpha)\,\%$ est l'ensemble des valeurs nulles qu'un test de niveau $\alpha$ ne rejetterait pas. Il porte plus d'information qu'un seul $p$ contre zéro.
+
+Deux jugements restent séparés. La preuve statistique demande si les données pouvaient venir d'un monde sans effet. La preuve pratique compare l'estimation à une différence minimale importante, fixée avant l'ajustement : un flux, un stock, une décision de gestion. La valeur $p$ ne fournit pas ce seuil.
+
+Si l'on accepte une décision oui ou non, le test a deux erreurs. L'erreur de type I rejette l'hypothèse nulle alors qu'elle est vraie ; son taux de long terme, quand le test est calibré, est $\alpha$. L'erreur de type II ne rejette pas une hypothèse nulle fausse ; son taux est $\beta$, et la puissance est $1 - \beta$. $\alpha$ est choisi avant les données. $p$ est calculé après.
+
+Sous des répétitions identiques de l'expérience, avec l'effet fixé à zéro, $p$ est la probabilité d'un résultat plus extrême que celui en main. Un $p$ de 0,06 dit que, sous le modèle et sous l'hypothèse nulle, une répétition serait plus extrême environ 6 fois sur 100. Il ne dit pas que l'hypothèse nulle a la probabilité 0,06. $\alpha$ est la probabilité de long terme d'affirmer un effet quand l'effet est exactement nul. Ce n'est pas la probabilité qu'un résultat positif soit faux : cela échangerait $\Pr(\text{affirmer} \mid H_0)$ et $\Pr(H_0 \mid \text{affirmer})$.
+
+Halsey et collègues ont montré, sur une petite expérience normale simulée, un $p$ qui traverse 0,05 d'un échantillon à l'autre [@halseyFickleValueGenerates2015]. van Helden a repris la simulation : l'intervalle traversait la valeur nulle dans les mêmes tirages où $p > 0{,}05$, de sorte que remplacer $p$ par l'intervalle ne changeait pas la décision. Il a situé l'instabilité dans le petit échantillon [@vanheldenConfidenceIntervalsAre2016]. La réponse de Halsey, Curran-Everett et Drummond porte sur la recommandation, pas sur l'algèbre commune : lire l'effet et sa marge d'erreur, plutôt que de réappliquer un seuil [@halseyResponse2016].
+
+Huber a appelé cet échange un conflit de cultures. Un artisan rapporte un $p$ pour une question écrite à l'avance. Un criblage industriel utilise $p$ pour des milliers d'hypothèses, et l'histogramme de tous ces $p$ fait partie de la preuve. Un seul $p$ peut tomber n'importe où dans $(0, 1)$ quand l'hypothèse nulle est vraie. La loi de beaucoup de $p$ est un autre objet. Les deux usages s'accordent sur un point : $p$ seul est un compte rendu insuffisant.
+
+Lantz garde $p = 0{,}0253$ pendant qu'une préférence pour un traitement X se rapproche d'un pile ou face. À $n = 20$, 75 % préfèrent X (Cohen $h = 1{,}05$). À $n = 1\,997\,120$, 50,08 % préfèrent X ($h < 0{,}01$). Le premier chiffre changerait un choix. Le second non. Ce que le grand échantillon resserre, c'est l'intervalle. Cinq lectures de $p$ sont à retirer : la probabilité que le résultat soit dû au hasard, la probabilité qu'une répétition donne le même appel, la probabilité que l'hypothèse nulle soit fausse, la probabilité que le résultat importe, la probabilité qu'il se généralise. Les trois premières confondent une probabilité sur les données et une probabilité sur l'hypothèse. Les deux dernières sont l'effet et l'intervalle.
+
+L'échec inverse est une petite étude qui déclare quand même un effet. Gelman et Carlin appellent erreur de type M le facteur par lequel une estimation significative est trop grande, et erreur de type S la fréquence à laquelle cette estimation significative a le mauvais signe ([DOI 10.1177/1745691614551642](https://doi.org/10.1177/1745691614551642)). Sur le tirage d'Olszewski, deux échantillons normaux, $n = 10$ chacun, écart-type 10, différence vraie 1, graine 1000, 10 000 tests de Student : la puissance est d'environ 5,5 %, les estimations significatives valent environ 11 fois la différence vraie, et environ un quart à un tiers d'entre elles pointent dans le mauvais sens. Sur sa courbe, l'inflation est de plusieurs fois en dessous d'environ 10 % de puissance, et proche de 1 une fois la puissance au-delà d'environ 80 %. Un petit $p$ issu d'une petite étude est une raison de douter de la taille.
+
+#### Règle 3. Traiter les données manquantes délibérément
+
+Trois mécanismes placent l'indicatrice de manquement $R$ dans la loi de $(Y, \mathbf{x})$.
+
+- **MCAR.** Le manquement est indépendant des valeurs, observées ou non.
+- **MAR.** Il dépend de variables observées.
+- **MNAR.** Il dépend de la valeur non observée.
+
+Si $R$ dépend de la valeur non observée de $Y$, un modèle qui ne conditionne que sur les covariables observées ne corrige pas le biais. Le mécanisme MAR ne se teste pas contre MNAR à partir des seules données observées.
+
+À éviter comme réflexe : remplir par zéro ou par la moyenne, et supprimer toutes les lignes incomplètes sans argument. À rapporter : l'étendue du manquement dans $Y$ et dans $\mathbf{x}$, le mécanisme que l'on suppose, et une imputation multiple quand MAR est défendable. Le remplissage par zéro, le remplissage par la moyenne et la suppression des lignes incomplètes sont des hypothèses [@riley12thDayChristmas2022].
+
+#### Règle 4. Ne pas dichotomiser une variable continue
+
+Couper $x$ à un seuil jette l'ordre, dépense de la puissance, et fait dépendre le résultat du seuil choisi [@riley12thDayChristmas2022]. La note courte est [Altman et Royston (2006)](https://doi.org/10.1136/bmj.332.7549.1080). Un seuil à 130 range 129 avec les valeurs basses et 131 avec 220. En carbone : « sec » contre « humide », ou une température du sol coupée à $10^\circ\mathrm{C}$. Alors $9{,}9^\circ\mathrm{C}$ et $10{,}1^\circ\mathrm{C}$ deviennent deux régimes, et $10{,}1^\circ\mathrm{C}$ et $25^\circ\mathrm{C}$ le même. Un second seuil choisi parce qu'il était significatif ne voyagera pas. On garde le réchauffement, l'humidité et le pH continus, dans
+
+$$
+Y = \beta_0 + \beta_1 x + \varepsilon,
+$$ {#eq-pente}
+
+sauf si le seuil est lui-même l'objet scientifique. SPRUCE a gardé le gradient de réchauffement plutôt que de le découper en classes.
+
+#### Règle 5. Vérifier la linéarité de la moyenne conditionnelle
+
+Une droite est une hypothèse : un pas d'une unité de $x$ n'a pas forcément le même effet en bas et en haut de l'échelle. Les contrôles paramétriques usuels sont les splines cubiques restreintes et les polynômes fractionnaires [@riley12thDayChristmas2022]. La moyenne souple s'écrit
+
+$$
+g(\mu) = \beta_0 + f(x),
+$$ {#eq-courbe}
+
+à côté de la droite $g(\mu) = \beta_0 + \beta_1 x$. Si @eq-courbe est nécessaire, un GLM avec le bon lien, un GAM (`mgcv::gam`), ou une spline dans le prédicteur linéaire, décrit $f(x)$. Un test de rangs peut répondre à une autre question : @eq-mann-whitney estime une supériorité stochastique, pas la pente de @eq-pente ni la médiane. Le changement de procédure change souvent l'hypothèse.
+
+Une simulation illustrative, graine 20261005, le montre sans être un ajustement SPRUCE. La moyenne générative est une bosse,
+
+$$
+\mu = 4 + 0{,}35\, \mathrm{temp} - 0{,}08\,(\mathrm{temp} - 4{,}5)^2,
+$$
+
+avec un bruit normal d'écart-type 0,35. La droite des moindres carrés rate le sommet. La courbe verte du diaporama est cette $\mu$ ; la droite est ce qu'un ajustement linéaire impose.
+
+#### Règle 6. Quantifier une différence entre sous-groupes par son contraste
+
+« Significatif dans les tourbières minérotrophes, pas dans les tourbières ombrotrophes » n'est pas une interaction. Deux tests de sous-groupes comparent chacun un effet à zéro. Le test d'interaction compare les effets entre eux. Des barres d'intervalle qui se chevauchent ne constituent pas ce test. Le contraste à rapporter est $\hat\beta_3$ et son intervalle, dans
+
+$$
+Y = \beta_0 + \beta_1 T + \beta_2 S + \beta_3 (T \times S) + \varepsilon.
+$$ {#eq-interaction}
+
+#### Règle 7. Lire l'hétérogénéité avec $\tau^2$, pas avec $I^2$ seul
+
+Chaque site, ou chaque étude, rapporte une estimation. Sa dispersion autour de la moyenne combinée a deux sources. Les vrais effets diffèrent entre sites : leur dispersion est $\tau^2$. Chaque estimation est bruitée : sa variance d'échantillonnage est $s^2$, et elle diminue quand le site collecte plus de carottes. $I^2$ mélange les deux. $\tau^2$ ne les mélange pas.
+
+$$
+I^2 \approx \frac{\tau^2}{\tau^2 + s^2}.
+$$ {#eq-i2}
+
+On peut garder $\tau^2 = 0{,}04$ et changer seulement le bruit. Avec des sites bruyants, $s^2 = 0{,}16$, @eq-i2 vaut $0{,}04/0{,}20 = 20\,\%$. Avec des sites précis, $s^2 = 0{,}0025$, @eq-i2 vaut $0{,}04/0{,}0425 \approx 94\,\%$. Les vrais effets n'ont pas bougé. Les mesures sont devenues plus nettes, donc l'hétérogénéité occupe une plus grande part de ce que l'on voit. Les seuils 25 %, 50 % et 75 % ne sont pas des coupures. Le même $\tau^2$ a donné 20 % et 94 %. $\tau^2$ répond à « de combien les vrais effets de site s'écartent-ils ? », sur l'échelle au carré de l'effet. $I^2$ répond à « quelle est cette dispersion à côté du bruit d'échantillonnage ? ».
+
+Le modèle à effet fixe suppose un seul vrai effet : les sites ne diffèrent que par le bruit, donc $\tau^2 = 0$. Le modèle à effets aléatoires donne à chaque site son propre vrai effet, tiré autour de $\mu$ avec la dispersion $\tau^2$. C'est ainsi que $\tau^2$ entre dans une analyse combinée. Une covariable de site peut ensuite expliquer une partie de $\tau^2$ : c'est une méta-régression à effets mixtes. Comparer l'ajustement à effet fixe et l'ajustement à effets aléatoires dit si cette couche de variabilité entre sous-unités change la combinaison. Cela ne remplace pas le rapport de $\tau^2$ dans les unités de l'effet.
+
+#### Règle 8. Évaluer une prédiction sous trois angles
+
+La discrimination, la calibration et l'utilité à un seuil de décision sont trois questions [@riley12thDayChristmas2022]. Une grande AUC avec une probabilité mal calibrée induit encore la décision en erreur. Les trois contrôles appartiennent à l'usage « prédire » de la règle 1, pas à l'explication de $\beta$. Les dessins du diaporama sont des arithmétiques d'enseignement, pas des scores ajustés sur CA-SYS ou SPRUCE.
+
+La discrimination est le classement. L'aire sous la courbe ROC vaut
+
+$$
+\mathrm{AUC} = \Pr(\hat\pi_{\mathrm{événement}} > \hat\pi_{\mathrm{absence}}).
+$$ {#eq-auc}
+
+Huit paires sur dix dans le bon ordre donnent une AUC de 0,8. La diagonale vaut 0,5. @eq-auc est invariante par transformation monotone de $\hat\pi$ : elle ne détecte pas un modèle mal calibré.
+
+La calibration demande si, dans un groupe de sites auxquels on a donné le même $\hat\pi$, l'événement arrive à peu près aussi souvent :
+
+$$
+\bar{Y}_{\mathrm{groupe}} \approx \hat\pi_{\mathrm{groupe}}.
+$$ {#eq-calibration}
+
+L'utilité demande si le score change l'action. Au seuil $t$, le bénéfice net est
+
+$$
+\mathrm{NB}(t)
+=
+\frac{\mathrm{TP}}{n}
+-
+\frac{\mathrm{FP}}{n}\,\frac{t}{1-t}.
+$$ {#eq-benefice-net}
+
+Un vrai positif compte 1. Un faux positif coûte $t/(1-t)$. Un score utile bat à la fois « agir sur chaque site » et « n'agir sur aucun » sur une plage de $t$. Dans l'exemple du diaporama, $t$ est la chance qu'une tourbière soit une source, ou qu'un stock change, à partir de laquelle une visite vaut le déplacement.
+
+#### Règle 9. Respecter les grappes et les répétitions
+
+Des lignes répétées ne sont pas des réplicats. Si le traitement a été appliqué à la grappe $j$, les lignes $i$ de cette grappe partagent $x_j$ et l'effet de grappe $u_j$ :
+
+$$
+Y_{ij}
+=
+\beta_0 + u_j + \boldsymbol\beta^{\top}\mathbf{x}_{ij} + \varepsilon_{ij},
+\qquad
+u_j \sim N(0, \sigma_u^2),
+\qquad
+\rho = \frac{\sigma_u^2}{\sigma_u^2 + \sigma^2}.
+$$ {#eq-grappe}
+
+Ignorer la grappe dans @eq-grappe traite les lignes d'un même enclos comme aussi différentes que des lignes d'enclos différents [@riley12thDayChristmas2022]. $\rho$ est la corrélation entre deux observations de la même grappe.
+
+Arithmétique d'enseignement, pas une étude publiée : 4 sites, le niveau qui a reçu le traitement, 3 placettes par site, 20 carottes par placette, 3 lectures techniques par carotte. Cela fait $4 \times 3 \times 20 \times 3 = 720$ lignes. Si le traitement a été appliqué au site, on n'a pas 720 réplicats indépendants. Le dénominateur correct pour un traitement au niveau du site est la variation entre sites.
+
+#### Règle 10. Choisir les covariables à partir d'un schéma causal
+
+Pour un modèle explicatif, le tri sur les valeurs $p$ est le mauvais portillon. On dessine d'abord les chemins [@riley12thDayChristmas2022].
+
+| Rôle | Ajustement |
+| --- | --- |
+| Facteur de confusion | En général, on ajuste : il bloque un chemin de porte dérobée |
+| Collisionneur | On n'ajuste pas : l'ajustement ouvre un biais. Un filtre sur la profondeur de lecture peut en être un |
+| Médiateur | On ajuste seulement si l'estimand est l'effet direct, pas l'effet total |
+| Modérateur | Le modèle comporte une interaction |
+| Facteur de variance (lot, séquençage) | On ajuste pour gagner en puissance |
+| Instrument | L'ajustement est optionnel |
+
+Le lasso et la ridge répondent à un problème de prédiction. Ils ne constituent pas un ensemble d'ajustement causal. La ridge pénalise les carrés des coefficients ($L_2$). Le lasso pénalise les valeurs absolues ($L_1$). Le filet élastique mélange les deux. Un critère d'Akaike pas à pas pose le même problème : le portillon est le graphe et l'estimand.
+
+#### Règle 11. Inclure l'analyse de sensibilité dans le résultat
+
+Un rapport de risques constant, une loi *a priori* dite vague, ou un ajustement sur les seuls cas complets peut chacun porter le résultat. On réajuste sous une seconde hypothèse défendable et l'on dit ce qui a bougé [@riley12thDayChristmas2022]. Les variantes à nommer portent sur le mécanisme de données manquantes, la forme d'un délai jusqu'à l'événement, le modèle, le lien ou la distribution, et le choix de la loi *a priori* ou de la pénalité. Une analyse de sensibilité fait varier une hypothèse que les données ne peuvent pas vérifier. Réajuster sous des hypothèses que les données rejettent déjà, c'est un contrôle de modèle.
+
+#### Règle 12. Rédiger pour qu'un lecteur puisse refaire l'analyse
+
+Les lignes directrices de rapport (CONSORT, STROBE, PRISMA, TRIPOD, selon le plan) couvrent le dispositif, les participants et les critères. Pour les méthodes statistiques, la liste de contrôle est SAMPL, sur le [réseau EQUATOR](https://www.equator-network.org/reporting-guidelines/sampl/) [Lang et Altman, 2015](https://pubmed.ncbi.nlm.nih.gov/25441757/). On y rapporte les méthodes, le traitement des données manquantes et la version du logiciel.
+
+| Préférer | Éviter |
+| --- | --- |
+| Médiane (écart interquartile) quand $Y$ est asymétrique | « Significatif » comme seul résultat |
+| *Multivariable* : plusieurs covariables $x$ | *Multivariate* : plusieurs réponses $Y$ |
+| Association, quand $x$ n'a pas été attribué | Un vocabulaire causal sans le dispositif qui le porte |
+
+Le fichier source, l'historique du code, le verrouillage des versions et la graine font l'objet du dernier point de cette note.
+
+### Pour aller plus loin
+
+**Rôle des variables.** Avant d'ajouter une covariable, le graphe causal de la règle 10 dit lequel des six rôles elle occupe. Le détail est dans la session causale du diaporama.
+
+**Plan d'expérience.** Avant d'écrire la formule, nommez l'unité qui a reçu le traitement, l'unité mesurée, ce qui a été randomisé ou mis en bloc, et les lignes qui sont des répétitions d'une même unité. Cela prolonge @eq-grappe.
+
+- Un effet fixe correspond à des niveaux choisis, dont on veut rapporter le contraste (le réchauffement, un traitement).
+- Un effet aléatoire correspond à des niveaux échantillonnés, sur lesquels on veut généraliser (enclos, parcelles, sites), et dont on estime la variance.
+- Précisez si les facteurs sont croisés ou emboîtés. En R : `lme4::lmer(y ~ rechauffement + (1 | enclos))`. On passe à `nlme` quand il faut modéliser une corrélation résiduelle dans le temps.
+
+**Reproductibilité.** Un seul fichier source `.qmd` produit les chiffres, les figures et le texte. Git conserve l'historique du code. Pour l'évolution des jeux de données, [DVC](https://dvc.org/) versionne les fichiers que Git ne doit pas absorber. `renv.lock` fige les versions des paquets. `set.seed()` est requis pour toute inférence ou simulation qui comporte une part stochastique.
+
+## Deux questions posées après la séance {#sec-questions}
+
+### Une tendance qui change de pente {#sec-rupture}
+
+Exemple : la biomasse augmente avec l'humidité jusqu'à un seuil, puis diminue. La régression segmentée (*broken-stick*, *changepoint*) écrit une moyenne continue dont la pente change en un point $\psi$ inconnu, que l'on estime :
+
+$$
+\mu(x) = \beta_0 + \beta_1 x + \beta_2 (x - \psi)_{+},
+\qquad
+(x - \psi)_{+} = \max(0,\, x - \psi).
+$$ {#eq-segmentee}
+
+La pente vaut $\beta_1$ avant $\psi$ et $\beta_1 + \beta_2$ après. Une biomasse qui augmente puis diminue correspond à $\beta_1 > 0$ et $\beta_1 + \beta_2 < 0$. @eq-segmentee est la base « puissance tronquée » des splines vues en cours, en degré 1 avec un seul nœud. Ici le nœud est un paramètre interprété, un seuil écologique, avec son propre intervalle de confiance. En R : `segmented::segmented()` (Muggeo), ou `mcp` pour une version bayésienne. Pour une biomasse positive et asymétrique, on applique la rupture au prédicteur linéaire d'un GLM gamma à lien log. Si la droite de la règle 5 est trop rigide et que rien n'impose un angle, on revient à @eq-courbe.
+
+Précautions :
+
+- Ne placez pas le seuil à l'œil avant d'ajuster le modèle. Cela consomme des degrés de liberté non comptés et donne des intervalles trop étroits.
+- Le test de l'existence d'une rupture n'est pas un test standard, car $\psi$ n'existe pas sous l'hypothèse nulle. Utilisez `segmented::davies.test()`.
+- Si rien n'impose un seuil net, une spline cubique restreinte ou un GAM, `mgcv::gam(y ~ s(humidite))`, décrit la courbe sans imposer d'angle. Le maximum de la courbe ajustée donne alors l'optimum.
+- Si $x$ représente le temps, les résidus sont souvent autocorrélés, et il faut le modéliser.
+
+### On ne dispose que du minimum et du maximum {#sec-etendue}
+
+Situation : à chaque pas de temps, plusieurs réplicats biologiques ont été mesurés, mais on ne dispose que de la plus petite et de la plus grande valeur de chaque série.
+
+La première recommandation est de demander les données brutes. Tout ce qui suit cherche à reconstituer une information qui a été perdue.
+
+S'il faut continuer, le minimum et le maximum sont des statistiques d'ordre. Avec $n$ réplicats indépendants de fonction de répartition $F$ au temps $t$,
+
+$$
+\mathbb{E}[F(\min)] \approx \frac{1}{n+1},
+\qquad
+\mathbb{E}[F(\max)] \approx \frac{n}{n+1}.
+$$ {#eq-ordre}
+
+Le maximum vise à peu près le quantile $n/(n+1)$, et cette cible change avec $n$. Une étendue calculée sur 3 réplicats n'est pas comparable à une étendue calculée sur 6.
+
+Deux approches.
+
+La régression quantile convient pour un usage descriptif. Ajuster `quantreg::rq()` sur les maxima avec $\tau \approx n/(n+1)$, et sur les minima avec $\tau \approx 1/(n+1)$, donne une enveloppe de tendance. C'est une approximation : on modélise un quantile de la loi du maximum, pas un quantile de $F$.
+
+L'approche par censure utilise le fait que l'on connaît le minimum $a$ et le maximum $b$, et que les $n - 2$ autres valeurs sont seulement censurées par intervalle dans $[a, b]$. La densité jointe des deux extrêmes est
+
+$$
+f(a, b) = n(n-1)\, f(a)\, f(b)\, \bigl[F(b) - F(a)\bigr]^{n-2}.
+$$ {#eq-censure}
+
+On choisit une loi pour chaque proportion, par exemple une loi bêta dont la moyenne dépend du temps via un lien logit et une spline, et l'on maximise la vraisemblance @eq-censure. Esquisse en R, pour une moyenne logit linéaire en $t$ et une précision constante :
+
+```r
+nll <- function(par, a, b, n, t) {
+  mu  <- plogis(par[1] + par[2] * t)
+  phi <- exp(par[3])
+  s1 <- mu * phi
+  s2 <- (1 - mu) * phi
+  -sum(log(n) + log(n - 1) + dbeta(a, s1, s2, log = TRUE) +
+       dbeta(b, s1, s2, log = TRUE) +
+       (n - 2) * log(pbeta(b, s1, s2) - pbeta(a, s1, s2)))
+}
+fit <- optim(c(0, 0, 1), nll, a = a, b = b, n = n, t = t, hessian = TRUE)
+```
+
+La méta-analyse rencontre le même problème d'information résumée. [Hozo, Djulbegovic et Hozo (2005)](https://doi.org/10.1186/1471-2288-5-13) et [Wan et collègues (2014)](https://doi.org/10.1186/1471-2288-14-135), tous deux dans *BMC Medical Research Methodology*, estiment une moyenne et un écart-type à partir du minimum, du maximum et de $n$. Ce sont des méthodes approximatives, fondées sur une hypothèse de normalité. Elles servent de point de comparaison, pas de substitut à @eq-censure quand la proportion est bornée.
