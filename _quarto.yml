@@ -30,6 +30,8 @@ project:
     - references/sarkar-measurement-and-expression-2021.pdf
     - references/schielzeth-nakagawa-2013.pdf
     - references/townes-count-distributions-2020.pdf
+    - suivi-atelier.qmd
+    - suivi-atelier.pdf
     - scripts/prepare-teaching-data.R
     - scripts/generate-data-figures.R
     - scripts/generate-slide-figures.R

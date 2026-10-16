@@ -31,7 +31,7 @@ Do not read the poster. Name the key principle along the bottom: align the quest
 :::
 :::
 
-The poster numbers are the workshop numbers. The BMJ article uses the same twelve ideas, in a slightly different order.
+The poster numbers are the workshop numbers. The BMJ article uses the same twelve ideas, in a slightly different order. The written follow-up spells each rule out: 📝 [Follow-up after the workshop](suivi-atelier.pdf).
 
 ::: {.notes}
 Read the left column down, then the right. These numbers are the roadmap for the next hour. Thirty seconds.
