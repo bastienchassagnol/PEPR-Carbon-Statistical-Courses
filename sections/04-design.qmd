@@ -387,7 +387,7 @@ Walk the four panels left to right, top to bottom. a: three fixed factors, every
 The original is a small published figure; it is redrawn here because the copy available was too small to read. In the original, tissue is a fixed factor (two named tissues compared); that is why it is coloured.
 :::
 
-## Crossed, nested, blocked, split {#sec-schielzeth-fig1 visibility="hidden"}
+## Crossed, nested, blocked, split {#sec-schielzeth-fig1 visibility="visible"}
 
 ![Four layouts: crossed, nested, randomised block, and split-plot. Schielzeth and Nakagawa, Figure 1.](figures/sources/schielzeth-fig1-designs.png){width="96%" fig-alt="Four schematics. Crossed: each level of one factor meets several levels of the other. Nested: each lower level belongs to one upper level. Randomised block: each treatment appears in each block. Split-plot: one treatment on the large unit, another inside it."}
 
@@ -397,7 +397,7 @@ Schielzeth and Nakagawa, Figure 1. Solid lines are a partial cross. Dashed lines
 Four panels: crossed, nested, randomised block, split-plot. Point to solid versus dashed lines in the caption—partial versus completed cross. Map split-plot to large-unit versus within-unit factors without re-deriving the cookie-dough story. [#sec-crossed-nested], in the mixed-model block, puts the SPRUCE labels on the same picture.
 :::
 
-## A short map of plans {.smaller visibility="hidden"}
+## A short map of plans {.smaller visibility="visible"}
 
 | Plan | What is randomised or assigned |
 | --- | --- |
@@ -416,7 +416,7 @@ Use the table as a menu, not a checklist. Pause on split-plot: the hard-to-chang
 **Going further.** A split-plot has two randomisations and therefore two error strata. With $a$ whole-plot levels in $r$ blocks and $b$ subplot levels, the whole-plot factor $A$ is tested against the whole-plot error (block $\times$ $A$, $(r-1)(a-1)$ degrees of freedom), while the subplot factor $B$ and the $A \times B$ interaction are tested against the smaller subplot error, $a(r-1)(b-1)$ degrees of freedom. The design deliberately buys precision for $B$ and $A \times B$ at the expense of $A$; analysing it as a factorial with one residual overstates the evidence for $A$. In a mixed model, the whole-plot error is the random effect `(1 | block:A)`, and with balanced data REML reproduces the stratified ANOVA exactly. Yates (1937) introduced the split-plot analysis; Bailey, *Design of Comparative Experiments* (2008), and Montgomery, *Design and Analysis of Experiments*, chapter 14, give the expected mean squares.
 :::
 
-## Do not bin the gradient you built {#sec-spruce-bins visibility="hidden"}
+## Do not bin the gradient you built {#sec-spruce-bins visibility="visible"}
 
 SPRUCE kept five warming levels, $+0$ to $+9^\circ\mathrm{C}$ in steps of $2.25^\circ\mathrm{C}$, each at ambient and elevated CO$_2$, on ten enclosures.
 
@@ -745,7 +745,7 @@ Write $u_j$ on the link, not on the copy-number scale, unless they are already o
 **Going further.** Power for a cluster-level treatment depends on the number of clusters far more than on rows per cluster: for a two-arm comparison with $J$ clusters per arm and $m$ rows each, the standard error of the difference is $\sqrt{2(\sigma_u^2 + \sigma_\varepsilon^2/m)/J}$, which hits a floor of $\sqrt{2\sigma_u^2/J}$ however large $m$ becomes. The required number of clusters is the individually randomised sample size times the design effect $1 + (m-1)\rho$, divided by $m$, plus a small-sample correction because the test has about $2J - 2$ degrees of freedom (Donner and Klar, *Design and Analysis of Cluster Randomization Trials in Health Research*, 2000). For complex designs, simulate: generate data from the fitted mixed model with the planned $J$, $m$ and effect size, refit, and count rejections, for example with the `simr` package (Green and MacLeod, 2016, *Methods in Ecology and Evolution*). With ten enclosures, the useful planning question is the smallest warming slope detectable with reasonable power, not whether more depths would help.
 :::
 
-## Repeated measures are a time series inside $j$ {visibility="hidden"}
+## Repeated measures are a time series inside $j$ {visibility="visible"}
 
 Do not run a separate test at each date and then narrate the dates that were "significant".
 
@@ -762,7 +762,7 @@ Dates are $i$. They do not become new experimental units because there are many 
 Warn against the "significant Tuesdays" narrative first. Then walk the bullet list: treatment is constant inside enclosure $j$; interaction matters if warming changes the time course. Index $i$ is the wave, not a new experimental unit. This slide sets up the AR(1) and `(time | enclosure)` calls near the end of the section.
 :::
 
-## Repeated in time is longitudinal {#sec-longitudinal visibility="hidden"}
+## Repeated in time is longitudinal {#sec-longitudinal visibility="visible"}
 
 [Angelino and Marcone](https://www.sib.swiss/training/course/20260907_ADDMG), September 2026: a repeated-measures design records each individual more than once. The design is longitudinal when those repeats are ordered in time.
 
@@ -774,7 +774,7 @@ Godechot's panel is the econometric name for the same layout: several dates for 
 Angelino and Marcone: repeated measures becomes longitudinal when time is ordered. Name the three predictor types beside $Y$—time, time-varying covariate, time-invariant covariate. Godechot's panel vocabulary helps economists in the room; enclosure waves are the carbon analogue.
 :::
 
-## Classical repeated-measures ANOVA wants a rectangle {#sec-sphericity visibility="hidden"}
+## Classical repeated-measures ANOVA wants a rectangle {#sec-sphericity visibility="visible"}
 
 The same course lists two limits. The ANOVA keeps only people with every wave. It also assumes sphericity: every pair of times has the same variance of the difference. When that fails, the $F$ ratios inflate.
 
@@ -839,9 +839,9 @@ Illustrative, seed `20261005`, not a SPRUCE fit. The lines are `lmer(Y ~ time * 
 Pair with the code slide: this is the saved simulation at seed `20261005`, not SPRUCE data. Point at ambient versus warmed colours and per-enclosure lines—each line is $u_{0j}$ and $u_{1j}$ around the shared `time * warming` mean. Thirty seconds if you are short on time; the estimand is still enclosure-level warming over time, not independent flux points.
 :::
 
-## Choosing the runs {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #e4d8f5 100%)" visibility="hidden"}
+## Choosing the runs {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #e4d8f5 100%)" visibility="visible"}
 
-## Choose the runs before the measurements {#sec-doe visibility="hidden"}
+## Choose the runs before the measurements {#sec-doe visibility="visible"}
 
 A [design of experiments]{.mark} picks the combinations you will run, before any $Y$ is recorded. The organising question is the objective, not the historical name of the matrix.
 
@@ -853,7 +853,7 @@ NIST's selection chapter is the map: [how do you select an experimental design?]
 DOE chooses $x$ combinations before any $Y$ is measured—the objective drives the matrix, not the historical name. Aliasing is the price of a smaller design: two effects share a column. Name the four families on the slide as the working set for the next four slides, then point to NIST as the map.
 :::
 
-## A fraction spends the interactions {#sec-doe-fraction visibility="hidden"}
+## A fraction spends the interactions {#sec-doe-fraction visibility="visible"}
 
 :::: {.columns}
 ::: {.column width="62%"}
@@ -873,7 +873,7 @@ Use the numbers on the slide: $2^{5-2}=8$ runs versus $32$ for a full $2^5$. Res
 **Going further.** A fraction is defined by generators: the half fraction of $2^3$ in the sketch uses $C = AB$, so the defining relation is $I = ABC$ and every effect is aliased with its product with $ABC$ ($A$ with $BC$, $B$ with $AC$, $C$ with $AB$). The resolution is the length of the shortest word in the defining relation: resolution III aliases main effects with two-factor interactions, IV aliases main effects only with three-factor interactions but two-factor interactions with each other, and V keeps main effects and two-factor interactions clear of each other. Among designs of equal resolution, minimum aberration (Fries and Hunter, 1980, *Technometrics*) picks the one with the fewest short words. An aliased pair is estimated as a sum, so the fit is unbiased for that sum, not for either effect, and a fold-over can break the aliasing afterwards. Box, Hunter and Hunter, *Statistics for Experimenters* (2nd edition, 2005), chapters 5–6, is the classic treatment.
 :::
 
-## A definitive screen also sees a curve {#sec-doe-dsd visibility="hidden"}
+## A definitive screen also sees a curve {#sec-doe-dsd visibility="visible"}
 
 Plackett–Burman is the classical screen: $11$ two-level factors in $12$ runs, with main effects aliased with two-factor interactions. NIST describes it as a design for when the main effects are the focus.
 
@@ -885,7 +885,7 @@ Contrast Plackett–Burman's $11$ factors in $12$ runs with main effects aliased
 **Going further.** Jones and Nachtsheim (2011, *Journal of Quality Technology*, "A class of three-level designs for definitive screening in the presence of second-order effects") built the design from a conference matrix $\mathbf{C}$: the runs are $\mathbf{C}$, $-\mathbf{C}$ and a centre run, which is why there are $2k + 1$. The fold-over makes every main effect orthogonal to every two-factor interaction and to every quadratic term, so main-effect estimates are unbiased by any second-order effect. Quadratic terms are estimable, but with low power, and they are correlated with each other; a two-factor interaction is partially aliased with others rather than completely. Plackett–Burman designs (Plackett and Burman, 1946, *Biometrika*) have "complex aliasing" instead: each two-factor interaction is spread over several main-effect columns with coefficients like $\pm 1/3$, which is harder to unpick than the clean aliasing of a regular fraction. Both rely on effect sparsity: only a few factors are active.
 :::
 
-## A surface needs three levels {#sec-doe-rsm visibility="hidden"}
+## A surface needs three levels {#sec-doe-rsm visibility="visible"}
 
 Once a few factors remain, the question moves from "which factor?" to "where is the optimum?". The working model is quadratic: a linear term, a square, and a product for each pair.
 
@@ -903,7 +903,7 @@ After screening, the question is "where is the optimum?"—hence linear, square,
 **Going further.** The second-order model is $\mu = \beta_0 + \sum_k \beta_k x_k + \sum_k \beta_{kk} x_k^2 + \sum_{k<l} \beta_{kl} x_k x_l$, and the stationary point is $\mathbf{x}_s = -\tfrac{1}{2}\mathbf{B}^{-1}\mathbf{b}$, whose nature (maximum, minimum or saddle) is read from the eigenvalues of $\mathbf{B}$ in canonical analysis. A central composite design is rotatable, so the prediction variance depends only on the distance from the centre, when $\alpha = (n_F)^{1/4}$ with $n_F$ the number of factorial points; $\alpha = 1$ gives the face-centred version that stays inside the cube. Replicated centre points give a pure-error estimate and a test of curvature. The method goes back to Box and Wilson (1951, *Journal of the Royal Statistical Society, Series B*, "On the experimental attainment of optimum conditions"); Myers, Montgomery and Anderson-Cook, *Response Surface Methodology* (4th edition, 2016), is the current text.
 :::
 
-## An optimal design is computed for the constraint {#sec-doe-optimal visibility="hidden"}
+## An optimal design is computed for the constraint {#sec-doe-optimal visibility="visible"}
 
 D-optimal, I-optimal, and A-optimal designs are algorithm-built matrices. They are the modern choice when the run budget is tight, the factors are a mix of continuous and categorical, or the experimental region is an awkward shape.
 
@@ -917,7 +917,7 @@ When the region is awkward or the budget is tight, the computer builds the matri
 **Going further.** For a linear model with design matrix $\mathbf{X}$, $\mathrm{Var}(\hat{\boldsymbol\beta}) = \sigma^2(\mathbf{X}^{\top}\mathbf{X})^{-1}$. D-optimality maximises $\det(\mathbf{X}^{\top}\mathbf{X})$, which minimises the volume of the joint confidence ellipsoid; A-optimality minimises $\mathrm{tr}\big((\mathbf{X}^{\top}\mathbf{X})^{-1}\big)$, the average coefficient variance; I-optimality minimises the prediction variance averaged over the region, the natural choice when the aim is a response surface. The Kiefer–Wolfowitz equivalence theorem (1960, *Canadian Journal of Mathematics*) states that, for approximate designs, D-optimality and G-optimality (minimising the maximum prediction variance) coincide, and the maximum standardised prediction variance then equals the number of parameters $p$, which gives a certificate of optimality. The criterion is optimal only for the model you specify: a D-optimal design for a straight line has no interior points and cannot detect curvature. For a GLM, $\mathbf{X}^{\top}\mathbf{W}\mathbf{X}$ depends on the unknown $\boldsymbol\beta$, so designs are locally optimal or Bayesian. Atkinson, Donev and Tobias, *Optimum Experimental Designs, with SAS* (2007), is the reference.
 :::
 
-## A decision tree for the matrix {#sec-doe-tree visibility="hidden"}
+## A decision tree for the matrix {#sec-doe-tree visibility="visible"}
 
 - **Objective**, chosen before any measurement
   - **Screen**, when many factors might matter: a fractional factorial, Plackett–Burman, or a definitive screening design
@@ -930,7 +930,7 @@ When the region is awkward or the budget is tight, the computer builds the matri
 Walk the nested bullets top-down: objective before measurement, then screen versus optimise branches. Taguchi and mixture are leaves students may never use but should recognise on a methods form. This tree is the thirty-second recap before Schielzeth's figures make crossing and nesting visual.
 :::
 
-## Eight minutes: name the plan :pencil: {#sec-design-doe-write visibility="hidden"}
+## Eight minutes: name the plan :pencil: {#sec-design-doe-write visibility="visible"}
 
 For your study, or for SPRUCE, write which row of the map it is, and what the plan spent.
 
@@ -943,7 +943,7 @@ For your study, or for SPRUCE, write which row of the map it is, and what the pl
 Eight minutes. SPRUCE is the worked answer because the warming grid is a designed shape, not a screen of dozens of factors.
 :::
 
-## One reading: the SPRUCE grid {#sec-design-doe-answer visibility="hidden"}
+## One reading: the SPRUCE grid {#sec-design-doe-answer visibility="visible"}
 
 SPRUCE is not a fractional factorial. Two factors were built, and the combinations exist.
 

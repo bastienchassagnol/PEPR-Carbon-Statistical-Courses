@@ -1293,7 +1293,7 @@ Read the top row first: Poisson to negative binomial by a gamma rate, the deriva
 **Going further.** If $Y_\ell \sim \mathrm{Poisson}(\lambda_\ell)$ independently and $m = \sum_\ell Y_\ell$, then $\mathbf{Y} \mid m \sim \mathrm{Multinomial}(m, \boldsymbol\pi)$ with $\pi_\ell = \lambda_\ell / \sum_k \lambda_k$, and the Poisson log-linear model with a sample intercept gives the same fitted proportions as the multinomial (Birch, 1963). Independent gammas with a common rate, divided by their sum, are Dirichlet; independent negative binomials with a shared scale, conditioned on their sum, are Dirichlet–multinomial. Shared shapes with different means do not stay in the family.
 :::
 
-## Compound, mixture, and the Tweedie line {visibility="hidden"}
+## Compound, mixture, and the Tweedie line {visibility="visible"}
 
 ::: {.incremental}
 - $\lambda$ fixed: $\mathrm{Var}(\lambda) = 0$, and $Y$ is Poisson.
@@ -1310,7 +1310,7 @@ Townes's Poisson–Tweedie has $\mathrm{Var}(Y) = \mu + \phi\mu^{p}$. The negati
 Step three fragments: fixed $\lambda$ Poisson; continuous $\lambda$ compound (gamma NB, log-normal heavier tail); discrete latent mixture including ZIP. Tweedie $\mathrm{Var}=\mu+\phi\mu^p$, $p=2$ is NB; often no closed likelihood.
 :::
 
-## Independent counts, given their sum {#sec-multinomial-sum visibility="hidden"}
+## Independent counts, given their sum {#sec-multinomial-sum visibility="visible"}
 
 Townes's identity: independent Poisson counts, conditioned on their total, are one multinomial draw. If $Y_\ell \sim \mathrm{Poisson}(\lambda_\ell)$ independently and $M = \sum Y_\ell$, then
 
@@ -1893,7 +1893,7 @@ Bullet list: ZI mixture, composition conditioning, continuous flux, space-time d
 **Going further.** Wedderburn (1974, *Biometrika*) showed that the estimating equations $\sum_i (y_i-\mu_i)\,(\partial\mu_i/\partial\boldsymbol\beta)/V(\mu_i) = \mathbf{0}$ need only a mean and a variance function, not a distribution: this quasi-likelihood gives the Poisson estimates with $\mathrm{Var}(Y) = \phi\mu$ and standard errors scaled by $\sqrt{\hat\phi}$. With no likelihood there is no AIC; Burnham and Anderson's QAIC divides the log-likelihood by $\hat\phi$ as a workaround. The quasi-Poisson weights observations in proportion to $\mu_i$, the negative binomial by $\mu_i/(1+\mu_i/\theta)$, so on the same data they can give different estimates, not only different intervals (Ver Hoef and Boveng, 2007). For dependence in space or time, the generalised estimating equations of Liang and Zeger (1986, *Biometrika*) extend the same idea with a working correlation.
 :::
 
-## Two names, one role each {#sec-lm-names visibility="hidden"}
+## Two names, one role each {#sec-lm-names visibility="visible"}
 
 [Angelino and Marcone](https://www.sib.swiss/training/course/20260907_ADDMG) (SIB, Lausanne, September 2026) use two roles. The **response**, also called the dependent variable, is what the model describes or predicts. That is $Y$ on the [notation](#sec-notation) slide.
 
@@ -1903,7 +1903,7 @@ The **explanatory variable** is also called an independent variable, a predictor
 Response $Y$ versus explanatory $x$; $g(Y)$ on the left is the transformed-response case from earlier. Angelino and Marcone SIB attribution. Link notation slide if someone asks for $\mathbf{x}$.
 :::
 
-## The link keeps $\mu$ in range {#sec-glm-link-range visibility="hidden"}
+## The link keeps $\mu$ in range {#sec-glm-link-range visibility="visible"}
 
 :::: {.columns}
 ::: {.column width="62%"}
@@ -1925,7 +1925,7 @@ Logit forces $0<\pi<1$; log link forces $\mu>0$. A line on $\log Y$ does not gua
 **Going further.** The fit is by iteratively reweighted least squares, which is Fisher scoring: regress the working response $z_i = \eta_i + (Y_i - \mu_i)\, g'(\mu_i)$ on $\mathbf{X}$ with weights $w_i = 1/\{V(\mu_i)\, g'(\mu_i)^2\}$, and repeat until $\hat{\boldsymbol{\beta}}$ settles. With the canonical link (logit for binomial, log for Poisson, inverse for gamma), the observed and expected information coincide, so Fisher scoring equals Newton–Raphson and $\mathbf{X}^{\top}\mathbf{Y}$ is sufficient. The working response is a linearised $g(Y)$, which is why the link never needs $g(Y_i)$ to exist at $Y_i = 0$. Asymptotically $\hat{\boldsymbol{\beta}} \approx \mathcal{N}\{\boldsymbol{\beta}, \phi(\mathbf{X}^{\top}\mathbf{W}\mathbf{X})^{-1}\}$.
 :::
 
-## Equidispersion is one parameter doing two jobs {#sec-count-equi visibility="hidden"}
+## Equidispersion is one parameter doing two jobs {#sec-count-equi visibility="visible"}
 
 StatHarbor Analytics, *Count Data Models: From Poisson to Zero-Inflated Models*, starts from $Y \sim \mathrm{Poisson}(\mu)$ with $\mathbb{E}(Y) = \mathrm{Var}(Y) = \mu$. One rate controls the centre and the spread. The log link makes a one-unit step in $x_j$ multiply $\mu$ by $e^{\beta_j}$, a [rate ratio]{.mark}.
 
@@ -1937,7 +1937,7 @@ Poisson: $\mathbb{E}(Y)=\mathrm{Var}(Y)=\mu$; $e^{\beta_j}$ is rate ratio on log
 **Going further.** Dean and Lawless (1989) derived the score test of $\mathrm{Var}(Y)=\mu$ against $\mathrm{Var}(Y)=\mu+\alpha\mu^2$; it needs only the Poisson fit, and its statistic is $\sum_i\{(y_i-\hat\mu_i)^2 - y_i\}/\sqrt{2\sum_i\hat\mu_i^2}$, approximately standard normal under the Poisson. Cameron and Trivedi (1990, *Journal of Econometrics*) recast it as an auxiliary regression of $\{(y_i-\hat\mu_i)^2-y_i\}/\hat\mu_i$ on $\hat\mu_i$, without intercept, and test the slope. Overdispersion is not always heterogeneity: a missing offset, clustering, an excess of zeros, or a misspecified mean all inflate $X^2$. Underdispersion, $\hat\phi < 1$, also occurs, for counts bounded above for instance, and the negative binomial cannot represent it.
 :::
 
-## Weight of evidence centres on the sample {#sec-woe visibility="hidden"}
+## Weight of evidence centres on the sample {#sec-woe visibility="visible"}
 
 [Weight of evidence]{.mark} asks a different contrast with the same fit. The sample default rate is $100/700 = 0.1429$, and its logit is $-1.7918$. A category's weight of evidence is its own log-odds minus that overall logit.
 
@@ -1949,7 +1949,7 @@ With a single categorical predictor the two codings describe one model. With sev
 Overall default rate 100/700, logit $-1.7918$. $\Delta\mathrm{WOE}=2.9957=\hat\beta_1$. SE of WOE equals SE of category log-odds; with several factors, WOE stays centred when one-hot slopes move.
 :::
 
-## Softmax, drawn {visibility="hidden"}
+## Softmax, drawn {visibility="visible"}
 
 ```{.tikz}
 %%| filename: dag-softmax
@@ -1974,7 +1974,7 @@ The class probabilities sum to 1. The cross-entropy is $-\sum_i\sum_k t_{ik}\log
 Ordered categories are a cumulative model. Burakov notes them and stays with the unordered softmax.
 :::
 
-## A conformal interval uses a calibration set {#sec-conformal visibility="hidden"}
+## A conformal interval uses a calibration set {#sec-conformal visibility="visible"}
 
 The same chapter then builds an interval whose coverage is finite-sample, under [exchangeability]{.mark}, from a [calibration set]{.mark} that was not used to fit $\boldsymbol{\beta}$.
 

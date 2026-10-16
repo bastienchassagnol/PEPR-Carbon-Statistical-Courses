@@ -141,7 +141,7 @@ $n = 400$, skewness about 0, kurtosis about 3. Shapiro–Wilk gives $p = 0.123$.
 Restate $n=400$ and the step in the QQ plot before reading any $p$-values. Shapiro–Wilk 0.123 versus rejecting Lilliefors/AD is the lesson—tests disagree while the plot stays honest. Ask which diagnostic they would trust for choosing a family.
 :::
 
-## Jumps, steps, and stray points {visibility="hidden"}
+## Jumps, steps, and stray points {visibility="visible"}
 
 [Rodrigue](https://www.linkedin.com/pulse/normality-tests-q-q-plots-natalie-rodrigue-qxlqc/) names three patterns that are not a smooth curve.
 
@@ -160,7 +160,7 @@ Below about 30 observations, even a Gaussian sample wiggles. Do not read that no
 Step the three fragments: pooled groups, discrete $Y$, outliers. The $n<30$ rule is on the slide—use it to stop over-interpretation. Ask which pattern they have seen in sequencing residuals (often staircase or stray points).
 :::
 
-## The straight line is the Gaussian case {visibility="hidden"}
+## The straight line is the Gaussian case {visibility="visible"}
 
 ![A grid of QQ plots and histograms for Gaussian, beta, uniform, skewed, bimodal, truncated, discrete, and outlier samples.](figures/sources/qq-distribution-gallery.png){fig-alt="Sixteen distributions. Each row shows a normal QQ plot and the matching histogram. Only the Gaussian row follows the reference line. Skew bends the plot, bimodality steps it, and heavy tails flare the ends." width="96%"}
 
@@ -170,7 +170,7 @@ Click the figure. Each distribution is a QQ plot against a normal reference, the
 Lightbox the gallery if time allows; otherwise name beta, uniform, bimodal, discrete rows. Only the Gaussian row tracks the line—everything else reuses the vocabulary from the four-shape slide. About one minute with the clickable figure.
 :::
 
-## A tail-sensitive band {#sec-qq-band visibility="hidden"}
+## A tail-sensitive band {#sec-qq-band visibility="visible"}
 
 The ribbon to draw is the simultaneous [tail-sensitive band]{.mark} of [Aldor-Noiman and colleagues (2013)](https://doi.org/10.1080/00031305.2013.847865). In [`qqplotr`](https://cran.r-project.org/package=qqplotr) that is `bandType = "ts"`. It is implemented for a **normal** QQ plot. A pointwise ribbon is a different object.
 
@@ -371,11 +371,11 @@ Use $x+y=1$ as the line-segment picture before sequencing. Library size fixes th
 Point at the histogram piled at 100% and the 92 ± 24% band leaving the 0–100 scale. The bell's 68/95/99.7 labels are the wrong feature for bounded recovery. A normality test on such data does not repair the interval—shape and support are separate failures.
 :::
 
-## The central limit theorems, in more detail {.center .pitfall-divider visibility="hidden" background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d6e2f5 100%)"}
+## The central limit theorems, in more detail {.center .pitfall-divider visibility="visible" background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d6e2f5 100%)"}
 
 Five facts from 📝 Olszewski's poster *7 important facts about the Central Limit Theorem(s)* (2024), then six versions of the theorem.
 
-## CLT fact 1 · The whole test statistic has to converge {.clt-fact visibility="hidden" #sec-clt-statistic}
+## CLT fact 1 · The whole test statistic has to converge {.clt-fact visibility="visible" #sec-clt-statistic}
 
 :::: {.columns}
 ::: {.column width="38%"}
@@ -396,7 +396,7 @@ Point at the circle, not at the cross: the denominator is random too. With a ske
 **Going further.** Slutsky's theorem gives $t \Rightarrow \mathcal{N}(0, 1)$ once $s \to \sigma$ in probability, but the approximation error of the ratio is driven by the skewness $\gamma$: an Edgeworth expansion gives a one-sided error of order $\gamma/\sqrt{n}$, so one-sided $t$ intervals for skewed data under-cover in one tail (Hall, *The Bootstrap and Edgeworth Expansion*, 1992). Bootstrap-$t$ intervals correct that term to second order.
 :::
 
-## CLT fact 2 · A valid answer can be meaningless {.clt-fact visibility="hidden" #sec-clt-meaning}
+## CLT fact 2 · A valid answer can be meaningless {.clt-fact visibility="visible" #sec-clt-meaning}
 
 :::: {.columns}
 ::: {.column width="38%"}
@@ -415,7 +415,7 @@ A bimodal or strongly skewed response can give a narrow, valid interval for a me
 **Going further.** For a multiplicative process $Y = \prod_k U_k$, the CLT applies to $\log Y = \sum_k \log U_k$, which gives a log-normal limit (Gibrat's law, the fourth theorem of this block). The arithmetic mean $\mathbb{E}(Y) = e^{m + s^2/2}$ is then dominated by the upper tail, and its sample estimate converges slowly; the geometric mean $e^{m}$ is the natural centre.
 :::
 
-## CLT fact 3 · Simpler conditions converge faster {.clt-fact visibility="hidden" #sec-clt-conditions}
+## CLT fact 3 · Simpler conditions converge faster {.clt-fact visibility="visible" #sec-clt-conditions}
 
 :::: {.columns}
 ::: {.column width="38%"}
@@ -434,7 +434,7 @@ The runner and the snail. The "$n > 30$" rule has no theorem behind it: Wilcox s
 **Going further.** The Berry–Esseen theorem bounds the error for i.i.d. terms: $\sup_x |P(\sqrt{n}(\bar Y - \mu)/\sigma \le x) - \Phi(x)| \le C\rho/(\sigma^3\sqrt{n})$, with $\rho = \mathbb{E}|Y - \mu|^3$ and $C < 0.48$. The bound grows with the standardised third absolute moment, so a skewed or heavy-tailed $Y$ needs a much larger $n$. For independent, non-identical terms the same bound holds with sums of third moments over $s_n^3$.
 :::
 
-## CLT fact 4 · A sum of independent variables is a convolution {.clt-fact visibility="hidden" #sec-clt-convolution}
+## CLT fact 4 · A sum of independent variables is a convolution {.clt-fact visibility="visible" #sec-clt-convolution}
 
 $$
 f_{X+Y}(s) = (f_X * f_Y)(s) = \int_{-\infty}^{\infty} f_X(x)\, f_Y(s - x)\, dx
@@ -450,7 +450,7 @@ Read the panels left to right: one exponential, then sums of 2, 4, and 16, each 
 **Going further.** Convolution of densities is multiplication of characteristic functions: $\varphi_{S_n}(t) = \varphi(t)^n$. For the standardised sum, $\log\varphi(t/\sqrt{n})^n = n\log\{1 - t^2/(2n) + o(1/n)\} \to -t^2/2$, the log characteristic function of $\mathcal{N}(0, 1)$, and Lévy's continuity theorem turns that into convergence in distribution. The second-order Taylor term needs a finite variance; the third-order term, which carries the skewness, vanishes at rate $1/\sqrt{n}$, which is why the $n = 4$ panel is still skewed.
 :::
 
-## CLT fact 5 · There are several central limit theorems {.clt-fact visibility="hidden" #sec-clt-versions}
+## CLT fact 5 · There are several central limit theorems {.clt-fact visibility="visible" #sec-clt-versions}
 
 :::: {.columns}
 ::: {.column width="55%"}
@@ -465,7 +465,7 @@ Not every CLT needs independent, identically distributed rows. Each version trad
 The next slide sorts the six by the first question: are the terms independent and identically distributed? The six slides after that state each theorem and say when to use it.
 :::
 
-## Six versions, sorted by one question {visibility="hidden" #sec-clt-map}
+## Six versions, sorted by one question {visibility="visible" #sec-clt-map}
 
 ```{mermaid}
 %%| fig-width: 10
@@ -488,7 +488,7 @@ Read from the left: answer the question about your rows, then the condition the 
 Two branches. The i.i.d. branch splits on the variance and on whether the process adds or multiplies. The non-i.i.d. branch splits on independence. Each leaf is a theorem slide below.
 :::
 
-## Theorem 1 · Lindeberg–Lévy {visibility="hidden" #sec-clt-ll}
+## Theorem 1 · Lindeberg–Lévy {visibility="visible" #sec-clt-ll}
 
 ::: {#thm-lindeberg-levy name="Lindeberg–Lévy"}
 Let $Y_1, \ldots, Y_n$ be independent and identically distributed, with $\mathbb{E}(Y_i) = \mu$ and $0 < \mathrm{Var}(Y_i) = \sigma^2 < \infty$. Then $\sqrt{n}\,(\bar Y - \mu)/\sigma \Rightarrow \mathcal{N}(0, 1)$.
@@ -503,7 +503,7 @@ Let $Y_1, \ldots, Y_n$ be independent and identically distributed, with $\mathbb
 The version taught as "the" CLT. Only two moments are needed, but both identical distribution and independence. The rate is the Berry–Esseen bound of fact 3.
 :::
 
-## Theorem 2 · Lyapunov {visibility="hidden" #sec-clt-lyapunov}
+## Theorem 2 · Lyapunov {visibility="visible" #sec-clt-lyapunov}
 
 ::: {#thm-lyapunov name="Lyapunov"}
 Let $Y_i$ be independent with means $\mu_i$ and variances $\sigma_i^2$, and $s_n^2 = \sum_i \sigma_i^2$. If for some $\delta > 0$
@@ -522,7 +522,7 @@ then $\sum_i (Y_i - \mu_i)/s_n \Rightarrow \mathcal{N}(0, 1)$.
 The condition says that the higher central moments shrink relative to the total spread: no single row is too wild. With $\delta = 1$ it is a statement about third absolute moments.
 :::
 
-## Theorem 3 · Lindeberg–Feller {visibility="hidden" #sec-clt-lindeberg}
+## Theorem 3 · Lindeberg–Feller {visibility="visible" #sec-clt-lindeberg}
 
 ::: {#thm-lindeberg-feller name="Lindeberg–Feller"}
 Let $Y_i$ be independent with finite variances, and $s_n^2 = \sum_i \sigma_i^2$. If for every $\varepsilon > 0$
@@ -541,7 +541,7 @@ then $\sum_i (Y_i - \mu_i)/s_n \Rightarrow \mathcal{N}(0, 1)$. When $\max_i \sig
 Lyapunov implies Lindeberg, not the reverse. In regression the condition becomes $\max_i h_{ii} \to 0$: no single row of the design carries the fit, which is the asymptotic justification for least-squares inference without Gaussian errors.
 :::
 
-## Theorem 4 · Gibrat's law, a multiplicative CLT {visibility="hidden" #sec-clt-gibrat}
+## Theorem 4 · Gibrat's law, a multiplicative CLT {visibility="visible" #sec-clt-gibrat}
 
 ::: {#thm-gibrat name="Gibrat's law"}
 If $Y_n = Y_0 \prod_{k=1}^{n} U_k$ with independent, identically distributed positive factors and $\mathrm{Var}(\log U_k) < \infty$, then $\log Y_n$ is approximately Gaussian for large $n$, so $Y_n$ is approximately log-normal.
@@ -556,7 +556,7 @@ If $Y_n = Y_0 \prod_{k=1}^{n} U_k$ with independent, identically distributed pos
 Gibrat (1931) stated it for firm sizes: proportional growth independent of size. Limpert, Stahel, and Abbt (2001) give the ecological examples already cited on caveat 4.
 :::
 
-## Theorem 5 · Dependent rows: m-dependent and mixing sequences {visibility="hidden" #sec-clt-dependent}
+## Theorem 5 · Dependent rows: m-dependent and mixing sequences {visibility="visible" #sec-clt-dependent}
 
 ::: {#thm-dependent-clt name="m-dependent CLT"}
 Let $(Y_i)$ be stationary and $m$-dependent (rows more than $m$ apart are independent), with mean $\mu$ and autocovariances $\gamma(k)$. Then
@@ -575,7 +575,7 @@ Mixing conditions (Orey, Withers) extend the result to dependence that fades wit
 Hoeffding and Robbins (1948) proved the $m$-dependent case; Orey (1958) and Withers (1981) gave versions under weaker dependence conditions. In practice the long-run variance is estimated with a heteroscedasticity and autocorrelation consistent (HAC) estimator, or the dependence is modelled directly, as in the design block.
 :::
 
-## Theorem 6 · Gnedenko–Kolmogorov, the generalised CLT {visibility="hidden" #sec-clt-gclt}
+## Theorem 6 · Gnedenko–Kolmogorov, the generalised CLT {visibility="visible" #sec-clt-gclt}
 
 ::: {#thm-gclt name="Generalised CLT"}
 Let $Y_i$ be independent and identically distributed with tails $P(|Y| > y) \sim c\, y^{-\alpha}$ for some $0 < \alpha < 2$, so the variance is infinite. If constants $a_n$ and $b_n$ exist with $(S_n - b_n)/a_n$ converging, the limit is an [$\alpha$-stable]{.mark} distribution, with $a_n \propto n^{1/\alpha}$, not $\sqrt{n}$.
@@ -1012,7 +1012,7 @@ Four bullets: GLS, GEE, GLM, GAM—each names what breaks in OLS. This hour stay
 **Going further.** With $\operatorname{Var}(\boldsymbol{\varepsilon}) = \sigma^2\boldsymbol{\Sigma}$ and $\boldsymbol{\Sigma}$ known, Aitken's theorem makes $\hat{\boldsymbol{\beta}}_{\mathrm{GLS}} = (\mathbf{X}^{\top}\boldsymbol{\Sigma}^{-1}\mathbf{X})^{-1}\mathbf{X}^{\top}\boldsymbol{\Sigma}^{-1}\mathbf{Y}$ the best linear unbiased estimator, by applying Gauss–Markov to $\boldsymbol{\Sigma}^{-1/2}\mathbf{Y}$. In practice $\boldsymbol{\Sigma}$ is estimated (feasible GLS, `nlme::gls`), which is efficient asymptotically but not exact in small samples. GEE instead keeps $\hat{\boldsymbol{\beta}}$ simple and corrects only the standard error, trading efficiency for robustness to a wrong $\boldsymbol{\Sigma}$.
 :::
 
-## The hypothesis moved {#sec-transform-hypothesis visibility="hidden"}
+## The hypothesis moved {#sec-transform-hypothesis visibility="visible"}
 
 A log is meaningful when the question was a ratio of geometric means, or a difference of means on a multiplicative scale.
 
@@ -1026,7 +1026,7 @@ A log is meaningful when the question was a ratio of geometric means, or a diffe
 Ask what hypothesis $\lambda = -0.67$ tests. The honest answer is that nobody wrote it down. Pek is the review; do not open the taxonomy. One minute.
 :::
 
-## Back-transformation misses the mean {#sec-transform-back visibility="hidden"}
+## Back-transformation misses the mean {#sec-transform-back visibility="visible"}
 
 @eq-jensen is the gap. Inverting a fit on the Box–Cox scale does not return $\mathbb{E}(Y \mid x)$.
 
@@ -1040,7 +1040,7 @@ One sentence from the abstract is enough: expectation and inversion do not commu
 **Going further.** If $\log Y = \mathbf{x}^{\top}\boldsymbol{\beta} + \varepsilon$ with $\varepsilon$ independent of $\mathbf{x}$, then $\mathbb{E}(Y \mid \mathbf{x}) = e^{\mathbf{x}^{\top}\boldsymbol{\beta}}\, \mathbb{E}(e^{\varepsilon})$. Under a Gaussian $\varepsilon$ that factor is $e^{\sigma^2/2}$; without the Gaussian assumption, Duan's smearing estimator replaces it by $n^{-1}\sum_i e^{e_i}$ (Duan, *Journal of the American Statistical Association*, 1983). Both corrections fail when $\operatorname{Var}(\varepsilon \mid \mathbf{x})$ depends on $\mathbf{x}$, because the factor then varies with $\mathbf{x}$ and the retransformed slopes are biased (Manning, *Journal of Health Economics*, 1998). A GLM with a log link avoids the retransformation altogether.
 :::
 
-## Five steps that rewrite $Y$ {visibility="hidden"}
+## Five steps that rewrite $Y$ {visibility="visible"}
 
 For a positive $x$, a common checklist is:
 
@@ -1056,7 +1056,7 @@ They note that this interval stays positive. That is not the same as an interval
 Read the five-step checklist aloud once. The slide's own caveat is the punchline: positivity of the reported interval is not an interval for $\mathbb{E}(Y)$. Students recognise this pipeline from papers; name what estimand the geometric mean times/divided by GSD actually targets.
 :::
 
-## The exponential does not return the moment {visibility="hidden"}
+## The exponential does not return the moment {visibility="visible"}
 
 $\exp(\overline{\log x})$ is the geometric mean. It is not $\mathbb{E}(Y)$. Exponentiating the standard deviation of the logs does not return the standard deviation of $Y$. A shift before the logarithm is a third response. The [inequality](#sec-log-estimand) is why the two means differ. Prefer a model for $\mu$, or a robust summary, over this sequence.
 
@@ -1066,7 +1066,7 @@ $\exp(\overline{\log x})$ is the geometric mean, not $\mathbb{E}(Y)$. Exponentia
 **Going further.** If $\log Y \sim \mathcal{N}(m, s^2)$, the geometric mean is $e^{m}$, the geometric standard deviation is $e^{s}$, the mean is $e^{m + s^2/2}$, and the standard deviation is $e^{m + s^2/2}\sqrt{e^{s^2} - 1}$. The interval $e^{m} \times\!/ e^{2s}$ covers about 95% of $Y$, which is a prediction interval for an observation, not a confidence interval for $\mathbb{E}(Y)$. Estimating $\mathbb{E}(Y)$ from logged data needs $s^2$ and, for small samples, the unbiased estimator of Finney (*Supplement to the Journal of the Royal Statistical Society*, 1941).
 :::
 
-## The mean and the variance are tied {#sec-transform-variance visibility="hidden"}
+## The mean and the variance are tied {#sec-transform-variance visibility="visible"}
 
 Transforming the column changes how the spread sits on the mean.
 
@@ -1077,7 +1077,7 @@ Transforming the column changes how the spread sits on the mean.
 A GLM moves $\mu$. A power moves the column, so the mean and the spread move together. One minute.
 :::
 
-## Skew is a description {#sec-skew-summary visibility="hidden"}
+## Skew is a description {#sec-skew-summary visibility="visible"}
 
 A skewed description of a real process does not become less legitimate because the sample grew. Treating the normal law as the dominant description sets aside the mechanisms that generate the skew.
 
@@ -1087,7 +1087,7 @@ The next slide is the modelling consequence. The Gaussian assumption, when it is
 Quote the Medium opening idea: skew is not illegitimate because $n$ grew. Bridge to the next slide with the conditional phrase $Y \mid \mathbf{x}$. A common misread is to treat marginal skew as proof the linear model failed before any covariates are in the model.
 :::
 
-## The pooled histogram is the wrong picture {#sec-pooled-histogram visibility="hidden"}
+## The pooled histogram is the wrong picture {#sec-pooled-histogram visibility="visible"}
 
 Conditional Gaussian groups with different means look skewed once you pool them. In his sketch the groups are normal, seed 1000, and the model is `lm(DV ~ IV)`. Logging the pooled $Y$ because the histogram is skewed spoils residuals that were already close to Gaussian.
 
@@ -1099,7 +1099,7 @@ Olszewski's sketch: normal groups, different means, pooled skew. Logging pooled 
 **Going further.** Under the model $Y_i = \mu(x_i) + \varepsilon_i$ with Gaussian errors, the residuals $Y_i - \hat{\mu}(x_i)$ are approximately Gaussian while the pooled $Y_i$ follow a mixture whose shape is set by the design. A transformation such as $\log$ applied to the pooled $Y$ is a nonlinear function of $\mu(x_i) + \varepsilon_i$, so the transformed errors are no longer additive or identically distributed across groups. Box–Cox's own likelihood is conditional on $x$, which is why profiling $\lambda$ in `MASS::boxcox(lm(y ~ x))` and on `y` alone can give very different powers.
 :::
 
-## The excuse is not a diagnosis {visibility="hidden"}
+## The excuse is not a diagnosis {visibility="visible"}
 
 The same slides list the defences of that summary:
 
@@ -1116,7 +1116,7 @@ None of these is a reason to attach a Gaussian spread to a feature whose scale f
 Read two or three excuses from the bullet list and invite the room to name others they have heard. Close with the QQ plot link: diagnosis of shape is not the same as choosing a summary on the right scale. Keep the tone practical, not preachy.
 :::
 
-## A transform is not a guarantee {#sec-transform-normal visibility="hidden"}
+## A transform is not a guarantee {#sec-transform-normal visibility="visible"}
 
 A power chosen to look more Gaussian does not deliver Gaussian residuals.
 
@@ -1131,7 +1131,7 @@ Permutation and bootstrap procedures that keep $Y$ are the alternative when the 
 Close Adrian's list on the fourth and fifth points: Jensen was the previous slide, and normality is not guaranteed. Prediction may still use a transform. Inference has to name the new question. Forty seconds.
 :::
 
-## Five count transforms {#sec-count-transforms .smaller visibility="hidden"}
+## Five count transforms {#sec-count-transforms .smaller visibility="visible"}
 
 | Transform | Equation | Suited to | Trade-off |
 | --- | --- | --- | --- |
@@ -1149,7 +1149,7 @@ Read the trade-off column, not every equation. CLR is the composition row. VST a
 **Going further.** The centred log-ratio maps a composition $x$ with $D$ parts to $\log\{x_j / g(x)\}$, which sums to zero, so its covariance matrix is singular; the isometric log-ratio (Egozcue and colleagues, *Mathematical Geology*, 2003) gives $D - 1$ orthonormal coordinates instead. Aitchison, *The Statistical Analysis of Compositional Data* (1986), is the foundation. voom estimates a smooth mean–variance trend of $\log_2\mathrm{CPM}$ and turns it into precision weights for each observation, so limma's weighted least squares inherits $v(\mu)$ (Law and colleagues, *Genome Biology*, 2014).
 :::
 
-## The same mean, with a covariate {visibility="hidden"}
+## The same mean, with a covariate {visibility="visible"}
 
 ![The lower half of the same table: ANCOVA by ordinary least squares, sandwich standard errors, generalised least squares, Freedman–Lane, and a wild bootstrap.](figures/sources/compare-means-with-covariate.png){fig-alt="Rows for a covariate-adjusted comparison of two means. Ordinary least squares when variances match and slopes are parallel. Sandwich standard errors or generalised least squares when variances differ. Freedman–Lane or a wild bootstrap when the distribution is not Gaussian." width="96%"}
 
@@ -1161,7 +1161,7 @@ This is the lower half of Olszewski's table—pair it mentally with the previous
 **Going further.** The sandwich estimator $(\mathbf{X}^{\top}\mathbf{X})^{-1}\mathbf{X}^{\top}\hat{\boldsymbol{\Omega}}\mathbf{X}(\mathbf{X}^{\top}\mathbf{X})^{-1}$, with $\hat{\boldsymbol{\Omega}} = \operatorname{diag}(e_i^2)$ (White, *Econometrica*, 1980), is consistent under heteroskedasticity of unknown form; the HC3 version divides $e_i^2$ by $(1 - h_{ii})^2$ and behaves better in small samples (MacKinnon and White, 1985). Freedman–Lane fits the reduced model without the treatment, permutes its residuals, adds them back to the reduced fit, and recomputes the full-model statistic (Freedman and Lane, 1983). The wild bootstrap multiplies each residual by an independent sign or a two-point weight, so each observation keeps its own variance (Wu, *Annals of Statistics*, 1986).
 :::
 
-## Prefer Welch when the model is this simple {visibility="hidden"}
+## Prefer Welch when the model is this simple {visibility="visible"}
 
 ![Side-by-side equivalence of a pooled t-test with ordinary least squares, and a Welch test with generalised least squares and Satterthwaite degrees of freedom.](figures/sources/welch-versus-ols-1.png){fig-alt="Two blocks. A pooled t-test matches a Wald test from ordinary least squares, estimate minus 2.99, p 0.049. A Welch test matches generalised least squares with Satterthwaite degrees of freedom, the same estimate, p 0.052." width="72%"}
 
@@ -1171,7 +1171,7 @@ Start from Welch ([Olszewski](https://www.linkedin.com/feed/update/urn:li:activi
 Same estimate $-2.99$, different $p$: 0.049 pooled versus 0.052 Welch. Use that pair to show the decision is in the standard error, not the contrast. Pooled $t$ equals homoscedastic OLS; Welch equals GLS with Satterthwaite df on the figure.
 :::
 
-## Put the curve in $\mu$, not in $Y$ {visibility="hidden"}
+## Put the curve in $\mu$, not in $Y$ {visibility="visible"}
 
 A nonlinear regression lets $\mu$ be a nonlinear function of $x$. A generalised linear model leaves $Y$ alone and puts a [link]{.mark} on $\mu$. Both keep the original response. The link is the rest of this hour, from the [skeleton](#sec-skeleton).
 
@@ -1181,7 +1181,7 @@ Nonlinear regression bends $\mu(x)$; GLM bends $g(\mu)$ while $Y$ stays on its s
 **Going further.** A nonlinear model $Y_i = m(\mathbf{x}_i; \boldsymbol{\theta}) + \varepsilon_i$ is fitted by Gauss–Newton least squares, which is maximum likelihood under additive Gaussian errors; its inference relies on a local linearisation whose accuracy depends on the curvature of the model (Bates and Watts, *Nonlinear Regression Analysis and Its Applications*, 1988). A GLM is the special case where $m = g^{-1}(\mathbf{x}^{\top}\boldsymbol{\beta})$ and the error law comes from the family, not from an additive Gaussian term. Both keep $\mathbb{E}(Y \mid \mathbf{x})$ as the target.
 :::
 
-## Or model the variance, or change the summary {visibility="hidden"}
+## Or model the variance, or change the summary {visibility="visible"}
 
 ::: {.incremental}
 - [Generalised least squares or estimating equations](#sec-ols-replacements) when the variance or the correlation is the problem, and the mean is still the target.

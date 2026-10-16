@@ -180,7 +180,7 @@ Step the fragments slowly. The common mistake is to treat a small $p$ on $\hat\b
 **Going further.** Shmueli's article "To explain or to predict?" (Statistical Science, 2010) is the standard reference. The expected squared prediction error at a new $\mathbf{x}$ decomposes as $\sigma^2 + \mathrm{bias}^2\{\hat\mu(\mathbf{x})\} + \mathrm{Var}\{\hat\mu(\mathbf{x})\}$, so a deliberately biased but less variable model (dropped covariates, shrinkage) can predict better than the correctly specified one. Explanation instead needs $\hat\beta_j$ to be consistent for a named causal or structural quantity, which is a statement about bias, not about total error. Confirmatory inference adds a third requirement: the error rate of the test is only valid if the hypothesis, the covariates and the analysis were fixed before the data, otherwise the selection step must be accounted for (post-selection inference, Berk and colleagues, Annals of Statistics, 2013).
 :::
 
-## 1 · Two different scores {visibility="hidden"}
+## 1 · Two different scores {visibility="visible"}
 
 Prediction, on new units:
 
@@ -243,7 +243,7 @@ The coefficients are the explanatory object, and here they also predicted better
 Say the seeds once. Pause on 2.40 versus 1.01. Someone will say forests always predict better; this draw is the counter-example, because the mean really is linear. The forest is not bad software. It is the wrong tool for an explanatory coefficient.
 :::
 
-## 1 · A hold-out score does not certify the coefficient {#sec-holdout visibility="hidden"}
+## 1 · A hold-out score does not certify the coefficient {#sec-holdout visibility="visible"}
 
 :::: {.columns}
 ::: {.column width="62%"}
@@ -401,7 +401,7 @@ Genomics and high-throughput ecology are the industrialist case. Ask whether any
 **Going further.** With $m$ tests the histogram of $p$ is a mixture $\pi_0\,\mathrm{U}(0,1) + (1-\pi_0) f_1$, so its flat part estimates the share of true nulls $\pi_0$ (Storey's $q$-value method). Bonferroni controls the family-wise error rate, the chance of even one false rejection, by testing each hypothesis at $\alpha/m$; Benjamini and Hochberg control the expected false discovery proportion by comparing the ordered $p_{(k)}$ with $k\alpha/m$, which is valid under independence or positive dependence [@farcomeniReviewModernMultiple2008]. Closed testing and gatekeeping procedures for structured confirmatory families are in Bretz, Hothorn and Westfall [@bretzMultipleComparisonsUsing2016a].
 :::
 
-## 2 · The same p, a shrinking effect {#sec-large-n visibility="hidden"}
+## 2 · The same p, a shrinking effect {#sec-large-n visibility="visible"}
 
 [Lantz](references/large-sample-size-fallacy.pdf) keeps $p = 0.0253$ while a preference for treatment X shrinks toward a coin toss. These are the two ends of his table.
 
@@ -462,7 +462,7 @@ Type M and Type S only apply when someone filters on "significant". The scatter 
 **Going further.** With an estimate $\hat\theta \sim N(\theta, s^2)$, the Type S rate is $P(\hat\theta < -z s) / \{P(\hat\theta > z s) + P(\hat\theta < -z s)\}$ for $\theta > 0$, and the exaggeration ratio is $\mathbb{E}(|\hat\theta| \mid |\hat\theta| > z s)/\theta$, both functions of $\theta/s$ only. Gelman and Carlin's retrodesign calculation evaluates them at a plausible effect size taken from outside the study, not at the observed estimate, which would be circular. This is the winner's curse: selecting on significance is a truncation, and the truncated mean is biased away from zero.
 :::
 
-## 2 · Those significant runs were about eleven times too big {visibility="hidden"}
+## 2 · Those significant runs were about eleven times too big {visibility="visible"}
 
 [Olszewski](https://medium.com/@r.clin.res/type-m-and-type-s-errors-in-underpowered-studies-175291966f3b) drew the previous figure from two normal samples, $n = 10$ each, standard deviation 10, true difference 1, seed 1000, 10,000 $t$ tests.
 
@@ -474,7 +474,7 @@ The seed and sample sizes are on the slide so nobody thinks you made up the 11×
 **Going further.** The numbers follow from the retrodesign formulas: $\mathrm{SE} = 10\sqrt{2/10} \approx 4.47$, so $\theta/\mathrm{SE} \approx 0.22$, the two-sided power at $\alpha = 0.05$ is just above $5\%$, and only estimates beyond about $\pm 9.4$ (the $t_{18}$ critical value times the SE) can reach significance. A true difference of 1 can then only be declared through an estimate roughly ten times too large, in either direction, which is why the sign is so often wrong. Button and colleagues (Nature Reviews Neuroscience, 2013) document the same mechanism across a literature.
 :::
 
-## 2 · Power pulls the exaggeration down {visibility="hidden"}
+## 2 · Power pulls the exaggeration down {visibility="visible"}
 
 ![Type M inflation factor against power, falling from several-fold at low power toward 1 as power approaches 1.](figures/sources/type-m-versus-power.png){fig-alt="Curve of the Type M inflation factor against power. The factor is several-fold below 20 percent power and close to 1 once power is near 80 percent." width="58%"}
 
