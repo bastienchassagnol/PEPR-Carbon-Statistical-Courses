@@ -382,7 +382,7 @@ Le fichier source, l'historique du code, le verrouillage des versions et la grai
 
 **Reproductibilité.** Un seul fichier source `.qmd` produit les chiffres, les figures et le texte. Git conserve l'historique du code. Pour l'évolution des jeux de données, [DVC](https://dvc.org/) versionne les fichiers que Git ne doit pas absorber. `renv.lock` fige les versions des paquets. `set.seed()` est requis pour toute inférence ou simulation qui comporte une part stochastique.
 
-## Deux questions posées après la séance {#sec-questions}
+## Trois questions posées après la séance {#sec-questions}
 
 ### Une tendance qui change de pente {#sec-rupture}
 
@@ -445,3 +445,123 @@ fit <- optim(c(0, 0, 1), nll, a = a, b = b, n = n, t = t, hessian = TRUE)
 ```
 
 La méta-analyse rencontre le même problème d'information résumée. [Hozo, Djulbegovic et Hozo (2005)](https://doi.org/10.1186/1471-2288-5-13) et [Wan et collègues (2014)](https://doi.org/10.1186/1471-2288-14-135), tous deux dans *BMC Medical Research Methodology*, estiment une moyenne et un écart-type à partir du minimum, du maximum et de $n$. Ce sont des méthodes approximatives, fondées sur une hypothèse de normalité. Elles servent de point de comparaison, pas de substitut à @eq-censure quand la proportion est bornée.
+
+### Des modèles de comptage aux données de chimie {#sec-chimie}
+
+Question : les modèles de comptage du cours valent-ils pour des concentrations de carbone, des proportions d'azote ou des gaz dans l'air ? Les parallèles avec les méthodes omiques sont nombreux. Dans les deux cas, une quantité réelle dans l'échantillon passe par un instrument qui la mesure avec un rendement et un bruit, puis est souvent ramenée à un total. On peut lire ces parallèles en trois couches : la mesure, les valeurs non détectées, puis la composition.
+
+#### Un modèle d'expression et un modèle de mesure
+
+📄 [Sarkar et Stephens (2021)](https://doi.org/10.1038/s41588-021-00873-4) séparent deux modèles en transcriptomique. Le modèle d'expression décrit la quantité réelle de transcrits dans la cellule, avec sa variabilité biologique. Le modèle de mesure décrit comment le séquençage échantillonne ces transcrits, en général par un tirage de Poisson. 📄 [Fang et Pachter (2025)](https://doi.org/10.1101/2025.05.11.653373) écrivent la même séparation avec deux facteurs propres à chaque cellule. Pour la quantité réelle $Y_{ij}$ de l'espèce $j$ dans l'unité $i$ et le comptage observé $X_{ij}$ :
+
+$$
+\mathbb{E}\bigl[Y_{ij} \mid c_i^{\mathrm{bio}}\bigr] = c_i^{\mathrm{bio}}\,\mathbb{E}[Y_j],
+\qquad
+X_{ij} \mid Y_{ij} \sim \mathrm{Binomiale}\bigl(Y_{ij},\; \lambda_j\, c_i^{\mathrm{tech}}\bigr).
+$$ {#eq-fang-pachter}
+
+- $c_i^{\mathrm{bio}}$ est un facteur biologique commun à toutes les espèces de l'unité $i$, par exemple la taille de la cellule.
+- $c_i^{\mathrm{tech}}$ est un rendement technique commun à toute l'unité, par exemple la profondeur de séquençage.
+- $\lambda_j$ est un rendement propre à chaque espèce. Il s'élimine dans les quantités normalisées.
+
+Le produit $c_i = c_i^{\mathrm{bio}} c_i^{\mathrm{tech}}$ est le facteur de taille. Pour deux espèces sans corrélation intrinsèque et à variabilité intrinsèque poissonnienne, les auteurs montrent que la covariance normalisée et la variance normalisée valent toutes deux le bruit extrinsèque :
+
+$$
+\frac{\operatorname{Cov}(X_a, X_b)}{\mathbb{E}[X_a]\,\mathbb{E}[X_b]}
+=
+\frac{\operatorname{Var}(X_a) - \mathbb{E}[X_a]}{\mathbb{E}[X_a]^2}
+=
+\frac{\operatorname{Var}(c)}{\mathbb{E}[c]^2}.
+$$ {#eq-bruit-extrinseque}
+
+@eq-bruit-extrinseque explique la surdispersion de base des données de comptage. Elle explique aussi pourquoi le coefficient de variation se stabilise pour les espèces abondantes. Elle a une conséquence pratique : diviser par le total de chaque unité retire le bruit technique, mais aussi la part biologique de $c_i$, qui peut être le signal cherché.
+
+La même construction s'applique à une analyse chimique. $Y_{ij}$ est la quantité du composé $j$ dans l'échantillon $i$.
+
+- $c_i^{\mathrm{bio}}$ est un facteur de l'échantillon qui agit sur tous les composés à la fois : teneur en matière organique, humidité, densité apparente.
+- $c_i^{\mathrm{tech}}$ est le rendement de la chaîne analytique pour cet échantillon : extraction, volume injecté, sensibilité de l'instrument le jour de la série.
+- $\lambda_j$ est le facteur de réponse ou le taux de récupération propre au composé.
+
+Trois correspondances en découlent.
+
+- **Normaliser par le courant ionique total, ou par la somme des pics, est une normalisation par le facteur de taille.** Elle retire $c_i^{\mathrm{tech}}$ et $c_i^{\mathrm{bio}}$ ensemble. Si un traitement augmente la matière organique totale, ce signal disparaît.
+- **Les étalons internes et les étalons de récupération marqués isotopiquement jouent le rôle des *spike-ins* ERCC.** Ajoutés en quantité connue, ils estiment $c_i^{\mathrm{tech}}$ seul, ce qui le sépare de $c_i^{\mathrm{bio}}$. Fang et Pachter observent que les ERCC n'ont pas tout à fait le même rendement que les ARN endogènes. L'équivalent chimique est l'effet de matrice : un étalon interne ne se comporte pas toujours comme l'analyte.
+- **La variance a la même forme en deux termes.** Pour une concentration continue, le modèle de 📄 [Rocke et Lorenzato (1995)](https://dmrocke.ucdavis.edu/Class/BIM283.2025.Winter/Rocke%20and%20Lorenzato%201995.pdf), *Technometrics* 37(2), écrit $Y = \mu e^{\eta} + \varepsilon$, avec une erreur additive $\varepsilon$ de variance $\sigma_\varepsilon^2$ et une erreur multiplicative $e^{\eta}$ :
+
+$$
+\operatorname{Var}(Y) = \sigma_\varepsilon^2 + S_\eta^2\,\mu^2.
+$$ {#eq-rocke-lorenzato}
+
+Le plancher $\sigma_\varepsilon^2$ domine près de la limite de détection. Le terme $S_\eta^2 \mu^2$ domine aux fortes concentrations, où le coefficient de variation devient constant : c'est le plateau de @eq-bruit-extrinseque. La binomiale négative a la même structure, $\mu + \mu^2/\theta$. Le modèle est disponible dans `mkin::sigma_twocomp`, et les jeux de données de l'article sont dans `chemCal`. Quand l'instrument compte des événements, par exemple des ions sur un détecteur de spectrométrie de masse ou des particules, la couche de mesure est de nouveau un comptage de Poisson.
+
+Une concentration est aussi une estimation : elle passe par une courbe d'étalonnage, comme les copies qPCR de SPRUCE. L'incertitude de l'étalonnage se propage au résultat. C'est un problème d'erreur sur les variables, pas un simple $Y$ bruité.
+
+#### Données censurées et inflation de zéros
+
+En séquençage, un zéro est le plus souvent un zéro d'échantillonnage. Le taxon est présent, mais avec une espérance $\mu_i$ faible, et la probabilité de ne rien observer, $e^{-\mu_i}$ sous un modèle de Poisson, diminue quand la profondeur de séquençage augmente. En chimie, l'équivalent est la valeur « $<$ LD » : le composé peut être présent sous la limite de détection, et cette limite dépend elle-même de l'effort, par la masse extraite, la dilution ou la durée d'intégration.
+
+Il faut distinguer trois mécanismes.
+
+| Mécanisme | Omique | Chimie | Modèle |
+| --- | --- | --- | --- |
+| Zéro structurel | Taxon absent du milieu | Composé absent | Mélange avec une masse en 0 (@sec-melange) |
+| Zéro d'échantillonnage | Taxon rare, profondeur faible | Composé présent sous la LD | Censure à gauche, ou Poisson avec offset |
+| Arrondi | Comptage arrondi à 0 | Valeur rapportée à la résolution de l'appareil | Censure par intervalle |
+
+Une valeur $<$ LD n'est ni un zéro ni une donnée manquante. On sait seulement que $Y_i < \mathrm{LD}_i$. Sa contribution à la vraisemblance est la probabilité de cet intervalle :
+
+$$
+L = \prod_{i\,:\,\text{détecté}} f(y_i \mid \mathbf{x}_i)
+\;\prod_{i\,:\,<\mathrm{LD}} F(\mathrm{LD}_i \mid \mathbf{x}_i).
+$$ {#eq-censure-ld}
+
+C'est la même construction que @eq-censure pour l'étendue. Remplacer les valeurs $<$ LD par 0, LD/2 ou LD$/\sqrt{2}$ biaise à la fois les moyennes, les variances et les tests. La référence est le livre de Helsel, *Statistics for Censored Environmental Data Using Minitab and R* (Wiley, 2ᵉ éd. 2012), dont les méthodes (Kaplan–Meier, maximum de vraisemblance, ROS) sont dans le paquet [`NADA2`](https://cran.r-project.org/package=NADA2). Une régression sur @eq-censure-ld s'écrit avec `survival::survreg(Surv(y, detecte, type = "left") ~ x)`, ou avec `cens()` dans `brms`. Une LD qui change d'une série à l'autre se traite naturellement : chaque ligne porte la sienne.
+
+Le lien avec l'inflation de zéros est direct. Un modèle à inflation de zéros mélange une masse en 0 et une loi de comptage (@sec-melange). Un modèle censuré dit qu'une partie des valeurs est cachée sous un seuil. Les deux produisent un excès de « zéros » par rapport à une loi de Poisson, mais pas pour la même raison. La revue de 📄 [Swift et collègues (2022)](https://doi.org/10.1002/wics.1586) sépare de même deux familles en microbiome : les modèles de mélange, qui traitent les zéros en excès en une étape, et les modèles en deux parties, qui traitent la présence puis l'abondance. Si l'on attend à la fois des absences vraies et des valeurs sous la LD, le modèle combine une masse en 0 et une loi censurée. Les données seules départagent mal les deux mécanismes. Le choix vient de ce que l'on sait du composé et du site.
+
+#### Des données compositionnelles
+
+Une composition est un vecteur de parts positives de somme fixe : proportions de taxons, pourcentages d'oxydes majeurs, %C, %N et le reste de la masse d'un sol, aires relatives des pics d'un chromatogramme. Si l'on connaît $D - 1$ parts, la dernière s'en déduit. Cette contrainte du simplexe crée des corrélations négatives sans aucun mécanisme : quand une part augmente, les autres diminuent mécaniquement. 📄 [Zhang et collègues (2024)](https://doi.org/10.1016/j.csbj.2024.11.003) rappellent que cette contrainte de somme unité induit des corrélations fallacieuses entre composantes. Pour Swift et collègues, tester une abondance relative n'est pas tester une abondance absolue. Seules quelques méthodes visent l'abondance absolue, comme ANCOM-BC, qui estime le rapport entre la taille de la librairie et la charge microbienne. En chimie, la question se pose de la même façon. Un pourcentage de carbone qui augmente peut venir d'un gain de carbone ou d'une perte de la fraction minérale.
+
+Zhang et collègues décomposent les transformations usuelles en deux étapes. La première est une conversion de chaque proportion : logarithme, logit, arcsinus de la racine, Box–Cox. La seconde est un contraste entre les parts : additif (ALR, rapport à une part de référence) ou centré (CLR, rapport à la moyenne géométrique). ALR et CLR sont des cas particuliers, avec la conversion logarithmique. Ils marchent bien quand il y a peu de zéros. Leurs contrastes arcsinus (AAC, CAC) se passent de pseudo-comptage. Un logarithme impose au contraire d'ajouter une constante, et cette constante peut changer les conclusions. Ce sont toujours des transformations de $Y$. L'argument de @sec-glm s'applique : on modélise une moyenne de la variable transformée. Pour des parts sous la LD, le paquet [`zCompositions`](https://cran.r-project.org/package=zCompositions) remplace les zéros en tenant compte de la limite de détection et de la contrainte de somme.
+
+Deux modèles de comptage traitent directement la composition, sans transformer les données.
+
+**Le multinomial logistique.** Le total $m_i$ de l'unité $i$ (taille de librairie, masse analysée) est fixé, et les parts suivent une régression softmax, la généralisation à $K$ classes de la régression logistique vue en cours :
+
+$$
+\mathbf{Y}_i \mid m_i \sim \mathrm{Multinomiale}(m_i, \boldsymbol\pi_i),
+\qquad
+\pi_{ik} = \frac{\exp(\mathbf{x}_i^{\top}\boldsymbol\beta_k)}{\sum_{l=1}^{K}\exp(\mathbf{x}_i^{\top}\boldsymbol\beta_l)},
+\qquad \boldsymbol\beta_K = \mathbf{0}.
+$$ {#eq-multinomial-logistique}
+
+$\exp(\beta_{k1})$ est le facteur qui multiplie le rapport $\pi_k / \pi_K$ quand $x_1$ augmente d'une unité. C'est un rapport de parts, cohérent avec la contrainte du simplexe. Le diaporama le rappelle : des comptages de Poisson indépendants, conditionnés par leur total, forment un multinomial. Le modèle log-linéaire de Poisson avec un intercept par échantillon donne les mêmes proportions ajustées.
+
+**Le Dirichlet-multinomial.** Le multinomial suppose que tous les échantillons d'une même condition partagent exactement $\boldsymbol\pi$. Les données réelles sont surdispersées. On tire donc $\boldsymbol\pi_i$ d'une loi de Dirichlet, puis les comptages :
+
+$$
+\boldsymbol\pi_i \sim \mathrm{Dirichlet}(\boldsymbol\alpha_i),
+\qquad
+\mathbf{Y}_i \mid \boldsymbol\pi_i, m_i \sim \mathrm{Multinomiale}(m_i, \boldsymbol\pi_i),
+$$ {#eq-dirichlet-multinomial}
+
+avec $\alpha_{ik} = \alpha_{i0}\,\pi_{ik}$ et $\pi_{ik}$ donné par @eq-multinomial-logistique. La précision $\alpha_{i0}$ règle la surdispersion. Quand $\alpha_{i0} \to \infty$, on retrouve le multinomial. On peut lire ce modèle comme une binomiale négative ramenée à la taille de librairie. Des binomiales négatives indépendantes, conditionnées par leur total, donnent un Dirichlet-multinomial, mais à une condition : elles doivent partager le même paramètre d'échelle. Des binomiales négatives qui partagent seulement un paramètre de forme, avec des moyennes différentes, ne restent pas dans la famille après conditionnement. La forme usuelle de la binomiale négative, avec un $\theta$ commun à tous les taxons, est dans ce second cas. L'équivalence est donc une intuition utile, pas une identité générale.
+
+Pour ajuster ces modèles :
+
+- `nnet::multinom()` pour @eq-multinomial-logistique ;
+- `MGLM::MGLMreg(..., dist = "DM")` pour @eq-dirichlet-multinomial ;
+- `PLNmodels` quand il faut aussi des corrélations entre parts, positives ou négatives, que le Dirichlet-multinomial ne permet pas.
+
+ALDEx2, discuté par Swift et collègues, utilise aussi un Dirichlet-multinomial, mais seulement pour tirer des proportions plausibles avant une transformation CLR et des tests. Ses taux de fausses découvertes peuvent dépasser le niveau nominal.
+
+#### Points à retenir
+
+1. **Séparer la mesure de la quantité étudiée.** Écrire d'abord ce que fait l'instrument, puis ce que fait le sol ou l'air (@eq-fang-pachter).
+2. **Ne pas normaliser par le total sans savoir ce que l'on retire.** Une somme ou un courant ionique total contient aussi un signal biogéochimique.
+3. **Utiliser des étalons internes pour séparer le rendement technique du signal**, en vérifiant l'effet de matrice.
+4. **Modéliser une variance en deux termes**, un plancher additif et un terme multiplicatif (@eq-rocke-lorenzato). Ni une variance constante ni un logarithme ne conviennent sur toute la gamme.
+5. **Traiter une valeur $<$ LD comme censurée** (@eq-censure-ld), jamais comme un 0 ou une demi-LD. Distinguer une absence vraie d'une valeur cachée sous le seuil.
+6. **Avant de comparer des pourcentages, décider si la question porte sur une part ou sur une quantité absolue.** Une part s'analyse par des log-ratios ou par @eq-multinomial-logistique et @eq-dirichlet-multinomial. Une quantité absolue demande une mesure de la charge totale.
+7. **Un rapport comme C:N est le quotient de deux mesures bruitées.** On modélise $\log(C/N)$, ou $C$ avec $\log N$ en covariable ou en offset, plutôt que de corréler entre elles des parts d'une même composition.
