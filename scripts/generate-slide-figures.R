@@ -1,5 +1,6 @@
 # Illustrative figures for the PEPR Carbon workshop slides.
-# Every series here is simulated. Nothing is a fit to NEON or SPRUCE data.
+# Every series here is simulated, except the toxoplasmosis table (Efron, 1986)
+# used for the analysis-of-deviance slides. Nothing is a fit to NEON or SPRUCE data.
 # Seed 20261005. Regenerate with: Rscript scripts/generate-slide-figures.R
 
 seed <- 20261005L
@@ -381,6 +382,67 @@ p_error <- ggplot(error_df, aes(n, error, colour = kind)) +
   )
 save_fig(p_error, "random-versus-systematic-error.png", width = 9, height = 4.6)
 
+# Analysis of deviance on published data, not a simulation: toxoplasmosis
+# positives by city against rainfall (Efron, 1986), as tabulated in Brooms,
+# "Analysis of deviance" (2005), references/analysis_of_deviance.pdf.
+toxo <- data.frame(
+  tested = c(
+    4, 10, 5, 10, 2, 5, 8, 19, 6, 10, 24, 1, 30, 22, 1, 11, 1,
+    54, 9, 18, 12, 1, 11, 77, 51, 16, 82, 13, 43, 75, 13, 10, 6, 37
+  ),
+  positive = c(
+    2, 3, 1, 3, 2, 3, 2, 7, 3, 8, 7, 0, 15, 4, 0, 6, 0,
+    33, 4, 5, 2, 0, 8, 41, 24, 7, 46, 9, 23, 53, 8, 3, 1, 23
+  ),
+  rain = c(
+    1735, 1936, 2000, 1973, 1750, 1800, 1750, 2077, 1920, 1800, 2050, 1830,
+    1650, 2200, 2000, 1770, 1920, 1770, 2240, 1620, 1756, 1650, 2250, 1796,
+    1890, 1871, 2063, 2100, 1918, 1834, 1780, 1900, 1976, 2292
+  )
+)
+toxo$r <- toxo$rain / 1000 - mean(toxo$rain / 1000)
+toxo_null <- glm(cbind(positive, tested - positive) ~ 1, family = binomial, data = toxo)
+toxo_cubic <- glm(
+  cbind(positive, tested - positive) ~ r + I(r^2) + I(r^3),
+  family = binomial, data = toxo
+)
+toxo_lr <- anova(toxo_null, toxo_cubic, test = "Chisq")
+toxo_quasi <- anova(
+  update(toxo_null, family = quasibinomial),
+  update(toxo_cubic, family = quasibinomial),
+  test = "F"
+)
+toxo_est <- list(
+  null_deviance = round(deviance(toxo_null), 2),
+  residual_deviance = round(deviance(toxo_cubic), 2),
+  df_null = df.residual(toxo_null),
+  df_residual = df.residual(toxo_cubic),
+  deviance_drop = round(toxo_lr$Deviance[2], 2),
+  chisq_p = signif(toxo_lr$`Pr(>Chi)`[2], 2),
+  phi_deviance = round(deviance(toxo_cubic) / df.residual(toxo_cubic), 2),
+  phi_pearson = round(
+    sum(residuals(toxo_cubic, type = "pearson")^2) / df.residual(toxo_cubic), 2
+  ),
+  quasi_f = round(toxo_quasi$F[2], 2),
+  quasi_f_p = signif(toxo_quasi$`Pr(>F)`[2], 2)
+)
+toxo_grid <- data.frame(rain = seq(min(toxo$rain), max(toxo$rain), length.out = 200))
+toxo_grid$r <- toxo_grid$rain / 1000 - mean(toxo$rain / 1000)
+toxo_grid$cubic <- predict(toxo_cubic, newdata = toxo_grid, type = "response")
+toxo_grid$null <- plogis(coef(toxo_null)[[1]])
+p_toxo <- ggplot(toxo, aes(rain, positive / tested)) +
+  geom_point(aes(size = tested), colour = "#1d4e89", alpha = 0.55) +
+  geom_line(data = toxo_grid, aes(rain, null), colour = "#1c2b24", linetype = "dashed", linewidth = 0.9) +
+  geom_line(data = toxo_grid, aes(rain, cubic), colour = "#c45c26", linewidth = 1.3) +
+  scale_size_area(max_size = 9, name = "People tested") +
+  scale_y_continuous(limits = c(0, 1)) +
+  labs(
+    x = "Annual rainfall (mm)",
+    y = "Proportion testing positive"
+  ) +
+  theme_slide()
+save_fig(p_toxo, "toxo-deviance.png", width = 9, height = 4.6)
+
 payload <- list(
   seed = seed,
   n = n,
@@ -388,7 +450,8 @@ payload <- list(
   negative_binomial = c(wald(fit_nb), summary_nb),
   logit = wald(fit_bin),
   sd_versus_se = sd_se,
-  note = "Illustrative simulations. Coefficients are estimates from one seed, not NEON or SPRUCE results. The SD-versus-SE panel uses seed 42."
+  toxoplasmosis = toxo_est,
+  note = "Illustrative simulations. Coefficients are estimates from one seed, not NEON or SPRUCE results. The SD-versus-SE panel uses seed 42. The toxoplasmosis entry is a fit to published data (Efron, 1986), not a simulation."
 )
 
 write_json(payload, file.path(out_dir, "estimates.json"), pretty = TRUE, auto_unbox = TRUE)
