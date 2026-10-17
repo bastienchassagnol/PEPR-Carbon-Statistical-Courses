@@ -446,12 +446,102 @@ $$
 D_{\text{small}} - D_{\text{large}} \sim \chi^2,
 $$
 
-with degrees of freedom equal to the number of extra parameters. In R that is `anova(model1, model2, test = "Chisq")`. This is the GLM form of the [analysis of deviance](#sec-wald-rao-lrt).
+with degrees of freedom equal to the number of extra parameters. In R that is `anova(model1, model2, test = "Chisq")`. This is the GLM form of the [analysis of deviance](#sec-wald-rao-lrt). The next four slides build it step by step: [the saturated model](#sec-saturated), [the likelihood ratio](#sec-glrt), [a worked table](#sec-deviance-toxo), and [the $F$ version](#sec-deviance-f).
 
 ::: {.notes}
 Their pseudo-$R^2$ is $1 - D/D_0$. They say that several pseudo-$R^2$ exist, and that a nested comparison should be the likelihood-ratio test. AIC is the comparison they allow when the models are not nested: deviance, plus a penalty for the number of parameters.
 
 **Going further.** The scaled deviance is $D/\phi = 2\{\ell_{\text{sat}} - \ell(\hat{\boldsymbol\beta})\}$, and $\phi = 1$ for the Poisson and the Bernoulli. Wilks' theorem makes $(D_{\text{small}} - D_{\text{large}})/\phi$ approximately $\chi^2_q$ for nested models, with $p$ fixed and $n \to \infty$; when $\phi$ is estimated, as in the quasi-Poisson, the reference is an $F$ distribution (`test = "F"`). The residual deviance itself is $\chi^2_{n-p}$ only under small-dispersion asymptotics, large Poisson means or large binomial totals, because the saturated model gains a parameter with every observation. For 0/1 data the deviance is a function of the $\hat\pi_i$ alone and says nothing about fit; use a grouped check such as Hosmer–Lemeshow, or the residual plots. McCullagh and Nelder's *Generalized Linear Models* treats these limits.
+:::
+
+## The saturated model is the ceiling {#sec-saturated}
+
+The [saturated model]{.mark} gives each row its own parameter, so its fitted mean is the observation itself, $\tilde\mu_i = Y_i$. No model with the same family has a higher log-likelihood, $\ell_{\text{sat}}$. It is a yardstick, not a candidate: it explains nothing. With $\theta$ the canonical parameter of the family, the deviance of a fit is its distance below that ceiling:
+
+$$
+D = 2\phi\{\ell_{\text{sat}} - \ell(\hat{\boldsymbol\beta})\}
+  = 2\sum_{i=1}^{n}\bigl[Y_i(\tilde\theta_i - \hat\theta_i) - b(\tilde\theta_i) + b(\hat\theta_i)\bigr].
+$$ {#eq-deviance}
+
+- Gaussian: $D = \sum_i (Y_i - \hat\mu_i)^2$, the residual sum of squares
+- Poisson: $D = 2\sum_i \{Y_i \log(Y_i/\hat\mu_i) - (Y_i - \hat\mu_i)\}$, with $0 \log 0 = 0$
+- Binomial, $Y_i$ positives out of $m_i$: $D = 2\sum_i \{Y_i \log(Y_i/\hat\mu_i) + (m_i - Y_i)\log\frac{m_i - Y_i}{m_i - \hat\mu_i}\}$
+
+::: {.notes}
+Say "one parameter per row" and let the room see why it cannot be the answer: it reproduces the data and predicts nothing. The deviance is the GLM's residual sum of squares, and the first bullet shows that literally. The source for this block is Brooms's lecture chapter, [*Analysis of deviance*](references/analysis_of_deviance.pdf) (2005), section 7.2.
+
+**Going further.** In the exponential dispersion family $\ell = \sum_i \{Y_i\theta_i - b(\theta_i)\}/a_i(\phi) + c(Y_i, \phi)$, and the saturated fit sets $b'(\tilde\theta_i) = Y_i$. The $c(Y_i, \phi)$ terms are the same in both fits and cancel, which is why the deviance does not depend on them. Each row contributes a non-negative term, $d_i$, and the deviance residual is $\mathrm{sign}(Y_i - \hat\mu_i)\sqrt{d_i}$. When the rows are grouped, the saturated model depends on the grouping: the deviance of 34 city totals is not the deviance of the same data written as 697 individual 0/1 rows, although differences between nested models are the same.
+:::
+
+## Two nested fits, one likelihood ratio {#sec-glrt}
+
+A reduced model with $q$ parameters sits inside a full model with $p$. The [generalised likelihood ratio]{.mark} compares their maximised likelihoods:
+
+$$
+\Lambda = \frac{\hat L_R}{\hat L_F} \in (0, 1],
+\qquad
+-2\log\Lambda
+  = \frac{D_R - D_F}{\phi}
+  \;\approx\; \chi^2_{p-q}
+  \quad\text{under } H_0: \beta_{q+1} = \cdots = \beta_p = 0.
+$$ {#eq-glrt}
+
+$\Lambda$ near 1 says the extra terms add little. Write each likelihood relative to the saturated one and $\ell_{\text{sat}}$ cancels: the test is a drop in deviance. The same ratio against the saturated model is a goodness-of-fit test, $D_F/\phi \approx \chi^2_{n-p}$, but that approximation is often poor.
+
+::: {.notes}
+Read @eq-glrt from left to right: a ratio of likelihoods, its log, and the deviance difference. The saturated model is the common reference that cancels. Then the warning in the last sentence: the difference between two models is trustworthy, the absolute deviance of one model much less so.
+
+**Going further.** Wilks' theorem gives the $\chi^2_{p-q}$ limit with $p$ fixed and $n \to \infty$. The goodness-of-fit version is a different limit: the saturated model gains a parameter with every row, so $D_F/\phi \approx \chi^2_{n-p}$ holds only under small-dispersion asymptotics, large Poisson means or large binomial totals in each row (McCullagh and Nelder, *Generalized Linear Models*, 1989, section 4.4). For 0/1 data the residual deviance depends on the fitted values alone and carries no information about fit.
+:::
+
+## Toxoplasmosis: a cubic on rainfall {#sec-deviance-toxo}
+
+![Proportion testing positive for toxoplasmosis in 34 cities against annual rainfall, point size proportional to the number tested, with the intercept-only fit as a dashed line and the cubic logistic fit as an orange curve.](figures/generated/toxo-deviance.png){fig-alt="Scatter of 34 city proportions between 0 and 1 against rainfall from 1600 to 2300 mm. A dashed horizontal line sits near 0.51. An orange curve rises to about 0.56 near 1800 mm, falls to about 0.42 near 2100 mm, then rises to about 0.6." width="80%"}
+
+Efron's 34 cities. The deviance falls from 74.21 on 33 df (intercept only) to 62.63 on 30 df (cubic in rainfall): a drop of 11.58 on 3 df, so $\chi^2_3$ gives $p = 0.009$. But 62.63 on 30 df is itself about twice its degrees of freedom.
+
+::: {.notes}
+Worked example from Brooms's section 7.3 and the S-PLUS output in [the chapter](references/analysis_of_deviance.pdf), refitted in R by `scripts/generate-slide-figures.R`; the numbers are in `figures/generated/estimates.json`. Published data (Efron, 1986, *Journal of the American Statistical Association*), not a simulation and not CA-SYS or SPRUCE. The sequential table in the chapter adds one power at a time: the linear term drops the deviance by 0.12, the quadratic by 0.00, the cubic by 11.45, the quartic by 0.19, the quintic by 1.25. Only the cubic moves it.
+
+Ask the room what a residual deviance twice its degrees of freedom means for a binomial, where $\phi$ is fixed at 1. The next slide answers.
+
+**Going further.** A sequential (Type I) table depends on the order of the terms; here the order is the natural one, increasing powers, so it answers "does the next power help, given the lower ones?". Centring rainfall reduces the collinearity between powers but does not remove it: the chapter's correlation matrix shows $-0.95$ between the quadratic and quartic coefficients. A spline or a fractional polynomial, from the smoothing section, is the modern alternative to choosing a polynomial degree by sequential tests.
+:::
+
+## An estimated dispersion turns the $\chi^2$ into an $F$ {#sec-deviance-f}
+
+When $\phi$ is not known, estimate it from the full model, $\tilde\phi = D_F/(n-p)$, and divide:
+
+$$
+F = \frac{(D_R - D_F)/(p-q)}{D_F/(n-p)} \;\approx\; F_{p-q,\,n-p}.
+$$ {#eq-deviance-f}
+
+For the Gaussian linear model $D$ is the residual sum of squares and @eq-deviance-f is the [ANOVA $F$]{.mark}, exactly: the analysis of deviance contains the analysis of variance. For the toxoplasmosis cubic, $\hat\phi \approx 2$, and the quasi-binomial $F$ is 1.99 on 3 and 30 df, $p = 0.14$. The cubic that looked convincing under $\phi = 1$ is within the extra-binomial noise.
+
+::: {.notes}
+Brooms's section 7.4 shows the exact case: with Normal errors and the identity link, $(D_R - D_F)/\phi$ is the extra regression sum of squares over $\sigma^2$, independent of $D_F/\phi = \mathrm{SSR}/\sigma^2$, so the ratio is exactly $F$. Elsewhere it is an approximation. The two estimates of $\phi$ for the cubic are 2.09 from the deviance and 1.94 from the Pearson statistic; R's `quasibinomial` uses Pearson, which gives the 1.99. Both say the same thing: the cities vary more than a binomial allows, and the $p$-value moves from 0.009 to 0.14.
+
+**Going further.** The Pearson estimate $\hat\phi = \sum_i (Y_i - \hat\mu_i)^2/\{V(\hat\mu_i)(n-p)\}$ is consistent under the mean–variance model alone; the deviance estimate is biased when counts are small. Overdispersion here has two usual readings: unmeasured city-level variation, which a beta-binomial or a city random effect would model, or a mean function that is still wrong. The quasi-likelihood $F$ treats it as a variance inflation only. In R: `anova(fit0, fit, test = "F")` on a `quasibinomial` or `quasipoisson` fit.
+:::
+
+## The $F$ of the linearised fit {#sec-irls-f}
+
+A GLM is fitted as a weighted linear model on the link scale. At convergence, with the [working response]{.mark}
+
+$$
+z_i = \hat\eta_i + (Y_i - \hat\mu_i)\,g'(\hat\mu_i),
+\qquad
+w_i = \frac{1}{V(\hat\mu_i)\,g'(\hat\mu_i)^2},
+\qquad
+\hat{\boldsymbol\beta} = (\mathbf{X}^{\top}\mathbf{W}\mathbf{X})^{-1}\mathbf{X}^{\top}\mathbf{W}\mathbf{z}.
+$$ {#eq-irls}
+
+$z_i$ is a first-order expansion of $g$ around $\hat\mu_i$, not $g(Y_i)$, so a zero count is no problem. Its weighted residual sum of squares is the [Pearson statistic]{.mark}, $\sum_i w_i(z_i - \hat\eta_i)^2 = \sum_i (Y_i - \hat\mu_i)^2/V(\hat\mu_i)$. An $F$ test on this weighted fit, with the weights held at the full model, is therefore the Wald $F$, $W/(q\hat\phi)$. With a Gaussian family and the identity link, $z_i = Y_i$, $w_i = 1$, and it is the ordinary ANOVA.
+
+::: {.notes}
+This slide answers "can I just run an $F$ test after the link?". Yes, in this precise sense: the link is applied to the mean through the linearisation, the weights carry the variance function, and the residual mean square is the Pearson $\hat\phi$. It is not the same as transforming $Y$ and running `lm`: that would put $g(Y_i)$ on the left, which is the transformation the [link stays on the mean](#sec-glm-versus-transform) slide rejects.
+
+**Going further.** Iteratively reweighted least squares is Fisher scoring: each step regresses $\mathbf{z}$ on $\mathbf{X}$ with weights $\mathbf{W}$ evaluated at the current $\hat{\boldsymbol\mu}$, and the fixed point is the maximum-likelihood estimate (Nelder and Wedderburn, 1972). Holding $\mathbf{W}$ fixed, the extra weighted sum of squares for $H_0: \mathbf{C}\boldsymbol\beta = \mathbf{0}$ is $(\mathbf{C}\hat{\boldsymbol\beta})^{\top}\{\mathbf{C}(\mathbf{X}^{\top}\mathbf{W}\mathbf{X})^{-1}\mathbf{C}^{\top}\}^{-1}\mathbf{C}\hat{\boldsymbol\beta}$, which is $\hat\phi$ times the Wald statistic of the [three-tests slide](#sec-wald-rao-lrt). It agrees with the deviance $F$ of @eq-deviance-f to first order, and differs from it when the effect is large or the sample small; the likelihood-ratio version is usually the more accurate.
 :::
 
 ## The three tests in R {#sec-anova-r}
@@ -1597,6 +1687,18 @@ The [second note](https://medium.com/@r.clin.res/testing-hypotheses-about-propor
 Part I: unpooled Wald matches logistic AME; part II: pooled `prop.test` matches Rao score. Several groups → deviance; numeric covariate → ANCOVA analogue links on slide.
 
 **Going further.** For one parameter with log-likelihood $\ell$, the Wald statistic uses the curvature at $\hat\beta$, the score statistic the slope and curvature at the null value, and the likelihood-ratio statistic $2\{\ell(\hat\beta)-\ell(\beta_0)\}$. Under the null all three are asymptotically $\chi^2_1$, and they agree to first order under local alternatives; in finite samples they differ. The Wald version is the least invariant: it changes with the parameterisation, and for a logit it can lose power as $|\hat\beta|$ grows (Hauck and Donner, 1977, *Journal of the American Statistical Association*). `prop.test()` applies Yates's continuity correction by default; with `correct = FALSE` its $X^2$ is the square of the pooled $z$. Agresti sets out the three tests for GLMs [@agrestiFoundationsLinearGeneralized2015].
+:::
+
+## A small $2 \times 2$ table: Boschloo before Fisher {#sec-boschloo}
+
+With two groups and a binary $Y$, the counts are small enough that no large-sample statistic is safe. The usual exact choice, Fisher's test, conditions on both margins of the table. The design fixed only the group sizes. Conditioning on the second margin makes Fisher's test [conservative]{.mark}: its real level sits below $\alpha$, and it loses power.
+
+[Boschloo's test]{.mark} is unconditional. It keeps the group sizes fixed, uses Fisher's $p$-value as the ordering statistic, and takes the largest tail probability over the unknown common proportion. It is never less powerful than Fisher's test at the same level. The cost is computation. Olszewski uses it by default for $2 \times 2$ tables ([post](https://lnkd.in/p/eY-68wYX)). In R: `exact2x2::boschloo(x1, n1, x2, n2)`.
+
+::: {.notes}
+Example for the room: detection of a methanotroph in 3 of 12 cores under one practice and 9 of 12 under the other. Fisher conditions on the 12 detections in total, which the sampling did not fix. Boschloo does not. Say that both are exact, in the sense that their level never exceeds $\alpha$, and that Boschloo comes closer to using the full $\alpha$.
+
+**Going further.** For two independent binomials $Y_1 \sim \mathrm{Bin}(n_1, \pi)$ and $Y_2 \sim \mathrm{Bin}(n_2, \pi)$ under the null, the unconditional $p$-value is $\sup_{\pi} \Pr_{\pi}\{T(Y_1, Y_2) \ge t_{\text{obs}}\}$, the supremum over the nuisance proportion. Boschloo (1970, *Statistica Neerlandica*) takes $T$ to be Fisher's one-sided $p$-value; Barnard's test uses a Wald or score statistic instead. Because Fisher's $p$-value is itself a valid test, the supremum can only be smaller or equal, which gives the uniform power result. Berger and Boos (1994, *Journal of the American Statistical Association*) restrict the supremum to a confidence set for $\pi$ to save computation; the `exact2x2` package documents both options. A logistic regression with Firth's penalty is the model-based route when covariates are needed.
 :::
 
 ## One model, every test of proportions {#sec-proportion-map}

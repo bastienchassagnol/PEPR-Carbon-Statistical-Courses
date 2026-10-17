@@ -381,10 +381,10 @@ Observational claims need explicit what-ifs: unmeasured confounder strength, alt
 
 The Bayesian-network course notes separate two graphs. A [dependency network]{.mark} joins two variables that still share a statistical relationship once the others are accounted for. That removes indirect co-variation. It does not say which way the link runs.
 
-A regulatory direction needs a further claim, in the notes' words: a change in $X$ produces a change in $Y$, and a change in $Y$ does not change $X$. That is the same gap as Hertel's fork and chain, [one independence, two causal stories](#sec-same-ci).
+A regulatory direction needs a further claim, in the notes' words: a change in $X$ produces a change in $Y$, and a change in $Y$ does not change $X$. That is the same gap as Hertel's fork and chain.
 
 ::: {.notes}
-Dependency networks remove indirect association once other variables are accounted for—they do not orient edges. Regulatory direction needs asymmetry under intervention, as the notes quote. Tie back to [#sec-same-ci]: statistics alone did not pick fork versus chain.
+Dependency networks remove indirect association once other variables are accounted for—they do not orient edges. Regulatory direction needs asymmetry under intervention, as the notes quote. 
 
 **Going further.** For Gaussian data the dependency network is the Gaussian graphical model: an edge $A - B$ is absent exactly when the partial correlation of $A$ and $B$ given all other variables is zero, which is a zero in the precision matrix $\Sigma^{-1}$. The graphical lasso (Friedman, Hastie and Tibshirani, *Biostatistics*, 2008) estimates a sparse $\Sigma^{-1}$ when the number of variables exceeds the sample size. This undirected graph is the moral graph of any DAG that generated the data: it contains every DAG edge plus an edge between co-parents of a collider, so it can show a link that no causal arrow supports. For compositional counts such as 16S data, partial correlations on raw proportions are biased by the sum constraint, which is why methods such as SPIEC-EASI work on log-ratios first (Kurtz and colleagues, *PLoS Computational Biology*, 2015). Lauritzen, *Graphical Models* (1996), is the reference text.
 :::

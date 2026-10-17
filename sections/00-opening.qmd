@@ -328,6 +328,41 @@ The left-hand spread is $s$. The right-hand spread is the standard error. The dr
 Point at the two histograms, not the code. The right panel should look visibly narrower; that is the whole lesson. Forty-five seconds.
 :::
 
+## A swapped label made the effect four times larger {#sec-se-mislabel}
+
+Singh, Clements and Fiatarone (1997) randomised 32 depressed adults aged 60 or more to resistance training ($n = 17$) or an attention control ($n = 15$). The Methods say the values in parentheses are [standard errors]{.mark}. Every table labels them standard deviations. A meta-analyst who reads the tables divides the difference in means by an SE, not an SD:
+
+$$
+\mathrm{SE} = \frac{\mathrm{SD}}{\sqrt{n}}
+\quad\Longrightarrow\quad
+\frac{\Delta}{\mathrm{SE}} = \sqrt{n}\,\frac{\Delta}{\mathrm{SD}},
+\qquad \sqrt{16} = 4.
+$$
+
+The largest standardised effect a correct extraction allows is $-0.72$. Of 24 meta-analyses, 19 assign a larger one; the median is $-2.74$, and the Cochrane review uses $-1.75$. 📝 Jané and Mvududu, [ACE audit report ACE2026002](https://auditclinicalevidence.org/reports/ACE2026002/) (2026).
+
+::: {.notes}
+This is the previous slide's distinction with a price on it. An SD describes how far depression scores spread between people; an SE describes how far the group mean would move between trials. Divide an effect by the second and every standardised mean difference is inflated by about $\sqrt{n}$, four here. A seminal trial carried that error into most of the meta-analyses that followed. The audit report is CC BY 4.0, published 12 October 2026, DOI 10.5281/zenodo.23331179; the trial is DOI 10.1093/gerona/52A.1.M27. The report was shared in a [LinkedIn post](https://lnkd.in/p/edg3BvBh). The numbers on the slide are the audit's own; we have not recomputed them.
+
+**Going further.** A standardised mean difference is $d = (\bar Y_1 - \bar Y_2)/s_p$, with the pooled within-group SD $s_p$; Hedges' $g$ multiplies it by a small-sample factor close to $1 - 3/(4(n_1 + n_2) - 9)$. The check a reader can run is the one the audit ran: if a reported "SD" times $\sqrt{n}$ gives a plausible spread for the scale, and the reported test statistics reproduce only when the values are treated as SEs, the label is wrong. The Cochrane Handbook (chapter 6) gives the conversion $\mathrm{SD} = \mathrm{SE}\sqrt{n}$ and asks extractors to check which one a paper reports.
+:::
+
+## Some reported numbers cannot exist {#sec-impossible-stats}
+
+The same audit lists 24 statistics that no data set could produce.
+
+- **A mean of 13.6 from 4 people.** Four integer scores sum to an integer, so their mean is a multiple of $1/4$: 13.5 or 13.75, never 13.6. That check is the [GRIM test]{.mark}.
+- **An SD of 24 inside a range of 45 to 87.** With 17 values in that range, the SD cannot exceed about half the range; the audit's bound is 22.2.
+- **Unreproducible $p$-values.** A baseline $p$ of 0.98 recomputes to about 0.03 from the article's own table.
+
+Error bars and parentheses need a name. Write "mean (SD)" or "mean (SE)", never a bare "±".
+
+::: {.notes}
+Three checks anyone can do with a calculator before trusting a table: granularity of a mean, the maximum SD a range allows, and whether a $p$-value follows from the numbers printed beside it. Brown and Heathers introduced GRIM (*Social Psychological and Personality Science*, 2017). Connect back to the SAMPL draft at the end of the day: naming the dispersion statistic is a reporting item.
+
+**Going further.** With $n$ integer scores, $\bar Y = S/n$ for an integer $S$, so a reported mean $m$ is possible only if some integer lies in $[n(m - \delta), n(m + \delta)]$, with $\delta$ the rounding half-width. For values in $[a, b]$, the sample SD is largest when the values split between the two ends, giving at most $\tfrac{b - a}{2}\sqrt{n/(n-1)}$. The audit's slightly larger 22.2 allows for rounding of the reported range. SPRITE (Heathers and colleagues, 2018) extends these checks by reconstructing samples consistent with a reported mean and SD.
+:::
+
 ## Precise is not the same as right {.eq-fig #sec-math-variance}
 
 $$

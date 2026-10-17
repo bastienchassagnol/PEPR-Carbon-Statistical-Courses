@@ -41,5 +41,17 @@
     "se_of_means": 2.1139,
     "source": "https://www.r-bloggers.com/2025/07/standard-deviation-vs-standard-error-meaning-misuse-and-the-math-behind-the-confusion/"
   },
-  "note": "Illustrative simulations. Coefficients are estimates from one seed, not NEON or SPRUCE results. The SD-versus-SE panel uses seed 42."
+  "toxoplasmosis": {
+    "null_deviance": 74.21,
+    "residual_deviance": 62.63,
+    "df_null": 33,
+    "df_residual": 30,
+    "deviance_drop": 11.58,
+    "chisq_p": 0.009,
+    "phi_deviance": 2.09,
+    "phi_pearson": 1.94,
+    "quasi_f": 1.99,
+    "quasi_f_p": 0.14
+  },
+  "note": "Illustrative simulations. Coefficients are estimates from one seed, not NEON or SPRUCE results. The SD-versus-SE panel uses seed 42. The toxoplasmosis entry is a fit to published data (Efron, 1986), not a simulation."
 }

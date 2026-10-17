@@ -835,7 +835,7 @@ Left panel: equal medians, $p<0.001$, ~70% stochastic superiority. Right panel: 
 
 Unless the two distributions differ only by a shift, a rank test mixes location, scale, and shape. Mann–Whitney can be small when the means are equal and the variances are not, and large when the means differ and the variances differ the other way. That is [Studentization]{.mark}: the null of a rank test is not the null of a mean.
 
-If the planned question is a mean, stay with a procedure for a mean: a permutation Welch test, Freedman–Lane, or a wild bootstrap. Brunner–Munzel is the rank procedure that allows unequal variances, and it still estimates a probability, not $\mu$. The map of those choices is [the six columns](https://www.linkedin.com/posts/adrianolszewski_there-exist-900-statistical-tests-many-share-7479152921432018944-tEK7/).
+If the planned question is a mean, stay with a procedure for a mean: a permutation Welch test, Freedman–Lane, or a wild bootstrap. If the question is stochastic superiority, [Brunner–Munzel]{.mark} is to Mann–Whitney what Welch is to Student: it allows unequal dispersions, and it still estimates a probability, not $\mu$. In R: `brunnermunzel::brunnermunzel.test(y ~ group, data = d)`. The map of those choices is [the six columns](https://www.linkedin.com/posts/adrianolszewski_there-exist-900-statistical-tests-many-share-7479152921432018944-tEK7/).
 
 ::: {.notes}
 Studentization is the keyword: rank null mixes location, scale, and shape. If the estimand is $\mu$, list permutation Welch, Freedman–Lane, wild bootstrap from the slide. Brunner–Munzel still targets a probability. Point to the six-column map link as the decision chart.
@@ -856,7 +856,7 @@ Third card. The null depends on the feature you name: a quantile, a pseudomedian
 ![Six columns of nonparametric comparisons: whole distributions, stochastic superiority, generalised locations, quantiles, robust mean-like estimators, and arithmetic means.](figures/sources/nonparametric-comparison-map.png){fig-alt="A diagram with six columns, from tests of the whole distribution, through ranks and quantiles, to permutation tests of an arithmetic mean." width="58%"}
 
 - A [generalised location]{.mark}, such as the Hodges–Lehmann shift, is rank-based. It is a shift only if both groups share dispersion and shape.
-- A [quantile]{.mark}, such as the median, is compared directly by quantile regression.
+- A [quantile]{.mark}, such as the median, is compared directly by quantile regression. It takes several factors, numeric covariates, interactions, splines, and random effects for clustered rows (`lqmm`), and fitting several $\tau$ shows how the effect changes from low to high values.
 
 ::: {.notes}
 Perspective only: one minute. The third and fourth columns of the map. In R: `quantreg::rq(y ~ group, tau = 0.5)`. Hodges–Lehmann is the location that Mann–Whitney estimates when the two distributions differ only by a shift; if the spreads differ, it is no longer a shift. Quantile regression names its target and needs no shape assumption.
@@ -876,7 +876,7 @@ Fourth card. This is where the mean lives. The third bullet is the bridge to the
 
 ![Table of ways to compare two means when variances differ, when there are outliers, or when the distribution is not Gaussian.](figures/sources/compare-means-no-covariate.png){fig-alt="A table. Equal variances: the ordinary t-test. Unequal variances: Welch. Outliers: Yuen or a robust regression, which changes the estimand to a trimmed or weighted mean. Non-Gaussian: a permutation or bootstrap t-test." width="86%"}
 
-[Olszewski](https://www.linkedin.com/feed/update/urn:li:activity/7445521856679407619/) keeps the mean when that is the question. Welch does not need a pretest of the variances. Yuen changes the target to a [trimmed mean]{.mark}. A permutation Welch test keeps the mean when the distribution is not Gaussian.
+[Olszewski](https://www.linkedin.com/feed/update/urn:li:activity/7445521856679407619/) keeps the mean when that is the question. Welch does not need a pretest of the variances. Yuen changes the target to a [trimmed mean]{.mark}. A permutation Welch test keeps the mean when the distribution is not Gaussian. If the mean–variance relationship is known (gamma, beta, inverse Gaussian, Poisson, negative binomial), the [GLM](#sec-family-table) gives parametric inference on the response or the link scale.
 
 ::: {.notes}
 Read the table row by row: equal variances → ordinary $t$; unequal → Welch without an $F$ pretest; outliers → Yuen and a new estimand. The bottom row is permutation or bootstrap $t$ when the mean stays the question. Yuen is the row where the estimand quietly changes.
@@ -886,7 +886,7 @@ Read the table row by row: equal variances → ordinary $t$; unequal → Welch w
 
 ## 3.iv · A permutation $p$ for the same Welch statistic {#sec-perm-welch}
 
-[Olszewski](https://www.linkedin.com/feed/update/urn:li:activity:7490552621573922816/): `MKinfer::perm.t.test` uses the Welch–Satterthwaite statistic unless you set `var.equal = TRUE`. Leave the default. Do not pretest the variances with an $F$ test.
+[Olszewski](https://www.linkedin.com/feed/update/urn:li:activity:7490552621573922816/): `MKinfer::perm.t.test` uses the Welch–Satterthwaite statistic unless you set `var.equal = TRUE`. Leave the default. Do not pretest the variances with an $F$ test. Use it when a Gaussian is a fair approximation of the population (one mode, roughly symmetric, no heavy tails), so the mean is the right target, but the samples look skewed or jagged: the permutation handles the shape, the studentisation the unequal variances.
 
 ::: {.codewindow .r}
 perm-test.R
@@ -908,6 +908,24 @@ The call returns the classical $p$ and the permutation $p$. Compare them, and lo
 **Going further.** A permutation test is exact when the observations are exchangeable under the null; equal means with unequal variances do not give exchangeability. Chung and Romano (*Annals of Statistics*, 2013) show that permuting a studentised statistic gives a test that is exact under exchangeability and asymptotically valid under the weaker mean null, which is why the Welch statistic is the one to permute. With $B$ random permutations, report $(1 + \#\{T^*_b \ge T\})/(1 + B)$, which is never 0 and keeps the test valid (Phipson and Smyth, *Statistical Applications in Genetics and Molecular Biology*, 2010).
 :::
 
+## 3.iv · With several factors or covariates, still the mean {.smaller #sec-mean-covariates}
+
+The Welch idea, carried to ANOVA and ANCOVA. Each row keeps the arithmetic mean in $H_0$ ([Olszewski](https://lnkd.in/p/eY-68wYX)).
+
+| Problem | Method | What it handles | What it does not |
+| --- | --- | --- | --- |
+| Non-Gaussian residuals | [Freedman–Lane]{.mark} permutation, `permuco::aovperm()` | Shape, with covariates | Unequal variances: exchangeability fails |
+| Non-Gaussian and unequal variances | Wild bootstrap, Rademacher weights | Both, with covariates | Very small samples |
+| Unequal variances, Gaussian | OLS with an HC3 sandwich, `sandwich::vcovHC(fit, type = "HC3")` | Heteroscedasticity of any form | Correlated rows |
+| Unequal variances or correlated repeats | [GLS](#sec-anova-fails), `nlme::gls()` | Any variance or correlation structure the data support; no compound symmetry needed | Non-Gaussian standardised residuals |
+| Non-Gaussian and correlated | GEE, `geepack::geeglm()` | A working correlation, a sandwich SE | Asymptotic Wald only; MCAR missing data |
+
+::: {.notes}
+Read the first column, then jump to the last: every method has a failure condition, and that is what to check. Freedman–Lane permutes the residuals of the model without the tested term, so the covariates stay in place; it assumes exchangeable errors. The wild bootstrap multiplies each residual by $\pm 1$ at random, which keeps its variance where it was, so it survives heteroscedasticity. HC3 is the sandwich with leverage correction that behaves best in small samples. GLS needs normality of the decorrelated, standardised residuals; when that fails, GEE. GLS and GEE already sit on the [ANOVA alternatives table](#sec-anova-fails) in the GLM section.
+
+**Going further.** Freedman and Lane (1983, *Journal of Business and Economic Statistics*) fit $Y = \mathbf{Z}\boldsymbol\gamma + \varepsilon$ under the null, permute $\hat\varepsilon$, add $\mathbf{Z}\hat{\boldsymbol\gamma}$ back, and refit the full model; Anderson and Legendre (1999, *Journal of Statistical Computation and Simulation*) found it the most reliable of the residual-permutation schemes. The wild bootstrap (Wu, 1986; Liu, 1988, *Annals of Statistics*) draws $Y^* = \hat{\mathbf{Y}}_0 + v_i\hat\varepsilon_i$ with $v_i = \pm 1$ and refits; with an HC-type studentised statistic it is valid under heteroscedasticity of unknown form (Davidson and Flachaire, 2008, *Journal of Econometrics*). HC3 divides each squared residual by $(1 - h_{ii})^2$ (MacKinnon and White, 1985, *Journal of Econometrics*; Long and Ervin, 2000, *The American Statistician*). GEE has small-sample sandwich corrections, such as Mancl and DeRouen (2001, *Biometrics*).
+:::
+
 ## 3.iv · A robust estimator limits the pull of one point {#sec-huber}
 
 $$
@@ -924,6 +942,21 @@ $$
 Extension of the parameter card: keep a location, stop one wild core from moving it. Yuen's trimmed mean, two slides back, is the two-group version of the same idea. Ask what the coefficient means if the residuals are strongly skewed: a third location, not $\mu$.
 
 **Going further.** Huber's M-estimator (Huber, *Annals of Mathematical Statistics*, 1964) solves $\sum_i \psi_c(e_i/\hat\sigma)\,\mathbf{x}_i = \mathbf{0}$ with $\psi_c = \rho_c'$, by iteratively reweighted least squares with weights $\min(1, c/|e_i/\hat\sigma|)$. Its influence function is bounded in $Y$ but not in $\mathbf{x}$, so a high-leverage point can still break it: the regression breakdown point is 0. MM-estimators (Yohai, *Annals of Statistics*, 1987; `robustbase::lmrob`) reach a 50% breakdown point with high Gaussian efficiency. Standard errors come from the sandwich form $A^{-1}BA^{-1}$. Wilcox, *Introduction to Robust Estimation and Hypothesis Testing*, covers the two-group versions.
+:::
+
+## 3.iv · Time to an event, when hazards are not proportional {#sec-maxcombo}
+
+The log-rank test compares survival curves, and it is most powerful when the hazard ratio is constant. With a delayed effect, an early effect that fades, or curves that cross, the hazards are [non-proportional]{.mark} and the log-rank loses power.
+
+- **Max-Combo.** Compute several weighted log-rank statistics, each weighted towards early, middle, or late times, and test their maximum, with the correlation between them taken into account. It says that the curves differ, not how. Explore it on simulated data before using it on real data. In R: `simtrial::maxcombo()`.
+- **Restricted mean survival time.** The mean time free of the event up to a horizon $\tau$, the area under each survival curve. The difference is an estimand in time units. In R: `survRM2::rmst2()`.
+
+Carbon examples are time to germination, to seedling death, or to half the litter-bag mass.
+
+::: {.notes}
+This is item 8 of Olszewski's list; survival models are otherwise outside this workshop. The practical message is to name the estimand: a Max-Combo $p$-value is a detection without a size; an RMST difference is a number of days with an interval. If the hazard ratio is the question and it is not constant, report it on time intervals instead.
+
+**Going further.** The Fleming–Harrington weights $\hat S(t^-)^{\rho}\{1 - \hat S(t^-)\}^{\gamma}$ emphasise early differences for $(\rho, \gamma) = (1, 0)$ and late ones for $(0, 1)$; $(0, 0)$ is the log-rank (Fleming and Harrington, *Counting Processes and Survival Analysis*, 1991). The common Max-Combo takes the maximum of the standardised statistics for $(0,0)$, $(0,1)$, $(1,0)$ and $(1,1)$, whose joint null distribution is multivariate normal, so the $p$-value is exact for the maximum (Lin and colleagues, *Statistics in Biopharmaceutical Research*, 2020). RMST needs a horizon $\tau$ chosen before the analysis and within the follow-up of both groups (Royston and Parmar, *BMC Medical Research Methodology*, 2013).
 :::
 
 ## Guideline 4 · Change the model, not the data {.center .pitfall-divider background-gradient="linear-gradient(160deg, #f7f4ef 0%, #d5eadf 100%)"}
